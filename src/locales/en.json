@@ -1,0 +1,54 @@
+{
+  "header": {
+    "logo": "CHIP GAMES",
+    "playGame": "Play Game",
+    "guide": "Guide",
+    "gameDescription": "Game Description",
+    "howToUse": "How to Use",
+    "help": "Help"
+  },
+  "menu": {
+    "title": "Match Puzzle Game",
+    "playGame": "Play Game",
+    "guide": "Guide",
+    "help": "Help"
+  },
+  "stageSelect": {
+    "title": "Select Stage"
+  },
+  "guide": {
+    "title": "Game Guide",
+    "description": "Welcome to Match Puzzle Game!",
+    "howToPlay": "How to Play",
+    "step1": "Connect 3 or more gems of the same color horizontally or vertically",
+    "step2": "Swipe gems to swap their positions",
+    "step3": "Achieve the target score or collect specific gems",
+    "step4": "Complete the goal within the move limit to win"
+  },
+  "help": {
+    "title": "Help",
+    "description": "If you need help with the game, please contact us."
+  },
+  "common": {
+    "back": "Back"
+  },
+  "game": {
+    "score": "Score",
+    "moves": "Moves",
+    "goal": "Goal",
+    "stage": "Stage",
+    "startGame": "Start Game",
+    "pause": "Pause",
+    "resume": "Resume"
+  },
+  "footer": {
+    "privacyPolicy": "Privacy Policy",
+    "contactUs": "Contact Us",
+    "copyright": "© 2025 ChipGames. All rights reserved."
+  },
+  "error": {
+    "canvasNotSupported": "Canvas is not supported in this browser",
+    "dataSaveFailed": "Failed to save data",
+    "gameLoadFailed": "Failed to load game"
+  }
+}

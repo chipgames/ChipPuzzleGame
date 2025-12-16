@@ -1,0 +1,66 @@
+.guide-screen {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  overflow-y: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.guide-content {
+  max-width: 800px;
+  margin: 0 auto;
+  color: #fff;
+}
+
+.guide-title {
+  font-size: 2.5rem;
+  margin: 20px 0;
+  color: #fff;
+}
+
+.guide-text {
+  line-height: 1.8;
+  font-size: 1.1rem;
+}
+
+.guide-text h3 {
+  margin-top: 30px;
+  margin-bottom: 15px;
+  color: #667eea;
+}
+
+.guide-text ol {
+  padding-left: 20px;
+}
+
+.guide-text li {
+  margin-bottom: 10px;
+}
+
+.back-button {
+  padding: 10px 20px;
+  background: #2a2a2a;
+  color: #fff;
+  border: 1px solid #444;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  margin-bottom: 20px;
+}
+
+.back-button:hover {
+  background: #3a3a3a;
+}
+
+@media (max-width: 768px) {
+  .guide-title {
+    font-size: 1.8rem;
+  }
+
+  .guide-text {
+    font-size: 1rem;
+  }
+}
+

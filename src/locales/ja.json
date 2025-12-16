@@ -1,0 +1,54 @@
+{
+  "header": {
+    "logo": "CHIP GAMES",
+    "playGame": "ゲーム開始",
+    "guide": "ガイド",
+    "gameDescription": "ゲーム説明",
+    "howToUse": "使い方",
+    "help": "ヘルプ"
+  },
+  "menu": {
+    "title": "マッチパズルゲーム",
+    "playGame": "ゲーム開始",
+    "guide": "ガイド",
+    "help": "ヘルプ"
+  },
+  "stageSelect": {
+    "title": "ステージ選択"
+  },
+  "guide": {
+    "title": "ゲームガイド",
+    "description": "マッチパズルゲームへようこそ！",
+    "howToPlay": "遊び方",
+    "step1": "同じ色のジェムを3つ以上横または縦に接続します",
+    "step2": "ジェムをスワイプして位置を交換できます",
+    "step3": "目標スコアを達成するか、特定のジェムを収集します",
+    "step4": "移動回数制限内に目標を達成すると勝利です"
+  },
+  "help": {
+    "title": "ヘルプ",
+    "description": "ゲームに関するヘルプが必要な場合は、お問い合わせください。"
+  },
+  "common": {
+    "back": "戻る"
+  },
+  "game": {
+    "score": "スコア",
+    "moves": "移動回数",
+    "goal": "目標",
+    "stage": "ステージ",
+    "startGame": "ゲーム開始",
+    "pause": "一時停止",
+    "resume": "再開"
+  },
+  "footer": {
+    "privacyPolicy": "プライバシーポリシー",
+    "contactUs": "お問い合わせ",
+    "copyright": "© 2025 ChipGames. All rights reserved."
+  },
+  "error": {
+    "canvasNotSupported": "このブラウザはCanvasをサポートしていません",
+    "dataSaveFailed": "データの保存に失敗しました",
+    "gameLoadFailed": "ゲームの読み込みに失敗しました"
+  }
+}
