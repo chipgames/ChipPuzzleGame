@@ -6,3 +6,11 @@ export const STORAGE_VERSION = "1.0.0";
 export const MAX_STORAGE_SIZE = 5 * 1024 * 1024; // 5MB
 
 
+
+
+
+
+
+
+
+

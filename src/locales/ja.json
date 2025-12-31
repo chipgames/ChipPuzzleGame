@@ -5,7 +5,9 @@
     "guide": "ガイド",
     "gameDescription": "ゲーム説明",
     "howToUse": "使い方",
-    "help": "ヘルプ"
+    "help": "ヘルプ",
+    "soundOn": "サウンドON",
+    "soundOff": "サウンドOFF"
   },
   "menu": {
     "title": "マッチパズルゲーム",
@@ -14,7 +16,8 @@
     "help": "ヘルプ"
   },
   "stageSelect": {
-    "title": "ステージ選択"
+    "title": "ステージ選択",
+    "page": "ページ"
   },
   "guide": {
     "title": "ゲームガイド",

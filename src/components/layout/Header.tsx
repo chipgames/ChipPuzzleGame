@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { GameScreen } from "@/types/ui";
+import { soundManager } from "@/utils/SoundManager";
 import "./Header.css";
 
 interface HeaderProps {
@@ -11,10 +12,26 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen }) => {
   const { t } = useLanguage();
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
+    const saved = localStorage.getItem("chipPuzzleGame_soundEnabled");
+    return saved !== null ? JSON.parse(saved) : true;
+  });
+
+  useEffect(() => {
+    soundManager.setEnabled(soundEnabled);
+    localStorage.setItem("chipPuzzleGame_soundEnabled", JSON.stringify(soundEnabled));
+  }, [soundEnabled]);
 
   const handleMenuClick = (screen: GameScreen) => {
     if (onNavigate) {
       onNavigate(screen);
+    }
+  };
+
+  const toggleSound = () => {
+    setSoundEnabled(!soundEnabled);
+    if (!soundEnabled) {
+      soundManager.playClick();
     }
   };
 
@@ -60,7 +77,16 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen }) => {
             {t("header.help")}
           </button>
         </nav>
-        <LanguageSelector />
+        <div className="header-right">
+          <button
+            className="header-sound-button"
+            onClick={toggleSound}
+            title={soundEnabled ? t("header.soundOff") : t("header.soundOn")}
+          >
+            {soundEnabled ? "🔊" : "🔇"}
+          </button>
+          <LanguageSelector />
+        </div>
       </div>
     </header>
   );

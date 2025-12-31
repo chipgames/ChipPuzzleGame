@@ -36,3 +36,11 @@ const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate }) => {
 
 export default GuideScreen;
 
+
+
+
+
+
+
+
+

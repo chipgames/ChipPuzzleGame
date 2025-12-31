@@ -5,7 +5,9 @@
     "guide": "Guide",
     "gameDescription": "Game Description",
     "howToUse": "How to Use",
-    "help": "Help"
+    "help": "Help",
+    "soundOn": "Sound On",
+    "soundOff": "Sound Off"
   },
   "menu": {
     "title": "Match Puzzle Game",
@@ -14,7 +16,8 @@
     "help": "Help"
   },
   "stageSelect": {
-    "title": "Select Stage"
+    "title": "Select Stage",
+    "page": "Page"
   },
   "guide": {
     "title": "Game Guide",

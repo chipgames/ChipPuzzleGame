@@ -16,3 +16,11 @@ export const DEFAULT_CANVAS_CONFIG: Partial<CanvasConfig> = {
 };
 
 
+
+
+
+
+
+
+
+

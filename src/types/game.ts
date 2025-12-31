@@ -22,6 +22,15 @@ export interface GameState {
   currentStage: number;
   isAnimating: boolean;
   selectedGem: { row: number; col: number } | null;
+  comboCount: number; // 연쇄 매칭 횟수
 }
+
+
+
+
+
+
+
+
 
 

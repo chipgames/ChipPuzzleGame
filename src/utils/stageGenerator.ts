@@ -2,6 +2,7 @@ import { Gem } from "@/types/gem";
 import { StageConfig } from "@/types/stage";
 import { GEM_COLORS } from "@/constants/gemConfig";
 import { generateNewGem } from "./gravity";
+import { findMatches } from "./matchDetection";
 
 /**
  * 시드 기반 랜덤 생성기
@@ -119,8 +120,64 @@ function generateInitialBoard(
 function ensureNoInitialMatches(
   board: (Gem | null)[][]
 ): (Gem | null)[][] {
-  // 간단한 검증: 3개 연속 매칭이 없도록 조정
-  // 실제로는 더 복잡한 검증이 필요하지만, 기본 구현
+  const maxAttempts = 100; // 최대 시도 횟수
+  let attempts = 0;
+  
+  while (attempts < maxAttempts) {
+    const matches = findMatches(board);
+    
+    if (matches.length === 0) {
+      // 매칭이 없으면 완료
+      return board;
+    }
+    
+    // 매칭이 있으면 해당 위치의 색상 변경
+    for (const match of matches) {
+      for (const pos of match.positions) {
+        const gem = board[pos.row]?.[pos.col];
+        if (gem) {
+          // 다른 색상으로 변경
+          const currentColorIndex = GEM_COLORS.indexOf(gem.color);
+          const availableColors = GEM_COLORS.filter((_, idx) => idx !== currentColorIndex);
+          
+          // 인접한 젬의 색상도 고려하여 다른 색상 선택
+          let newColor = gem.color;
+          let colorAttempts = 0;
+          
+          while (colorAttempts < 10 && newColor === gem.color) {
+            const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+            
+            // 인접한 젬과 같은 색상이 아닌지 확인
+            const neighbors = [
+              board[pos.row - 1]?.[pos.col],
+              board[pos.row + 1]?.[pos.col],
+              board[pos.row]?.[pos.col - 1],
+              board[pos.row]?.[pos.col + 1],
+            ].filter(Boolean);
+            
+            const hasSameColorNeighbor = neighbors.some(n => n?.color === randomColor);
+            
+            if (!hasSameColorNeighbor) {
+              newColor = randomColor;
+            } else {
+              colorAttempts++;
+            }
+          }
+          
+          if (newColor === gem.color && availableColors.length > 0) {
+            newColor = availableColors[0];
+          }
+          
+          gem.color = newColor;
+        }
+      }
+    }
+    
+    attempts++;
+  }
+  
+  // 최대 시도 횟수를 초과해도 매칭이 있으면 그대로 반환
+  // (극히 드문 경우)
   return board;
 }
 

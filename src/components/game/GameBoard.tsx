@@ -7,7 +7,6 @@ import { DEFAULT_GRID_SIZE } from "@/constants/gameConfig";
 import { GameScreen } from "@/types/ui";
 import { useLanguage } from "@/hooks/useLanguage";
 import { useGameState } from "@/hooks/useGameState";
-import { Gem } from "@/types/gem";
 import { calculateStarRating } from "@/utils/starRating";
 import { ParticleSystem } from "@/utils/particles";
 import { findPossibleMatches, Hint } from "@/utils/hintSystem";
@@ -56,7 +55,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [unlockedStages, setUnlockedStages] = useState<number>(1);
 
   // 게임 상태 관리
-  const { gameState, selectGem, swapGems, processMatches } =
+  const { gameState, selectGem, swapGems, processMatches, togglePause } =
     useGameState(stageNumber);
 
   // 스테이지 설정에 맞게 config 업데이트
@@ -282,14 +281,31 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
       }
 
-      // 힌트 버튼 (우측 상단) - 모바일 비율 고려
+      // 콤보 표시 (콤보가 있을 때만)
+      if (gameState.comboCount > 0) {
+        ctx.fillStyle = "#ffd93d";
+        ctx.font = `bold ${Math.max(10, infoFontSize + 2 * scale)}px Arial`;
+        ctx.fillText(
+          `Combo x${gameState.comboCount}!`,
+          infoMarginX,
+          infoY + infoLineHeight * 3
+        );
+        ctx.fillStyle = "#fff";
+      }
+
+      // 힌트 버튼 및 일시정지 버튼 (우측 상단) - 모바일 비율 고려
       if (!gameState.isGameOver && !gameState.isAnimating) {
         const baseButtonWidth = 120;
         const baseButtonHeight = 40;
         const buttonMargin = 20 * scale;
+        const buttonGap = 10 * scale;
 
         const hintButtonWidth = Math.max(60, baseButtonWidth * scale);
         const hintButtonHeight = Math.max(24, baseButtonHeight * scale);
+        const pauseButtonWidth = Math.max(60, baseButtonWidth * scale);
+        const pauseButtonHeight = Math.max(24, baseButtonHeight * scale);
+
+        // 힌트 버튼
         const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
         const hintButtonY = buttonMargin;
 
@@ -318,6 +334,57 @@ const GameBoard: React.FC<GameBoardProps> = ({
           "Hint",
           hintButtonX + hintButtonWidth / 2,
           hintButtonY + hintButtonHeight / 2 + hintFontSize * 0.35
+        );
+
+        // 일시정지 버튼
+        const pauseButtonX = hintButtonX - pauseButtonWidth - buttonGap;
+        const pauseButtonY = buttonMargin;
+
+        ctx.fillStyle = gameState.isPaused ? "#ff6b6b" : "#667eea";
+        ctx.fillRect(
+          pauseButtonX,
+          pauseButtonY,
+          pauseButtonWidth,
+          pauseButtonHeight
+        );
+
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = Math.max(1, 2 * scale);
+        ctx.strokeRect(
+          pauseButtonX,
+          pauseButtonY,
+          pauseButtonWidth,
+          pauseButtonHeight
+        );
+
+        ctx.fillStyle = "#fff";
+        const pauseFontSize = Math.max(8, 16 * scale);
+        ctx.font = `bold ${pauseFontSize}px Arial`;
+        ctx.textAlign = "center";
+        ctx.fillText(
+          gameState.isPaused ? t("game.resume") : t("game.pause"),
+          pauseButtonX + pauseButtonWidth / 2,
+          pauseButtonY + pauseButtonHeight / 2 + pauseFontSize * 0.35
+        );
+      }
+
+      // 일시정지 오버레이
+      if (gameState.isPaused && !gameState.isGameOver) {
+        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.max(24, 48 * scale)}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(t("game.pause"), canvasWidth / 2, canvasHeight / 2);
+
+        ctx.fillStyle = "#ccc";
+        ctx.font = `bold ${Math.max(16, 24 * scale)}px Arial`;
+        ctx.fillText(
+          t("game.resume"),
+          canvasWidth / 2,
+          canvasHeight / 2 + 50 * scale
         );
       }
 
@@ -503,9 +570,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 ) {
                   // 드래그 대상 젬: 반대 방향으로 이동
                   if (dragCurrentPosRef.current) {
-                    const startGemX = gridStartX + startCell.col * cellSize;
-                    const startGemY = gridStartY + startCell.row * cellSize;
-
                     // 드래그 시작 젬의 이동량 계산
                     const offsetX = dragCurrentPosRef.current.x - startPos.x;
                     const offsetY = dragCurrentPosRef.current.y - startPos.y;
@@ -677,7 +741,32 @@ const GameBoard: React.FC<GameBoardProps> = ({
         });
 
         // 모든 젬 확인 후 중력 애니메이션 상태 업데이트
+        const wasAnimating = gravityAnimatingRef.current;
         gravityAnimatingRef.current = hasGravityAnimation;
+
+        // 중력 애니메이션이 완료되었을 때 (true -> false로 변경)
+        // 매칭 체크를 트리거하기 위해 lastBoardRef를 리셋
+        if (wasAnimating && !hasGravityAnimation) {
+          // 중력 애니메이션 완료 후 매칭 체크를 트리거하기 위해
+          // 게임이 진행 중이고 처리 중이 아닐 때만 체크
+          if (
+            gameState.isAnimating &&
+            currentScreen === "game" &&
+            !gameState.isGameOver &&
+            !isProcessingRef.current
+          ) {
+            // 중력 애니메이션 완료 후 전체 블럭을 체크하여 매칭되는 것이 있는지 확인
+            // lastBoardRef를 리셋하여 다음 useEffect에서 매칭이 감지되도록 함
+            // 약간의 지연을 두어 중력 애니메이션이 완전히 완료된 후 체크
+            setTimeout(() => {
+              // 중력 애니메이션 완료 후 매칭 체크를 위해
+              // lastBoardRef를 리셋하여 다음 useEffect 실행 시 새로운 보드 변경이 감지되도록 함
+              lastBoardRef.current = "";
+              // isProcessingRef를 false로 설정하여 다음 매칭이 처리될 수 있도록 함
+              // (이미 processMatches가 완료되었으므로)
+            }, 100);
+          }
+        }
       }
 
       // 파티클 렌더링
@@ -788,6 +877,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       if (isBoardChanged) {
         isProcessingRef.current = true;
+        // processMatches 호출 전 현재 보드 상태 저장
+        const boardBeforeProcess = boardKey;
         lastBoardRef.current = boardKey;
 
         // 기존 타임아웃 취소
@@ -801,13 +892,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
           const checkGravity = () => {
             if (!gravityAnimatingRef.current) {
               processMatches();
+
               // processMatches가 완료되고 상태 업데이트가 반영될 때까지 대기
               // 그 후 isProcessingRef를 리셋하여 다음 매칭이 처리될 수 있도록 함
               setTimeout(() => {
                 isProcessingRef.current = false;
-                // 보드 추적도 리셋하여 새로운 매칭이 감지될 수 있도록 함
-                lastBoardRef.current = "";
-              }, 50);
+                // processMatches가 보드를 업데이트했으므로,
+                // 중력 애니메이션이 완료된 후 매칭 체크를 위해
+                // lastBoardRef를 리셋하여 다음 useEffect에서 매칭이 감지되도록 함
+                // (중력 애니메이션이 완료되면 렌더링 루프에서 lastBoardRef를 리셋하므로
+                // 여기서는 processMatches 전 보드 상태로 되돌림)
+                lastBoardRef.current = boardBeforeProcess;
+              }, 200);
             } else {
               // 중력 애니메이션이 진행 중이면 다시 확인
               setTimeout(checkGravity, 50);
@@ -858,11 +954,71 @@ const GameBoard: React.FC<GameBoardProps> = ({
     if (!prevIsClearedRef.current && isCleared && !gameState.isGameOver) {
       console.log("Stage Cleared!", gameState.score);
       soundManager.playStageClear();
+
+      // 스테이지 클리어 정보 저장
+      try {
+        const stars = calculateStarRating(gameState);
+        const saved = localStorage.getItem("chipPuzzleGame_progress");
+        let progress: any = { highestStage: 1, stageRecords: {} };
+
+        if (saved) {
+          try {
+            progress = JSON.parse(saved);
+          } catch (e) {
+            console.error("Failed to parse progress", e);
+          }
+        }
+
+        // 최고 스테이지 업데이트
+        const currentStage = gameState.currentStage;
+        if (currentStage >= progress.highestStage) {
+          progress.highestStage = currentStage + 1;
+        }
+
+        // 스테이지 기록 업데이트
+        if (!progress.stageRecords) {
+          progress.stageRecords = {};
+        }
+
+        const stageKey = currentStage.toString();
+        const existingRecord = progress.stageRecords[stageKey];
+
+        if (!existingRecord || gameState.score > existingRecord.bestScore) {
+          progress.stageRecords[stageKey] = {
+            stageNumber: currentStage,
+            stars: Math.max(existingRecord?.stars || 0, stars),
+            score: gameState.score,
+            bestScore: gameState.score,
+            completedAt: new Date().toISOString(),
+            attempts: (existingRecord?.attempts || 0) + 1,
+          };
+        } else {
+          // 점수는 낮지만 별점이 더 높을 수 있음
+          progress.stageRecords[stageKey] = {
+            ...existingRecord,
+            stars: Math.max(existingRecord.stars, stars),
+            attempts: existingRecord.attempts + 1,
+          };
+        }
+
+        localStorage.setItem(
+          "chipPuzzleGame_progress",
+          JSON.stringify(progress)
+        );
+      } catch (e) {
+        console.error("Failed to save progress", e);
+      }
     }
 
     prevIsGameOverRef.current = gameState.isGameOver;
     prevIsClearedRef.current = isCleared;
-  }, [gameState.isGameOver, gameState.goals, gameState.score, currentScreen]);
+  }, [
+    gameState.isGameOver,
+    gameState.goals,
+    gameState.score,
+    gameState.currentStage,
+    currentScreen,
+  ]);
 
   // Canvas 클릭 이벤트 처리
   const handleCanvasClick = useCallback(
@@ -977,16 +1133,43 @@ const GameBoard: React.FC<GameBoardProps> = ({
           return;
         }
 
-        // 힌트 버튼 클릭 확인 (렌더링과 동일한 크기/위치 계산)
+        // 일시정지 상태에서는 클릭 무시
+        if (gameState.isPaused) {
+          // 일시정지 오버레이 클릭 시 재개
+          togglePause();
+          soundManager.playClick();
+          return;
+        }
+
+        // 힌트 버튼 및 일시정지 버튼 클릭 확인 (렌더링과 동일한 크기/위치 계산)
         const baseButtonWidth = 120;
         const baseButtonHeight = 40;
         const buttonMargin = 20 * scale;
+        const buttonGap = 10 * scale;
 
         const hintButtonWidth = Math.max(60, baseButtonWidth * scale);
         const hintButtonHeight = Math.max(24, baseButtonHeight * scale);
+        const pauseButtonWidth = Math.max(60, baseButtonWidth * scale);
+        const pauseButtonHeight = Math.max(24, baseButtonHeight * scale);
+
         const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
         const hintButtonY = buttonMargin;
+        const pauseButtonX = hintButtonX - pauseButtonWidth - buttonGap;
+        const pauseButtonY = buttonMargin;
 
+        // 일시정지 버튼 클릭
+        if (
+          x >= pauseButtonX &&
+          x <= pauseButtonX + pauseButtonWidth &&
+          y >= pauseButtonY &&
+          y <= pauseButtonY + pauseButtonHeight
+        ) {
+          togglePause();
+          soundManager.playClick();
+          return;
+        }
+
+        // 힌트 버튼 클릭
         if (
           x >= hintButtonX &&
           x <= hintButtonX + hintButtonWidth &&
@@ -1010,6 +1193,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
             }
           }
           soundManager.playClick();
+          return;
+        }
+
+        // 일시정지 상태에서는 젬 클릭 무시
+        if (gameState.isPaused) {
           return;
         }
 
@@ -1056,6 +1244,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       selectGem,
       swapGems,
       showHint,
+      togglePause,
     ]
   );
 
@@ -1065,6 +1254,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const canvas = canvasRef.current;
       if (!canvas) return;
       if (currentScreen !== "game") return;
+      if (gameState.isPaused) return;
 
       const rect = canvas.getBoundingClientRect();
       const x = event.clientX - rect.left;
@@ -1103,7 +1293,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         isDraggingRef.current = true;
       }
     },
-    [currentScreen, config, gameState.board]
+    [currentScreen, config, gameState.board, gameState.isPaused]
   );
 
   const handlePointerMove = useCallback(
@@ -1111,6 +1301,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const canvas = canvasRef.current;
       if (!canvas) return;
       if (currentScreen !== "game") return;
+      if (gameState.isPaused) return;
       if (
         !isDraggingRef.current ||
         !dragStartCellRef.current ||
@@ -1189,7 +1380,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       dragCurrentPosRef.current = { x, y };
       dragTargetCellRef.current = targetCell;
     },
-    [currentScreen, config]
+    [currentScreen, config, gameState.isPaused]
   );
 
   const handlePointerUp = useCallback(() => {

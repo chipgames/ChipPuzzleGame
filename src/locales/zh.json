@@ -5,7 +5,9 @@
     "guide": "指南",
     "gameDescription": "游戏说明",
     "howToUse": "使用方法",
-    "help": "帮助"
+    "help": "帮助",
+    "soundOn": "开启声音",
+    "soundOff": "关闭声音"
   },
   "menu": {
     "title": "匹配益智游戏",
@@ -14,7 +16,8 @@
     "help": "帮助"
   },
   "stageSelect": {
-    "title": "选择关卡"
+    "title": "选择关卡",
+    "page": "页"
   },
   "guide": {
     "title": "游戏指南",

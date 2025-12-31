@@ -38,3 +38,11 @@ export function calculateStarRating(gameState: GameState): number {
   return Math.min(stars, 3);
 }
 
+
+
+
+
+
+
+
+
