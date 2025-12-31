@@ -410,10 +410,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const buttonMargin = 20 * scale;
         const buttonGap = 10 * scale;
 
-        const hintButtonWidth = Math.max(60, baseButtonWidth * scale);
-        const hintButtonHeight = Math.max(24, baseButtonHeight * scale);
-        const pauseButtonWidth = Math.max(60, baseButtonWidth * scale);
-        const pauseButtonHeight = Math.max(24, baseButtonHeight * scale);
+        // 모바일에서도 비율에 맞게 조정 (최소값 제거하여 scale에 따라 정확히 조정)
+        const hintButtonWidth = baseButtonWidth * scale;
+        const hintButtonHeight = baseButtonHeight * scale;
+        const pauseButtonWidth = baseButtonWidth * scale;
+        const pauseButtonHeight = baseButtonHeight * scale;
 
         // 힌트 버튼 (프리미엄 스타일)
         const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
@@ -455,7 +456,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowOffsetY = 2 * scale;
 
         ctx.fillStyle = "#ffffff";
-        const hintFontSize = Math.max(10, 16 * scale);
+        const hintFontSize = 16 * scale;
         ctx.font = `600 ${hintFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -512,7 +513,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowOffsetY = 2 * scale;
 
         ctx.fillStyle = "#ffffff";
-        const pauseFontSize = Math.max(10, 16 * scale);
+        const pauseFontSize = 16 * scale;
         ctx.font = `600 ${pauseFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -1413,8 +1414,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const baseButtonHeight = 40;
         const buttonMargin = 20 * scale;
 
-        const hintButtonWidth = Math.max(60, baseButtonWidth * scale);
-        const hintButtonHeight = Math.max(24, baseButtonHeight * scale);
+        const hintButtonWidth = baseButtonWidth * scale;
+        const hintButtonHeight = baseButtonHeight * scale;
         const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
         const hintButtonY = buttonMargin;
 
@@ -1578,10 +1579,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const buttonMargin = 20 * scale;
         const buttonGap = 10 * scale;
 
-        const hintButtonWidth = Math.max(60, baseButtonWidth * scale);
-        const hintButtonHeight = Math.max(24, baseButtonHeight * scale);
-        const pauseButtonWidth = Math.max(60, baseButtonWidth * scale);
-        const pauseButtonHeight = Math.max(24, baseButtonHeight * scale);
+        const hintButtonWidth = baseButtonWidth * scale;
+        const hintButtonHeight = baseButtonHeight * scale;
+        const pauseButtonWidth = baseButtonWidth * scale;
+        const pauseButtonHeight = baseButtonHeight * scale;
 
         const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
         const hintButtonY = buttonMargin;
