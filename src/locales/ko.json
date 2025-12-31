@@ -43,7 +43,14 @@
     "stage": "스테이지",
     "startGame": "게임 시작",
     "pause": "일시정지",
-    "resume": "재개"
+    "resume": "재개",
+    "hint": "힌트",
+    "combo": "콤보",
+    "gameOver": "게임 오버",
+    "finalScore": "최종 점수",
+    "retry": "다시 시도",
+    "stageCleared": "스테이지 클리어!",
+    "nextStage": "다음 스테이지"
   },
   "footer": {
     "privacyPolicy": "개인정보처리방침",

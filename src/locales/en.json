@@ -43,7 +43,14 @@
     "stage": "Stage",
     "startGame": "Start Game",
     "pause": "Pause",
-    "resume": "Resume"
+    "resume": "Resume",
+    "hint": "Hint",
+    "combo": "Combo",
+    "gameOver": "Game Over",
+    "finalScore": "Final Score",
+    "retry": "Retry",
+    "stageCleared": "Stage Cleared!",
+    "nextStage": "Next Stage"
   },
   "footer": {
     "privacyPolicy": "Privacy Policy",

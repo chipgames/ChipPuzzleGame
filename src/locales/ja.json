@@ -43,7 +43,14 @@
     "stage": "ステージ",
     "startGame": "ゲーム開始",
     "pause": "一時停止",
-    "resume": "再開"
+    "resume": "再開",
+    "hint": "ヒント",
+    "combo": "コンボ",
+    "gameOver": "ゲームオーバー",
+    "finalScore": "最終スコア",
+    "retry": "リトライ",
+    "stageCleared": "ステージクリア！",
+    "nextStage": "次のステージ"
   },
   "footer": {
     "privacyPolicy": "プライバシーポリシー",

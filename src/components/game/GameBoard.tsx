@@ -354,7 +354,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.font = `600 ${infoFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.fillStyle = "#ffffff";
       ctx.fillText(
-        `Score: ${gameState.score.toLocaleString()}`,
+        `${t("game.score")}: ${gameState.score.toLocaleString()}`,
         infoMarginX,
         infoY
       );
@@ -362,7 +362,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 이동 횟수 표시
       ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
       ctx.fillText(
-        `Moves: ${gameState.moves}`,
+        `${t("game.moves")}: ${gameState.moves}`,
         infoMarginX,
         infoY + infoLineHeight
       );
@@ -373,7 +373,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const progress = goal.current / goal.target;
         ctx.fillStyle = progress >= 1 ? "#4ecdc4" : "rgba(255, 255, 255, 0.9)";
         ctx.fillText(
-          `Goal: ${goal.current.toLocaleString()}/${goal.target.toLocaleString()}`,
+          `${t(
+            "game.goal"
+          )}: ${goal.current.toLocaleString()}/${goal.target.toLocaleString()}`,
           infoMarginX,
           infoY + infoLineHeight * 2
         );
@@ -390,7 +392,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.fillStyle = "#ffd93d";
         ctx.textAlign = "left";
         ctx.fillText(
-          `Combo x${gameState.comboCount}!`,
+          `${t("game.combo")} x${gameState.comboCount}!`,
           infoMarginX,
           infoY + infoLineHeight * 3
         );
@@ -461,7 +463,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText(
-          "Hint",
+          t("game.hint"),
           hintButtonX + hintButtonWidth / 2,
           hintButtonY + hintButtonHeight / 2
         );
@@ -618,7 +620,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Game Over!", canvasWidth / 2, cardY + 60 * scale);
+        ctx.fillText(t("game.gameOver"), canvasWidth / 2, cardY + 60 * scale);
 
         // 점수 표시
         ctx.shadowColor = "transparent";
@@ -629,7 +631,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           24 * scale
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.fillText(
-          `Final Score: ${gameState.score.toLocaleString()}`,
+          `${t("game.finalScore")}: ${gameState.score.toLocaleString()}`,
           canvasWidth / 2,
           cardY + 120 * scale
         );
@@ -677,7 +679,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Retry", canvasWidth / 2, buttonY + buttonHeight / 2);
+        ctx.fillText(
+          t("game.retry"),
+          canvasWidth / 2,
+          buttonY + buttonHeight / 2
+        );
         ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
       }
@@ -1049,7 +1055,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Stage Cleared!", canvasWidth / 2, cardY + 80 * scale);
+        ctx.fillText(
+          t("game.stageCleared"),
+          canvasWidth / 2,
+          cardY + 80 * scale
+        );
 
         // 별점 표시 (프리미엄 스타일)
         const starSize = Math.max(24, 48 * scale);
@@ -1079,7 +1089,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           28 * scale
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.fillText(
-          `Score: ${gameState.score.toLocaleString()}`,
+          `${t("game.score")}: ${gameState.score.toLocaleString()}`,
           canvasWidth / 2,
           cardY + 220 * scale
         );
@@ -1127,7 +1137,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Next Stage", canvasWidth / 2, buttonY + buttonHeight / 2);
+        ctx.fillText(
+          t("game.nextStage"),
+          canvasWidth / 2,
+          buttonY + buttonHeight / 2
+        );
         ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
       }

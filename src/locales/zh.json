@@ -43,7 +43,14 @@
     "stage": "关卡",
     "startGame": "开始游戏",
     "pause": "暂停",
-    "resume": "继续"
+    "resume": "继续",
+    "hint": "提示",
+    "combo": "连击",
+    "gameOver": "游戏结束",
+    "finalScore": "最终分数",
+    "retry": "重试",
+    "stageCleared": "关卡完成！",
+    "nextStage": "下一关"
   },
   "footer": {
     "privacyPolicy": "隐私政策",
