@@ -1146,7 +1146,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowBlur = 0;
       }
     },
-    [config, gameState, showHint]
+    [config, gameState, showHint, t]
   );
 
   // render 함수를 먼저 정의
