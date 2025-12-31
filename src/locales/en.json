@@ -50,7 +50,15 @@
     "finalScore": "Final Score",
     "retry": "Retry",
     "stageCleared": "Stage Cleared!",
-    "nextStage": "Next Stage"
+    "nextStage": "Next Stage",
+    "rotateDevice": "Please rotate your device",
+    "rotateSubtext": "Landscape mode is recommended for better gameplay",
+    "rotateToLandscape": "Switch to Landscape",
+    "continuePortrait": "Continue in Portrait",
+    "landscapeMode": "Landscape",
+    "portraitMode": "Portrait",
+    "switchToLandscape": "Switch to Landscape",
+    "switchToPortrait": "Switch to Portrait"
   },
   "footer": {
     "privacyPolicy": "Privacy Policy",

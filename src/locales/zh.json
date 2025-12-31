@@ -50,7 +50,15 @@
     "finalScore": "最终分数",
     "retry": "重试",
     "stageCleared": "关卡完成！",
-    "nextStage": "下一关"
+    "nextStage": "下一关",
+    "rotateDevice": "请将设备横屏",
+    "rotateSubtext": "建议使用横屏模式以获得更好的游戏体验",
+    "rotateToLandscape": "切换到横屏",
+    "continuePortrait": "继续竖屏模式",
+    "landscapeMode": "横屏",
+    "portraitMode": "竖屏",
+    "switchToLandscape": "切换到横屏",
+    "switchToPortrait": "切换到竖屏"
   },
   "footer": {
     "privacyPolicy": "隐私政策",

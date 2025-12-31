@@ -50,7 +50,15 @@
     "finalScore": "最終スコア",
     "retry": "リトライ",
     "stageCleared": "ステージクリア！",
-    "nextStage": "次のステージ"
+    "nextStage": "次のステージ",
+    "rotateDevice": "デバイスを横向きに回転してください",
+    "rotateSubtext": "より良いゲーム体験のために横向きモードを推奨します",
+    "rotateToLandscape": "横向きモードに切り替え",
+    "continuePortrait": "縦向きモードで続ける",
+    "landscapeMode": "横向き",
+    "portraitMode": "縦向き",
+    "switchToLandscape": "横向きモードに切り替え",
+    "switchToPortrait": "縦向きモードに切り替え"
   },
   "footer": {
     "privacyPolicy": "プライバシーポリシー",
