@@ -784,25 +784,39 @@ const GameBoard: React.FC<GameBoardProps> = ({
         gravityAnimatingRef.current = hasGravityAnimation;
 
         // 중력 애니메이션이 완료되었을 때 (true -> false로 변경)
-        // 매칭 체크를 트리거하기 위해 lastBoardRef를 리셋
+        // 매칭 체크를 트리거하기 위해 processMatches 호출
         if (wasAnimating && !hasGravityAnimation) {
           // 중력 애니메이션 완료 후 매칭 체크를 트리거하기 위해
-          // 게임이 진행 중이고 처리 중이 아닐 때만 체크
+          // 게임이 진행 중일 때만 체크
           if (
             gameState.isAnimating &&
             currentScreen === "game" &&
             !gameState.isGameOver &&
             !isProcessingRef.current
           ) {
-            // 중력 애니메이션 완료 후 전체 블럭을 체크하여 매칭되는 것이 있는지 확인
-            // lastBoardRef를 리셋하여 다음 useEffect에서 매칭이 감지되도록 함
+            // 중력 애니메이션이 완전히 완료된 후 매칭 체크
             // 약간의 지연을 두어 중력 애니메이션이 완전히 완료된 후 체크
             setTimeout(() => {
-              // 중력 애니메이션 완료 후 매칭 체크를 위해
-              // lastBoardRef를 리셋하여 다음 useEffect 실행 시 새로운 보드 변경이 감지되도록 함
-              lastBoardRef.current = "";
-              // isProcessingRef를 false로 설정하여 다음 매칭이 처리될 수 있도록 함
-              // (이미 processMatches가 완료되었으므로)
+              // 중력 애니메이션 완료 후 processMatches 호출
+              // 이 시점에서 보드가 업데이트되어 있고, 새로운 매칭이 있는지 확인
+              if (
+                gameState.isAnimating &&
+                currentScreen === "game" &&
+                !gameState.isGameOver &&
+                !isProcessingRef.current
+              ) {
+                isProcessingRef.current = true;
+                processMatches();
+
+                // processMatches가 완료되고 상태 업데이트가 반영될 때까지 대기
+                setTimeout(() => {
+                  isProcessingRef.current = false;
+                  // processMatches가 보드를 업데이트했으므로,
+                  // 새로운 매칭이 있으면 (isAnimating이 여전히 true) 콤보 처리를 위해
+                  // lastBoardRef를 리셋하여 다음 중력 애니메이션 완료 시 다시 체크
+                  lastBoardRef.current = "";
+                }, 200);
+              }
             }, 100);
           }
         }
@@ -999,7 +1013,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (isBoardChanged) {
         isProcessingRef.current = true;
         // processMatches 호출 전 현재 보드 상태 저장
-        const boardBeforeProcess = boardKey;
         lastBoardRef.current = boardKey;
 
         // 기존 타임아웃 취소
@@ -1012,18 +1025,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
           // 중력 애니메이션이 완료될 때까지 대기
           const checkGravity = () => {
             if (!gravityAnimatingRef.current) {
+              // 중력 애니메이션이 완료되었으므로 processMatches 호출
               processMatches();
 
               // processMatches가 완료되고 상태 업데이트가 반영될 때까지 대기
-              // 그 후 isProcessingRef를 리셋하여 다음 매칭이 처리될 수 있도록 함
               setTimeout(() => {
                 isProcessingRef.current = false;
                 // processMatches가 보드를 업데이트했으므로,
-                // 중력 애니메이션이 완료된 후 매칭 체크를 위해
-                // lastBoardRef를 리셋하여 다음 useEffect에서 매칭이 감지되도록 함
-                // (중력 애니메이션이 완료되면 렌더링 루프에서 lastBoardRef를 리셋하므로
-                // 여기서는 processMatches 전 보드 상태로 되돌림)
-                lastBoardRef.current = boardBeforeProcess;
+                // 새로운 매칭이 있으면 (isAnimating이 여전히 true) 콤보 처리를 위해
+                // lastBoardRef를 리셋하여 다음 중력 애니메이션 완료 시 다시 체크
+                lastBoardRef.current = "";
               }, 200);
             } else {
               // 중력 애니메이션이 진행 중이면 다시 확인
