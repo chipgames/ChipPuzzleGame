@@ -62,7 +62,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   // 스테이지 설정에 맞게 config 업데이트
   const [config, setConfig] = useState<CanvasConfig>(() => {
-    const cellSize = 50; // 초기 셀 크기
+    const cellSize = 70; // 초기 셀 크기 (블록 크기 증가)
     const gridCols = DEFAULT_GRID_SIZE.cols;
     const gridRows = DEFAULT_GRID_SIZE.rows;
 
@@ -263,7 +263,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
       // 그리드 배경 그리기
-      const baseCellSize = config.cellSize || 50;
+      const baseCellSize = config.cellSize || 70;
       const cellSize = baseCellSize * scale;
       const gridCols = config.gridCols || 9;
       const gridRows = config.gridRows || 9;
@@ -1633,7 +1633,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         }
 
         // 젬 클릭 처리
-        const baseCellSize = config.cellSize || 50;
+        const baseCellSize = config.cellSize || 70;
         const cellSize = baseCellSize * scale;
         const gridCols = config.gridCols || 9;
         const gridRows = config.gridRows || 9;
