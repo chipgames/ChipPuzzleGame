@@ -1,11 +1,28 @@
 .header {
   flex-shrink: 0;
-  height: 60px;
-  background: #1a1a1a;
+  height: 70px;
+  background: rgba(15, 15, 30, 0.8);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 20px;
+  padding: 0 24px;
+  position: relative;
+  z-index: 100;
+  box-shadow: var(--shadow-sm);
+}
+
+.header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--gradient-primary);
+  opacity: 0.5;
 }
 
 .header-content {
@@ -23,47 +40,95 @@
 }
 
 .header-back-button {
-  padding: 8px 16px;
-  background: #2a2a2a;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 6px;
+  padding: 10px 20px;
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.2s;
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   white-space: nowrap;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-back-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: var(--gradient-primary);
+  transition: left 0.3s;
+  z-index: -1;
 }
 
 .header-back-button:hover {
-  background: #3a3a3a;
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.header-back-button:hover::before {
+  left: 0;
 }
 
 .header-logo {
   font-size: 1.5rem;
-  font-weight: bold;
-  color: #fff;
+  font-weight: 700;
+  color: var(--text-primary);
   display: flex;
   align-items: center;
-  gap: 12px;
-  transition: opacity 0.2s;
+  gap: 14px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
 }
 
 .header-logo:hover {
-  opacity: 0.8;
+  transform: scale(1.05);
+}
+
+.header-logo::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--gradient-primary);
+  transition: width 0.3s;
+}
+
+.header-logo:hover::after {
+  width: 100%;
 }
 
 .header-logo img {
-  height: 40px;
+  height: 44px;
   width: auto;
   display: block;
   object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(102, 126, 234, 0.3));
+  transition: filter 0.3s;
+}
+
+.header-logo:hover img {
+  filter: drop-shadow(0 4px 12px rgba(102, 126, 234, 0.5));
 }
 
 .header-game-title {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 600;
-  color: #fff;
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   white-space: nowrap;
+  letter-spacing: 0.5px;
 }
 
 .header-nav {
@@ -96,33 +161,71 @@
 }
 
 .header-sound-button {
-  padding: 8px 12px;
-  background: #2a2a2a;
-  color: #fff;
-  border: 1px solid #444;
-  border-radius: 6px;
+  padding: 10px 14px;
+  background: var(--bg-glass);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 1.2rem;
-  transition: all 0.2s;
+  font-size: 1.3rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 36px;
+  min-width: 44px;
+  height: 44px;
+  backdrop-filter: blur(10px);
+  position: relative;
+  overflow: hidden;
+}
+
+.header-sound-button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: var(--gradient-primary);
+  transform: translate(-50%, -50%);
+  transition: width 0.4s, height 0.4s;
+  z-index: -1;
 }
 
 .header-sound-button:hover {
-  background: #3a3a3a;
-  border-color: #667eea;
+  border-color: var(--border-hover);
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: var(--shadow-glow);
+}
+
+.header-sound-button:hover::before {
+  width: 100px;
+  height: 100px;
+}
+
+.header-sound-button:active {
+  transform: translateY(0) scale(0.98);
 }
 
 .language-selector {
-  padding: 5px 10px;
-  border-radius: 4px;
-  border: 1px solid #444;
-  background: #2a2a2a;
-  color: #fff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-glass);
+  color: var(--text-primary);
   cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+}
+
+.language-selector:hover {
+  border-color: var(--border-hover);
+  background: rgba(102, 126, 234, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 @media (max-width: 768px) {

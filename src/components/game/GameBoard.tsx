@@ -284,12 +284,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
         particleSystemRef.current = new ParticleSystem(ctx);
       }
 
-      // 그리드 배경
-      ctx.fillStyle = "#222";
-      ctx.fillRect(gridStartX, gridStartY, gridWidth, gridHeight);
+      // 그리드 배경 (프리미엄 스타일)
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = "rgba(22, 22, 46, 0.8)";
+      ctx.beginPath();
+      ctx.roundRect(gridStartX, gridStartY, gridWidth, gridHeight, 8 * scale);
+      ctx.fill();
+      ctx.restore();
 
-      // 그리드 선 그리기
-      ctx.strokeStyle = "#444";
+      // 그리드 선 그리기 (개선된 스타일)
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
       ctx.lineWidth = Math.max(0.5, 1 * scale);
 
       for (let i = 0; i <= gridRows; i++) {
@@ -308,24 +313,54 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.stroke();
       }
 
-      // 게임 정보 표시 (상단) - 모바일 비율 고려
-      ctx.fillStyle = "#fff";
-      const infoFontSize = Math.max(8, 18 * scale); // 모바일에서 과도하게 크지 않도록 최소값 축소
-      ctx.font = `bold ${infoFontSize}px Arial`;
+      // 게임 정보 표시 (상단) - 프리미엄 스타일
+      const infoFontSize = Math.max(10, 20 * scale);
+      const infoMarginX = 24 * scale;
+      const infoMarginY = 24 * scale;
+      const infoLineHeight = infoFontSize + 8 * scale;
+      const infoY = infoMarginY;
+      const infoCardPadding = 16 * scale;
+      const infoCardRadius = 16 * scale;
+
+      // 정보 카드 배경 (글래스모피즘 효과)
+      const infoCardWidth = 280 * scale;
+      const infoCardHeight = infoLineHeight * 4 + infoCardPadding * 2;
+      ctx.save();
+      ctx.globalAlpha = 0.9;
+      ctx.fillStyle = "rgba(15, 15, 30, 0.8)";
+      ctx.beginPath();
+      ctx.roundRect(
+        infoMarginX - infoCardPadding,
+        infoMarginY - infoCardPadding,
+        infoCardWidth,
+        infoCardHeight,
+        infoCardRadius
+      );
+      ctx.fill();
+      ctx.strokeStyle = "rgba(102, 126, 234, 0.3)";
+      ctx.lineWidth = 1 * scale;
+      ctx.stroke();
+      ctx.restore();
+
+      // 텍스트 스타일
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
+      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowBlur = 4 * scale;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 2 * scale;
 
-      const infoMarginX = 20 * scale;
-      const infoMarginY = 20 * scale;
-      const infoLineHeight = infoFontSize + 6 * scale;
-      const infoY = infoMarginY;
-
-      // 점수 표시 (개선된 스타일 - 천 단위 구분)
+      // 점수 표시 (그라데이션 효과)
+      ctx.font = `600 ${infoFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.fillStyle = "#ffffff";
       ctx.fillText(
         `Score: ${gameState.score.toLocaleString()}`,
         infoMarginX,
         infoY
       );
+
+      // 이동 횟수 표시
+      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
       ctx.fillText(
         `Moves: ${gameState.moves}`,
         infoMarginX,
@@ -335,25 +370,38 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 목표 표시
       if (gameState.goals.length > 0) {
         const goal = gameState.goals[0];
+        const progress = goal.current / goal.target;
+        ctx.fillStyle = progress >= 1 ? "#4ecdc4" : "rgba(255, 255, 255, 0.9)";
         ctx.fillText(
-          `Goal: ${goal.current}/${goal.target}`,
+          `Goal: ${goal.current.toLocaleString()}/${goal.target.toLocaleString()}`,
           infoMarginX,
           infoY + infoLineHeight * 2
         );
       }
 
-      // 콤보 표시 (콤보가 있을 때만) - 개선된 표시
+      // 콤보 표시 (프리미엄 스타일)
       if (gameState.comboCount > 0) {
+        ctx.shadowColor = "rgba(255, 217, 61, 0.6)";
+        ctx.shadowBlur = 12 * scale;
+        ctx.font = `700 ${Math.max(
+          14,
+          24 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.fillStyle = "#ffd93d";
-        ctx.font = `bold ${Math.max(12, 20 * scale)}px Arial`;
         ctx.textAlign = "left";
         ctx.fillText(
           `Combo x${gameState.comboCount}!`,
           infoMarginX,
           infoY + infoLineHeight * 3
         );
-        ctx.fillStyle = "#fff";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        ctx.shadowBlur = 4 * scale;
       }
+
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
 
       // 힌트 버튼 및 일시정지 버튼 (우측 상단) - 모바일 비율 고려
       if (!gameState.isGameOver && !gameState.isAnimating) {
@@ -367,136 +415,270 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const pauseButtonWidth = Math.max(60, baseButtonWidth * scale);
         const pauseButtonHeight = Math.max(24, baseButtonHeight * scale);
 
-        // 힌트 버튼
+        // 힌트 버튼 (프리미엄 스타일)
         const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
         const hintButtonY = buttonMargin;
+        const buttonRadius = 12 * scale;
 
-        ctx.fillStyle = showHint ? "#4ecdc4" : "#667eea";
-        ctx.fillRect(
+        // 버튼 배경 (그라데이션)
+        const hintGradient = ctx.createLinearGradient(
+          hintButtonX,
+          hintButtonY,
+          hintButtonX,
+          hintButtonY + hintButtonHeight
+        );
+        hintGradient.addColorStop(0, showHint ? "#4ecdc4" : "#667eea");
+        hintGradient.addColorStop(1, showHint ? "#44a08d" : "#764ba2");
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(
           hintButtonX,
           hintButtonY,
           hintButtonWidth,
-          hintButtonHeight
+          hintButtonHeight,
+          buttonRadius
         );
+        ctx.fillStyle = hintGradient;
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = Math.max(1, 1.5 * scale);
+        ctx.stroke();
+        ctx.restore();
 
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = Math.max(1, 2 * scale);
-        ctx.strokeRect(
-          hintButtonX,
-          hintButtonY,
-          hintButtonWidth,
-          hintButtonHeight
-        );
+        // 그림자 효과
+        ctx.shadowColor = showHint
+          ? "rgba(78, 205, 196, 0.4)"
+          : "rgba(102, 126, 234, 0.4)";
+        ctx.shadowBlur = 8 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
 
-        ctx.fillStyle = "#fff";
-        const hintFontSize = Math.max(8, 16 * scale);
-        ctx.font = `bold ${hintFontSize}px Arial`;
+        ctx.fillStyle = "#ffffff";
+        const hintFontSize = Math.max(10, 16 * scale);
+        ctx.font = `600 ${hintFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(
           "Hint",
           hintButtonX + hintButtonWidth / 2,
-          hintButtonY + hintButtonHeight / 2 + hintFontSize * 0.35
+          hintButtonY + hintButtonHeight / 2
         );
 
-        // 일시정지 버튼
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+
+        // 일시정지 버튼 (프리미엄 스타일)
         const pauseButtonX = hintButtonX - pauseButtonWidth - buttonGap;
         const pauseButtonY = buttonMargin;
 
-        ctx.fillStyle = gameState.isPaused ? "#ff6b6b" : "#667eea";
-        ctx.fillRect(
+        // 버튼 배경 (그라데이션)
+        const pauseGradient = ctx.createLinearGradient(
+          pauseButtonX,
+          pauseButtonY,
+          pauseButtonX,
+          pauseButtonY + pauseButtonHeight
+        );
+        if (gameState.isPaused) {
+          pauseGradient.addColorStop(0, "#ff6b6b");
+          pauseGradient.addColorStop(1, "#ee5a6f");
+        } else {
+          pauseGradient.addColorStop(0, "#667eea");
+          pauseGradient.addColorStop(1, "#764ba2");
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(
           pauseButtonX,
           pauseButtonY,
           pauseButtonWidth,
-          pauseButtonHeight
+          pauseButtonHeight,
+          buttonRadius
         );
+        ctx.fillStyle = pauseGradient;
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = Math.max(1, 1.5 * scale);
+        ctx.stroke();
+        ctx.restore();
 
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = Math.max(1, 2 * scale);
-        ctx.strokeRect(
-          pauseButtonX,
-          pauseButtonY,
-          pauseButtonWidth,
-          pauseButtonHeight
-        );
+        // 그림자 효과
+        ctx.shadowColor = gameState.isPaused
+          ? "rgba(255, 107, 107, 0.4)"
+          : "rgba(102, 126, 234, 0.4)";
+        ctx.shadowBlur = 8 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
 
-        ctx.fillStyle = "#fff";
-        const pauseFontSize = Math.max(8, 16 * scale);
-        ctx.font = `bold ${pauseFontSize}px Arial`;
+        ctx.fillStyle = "#ffffff";
+        const pauseFontSize = Math.max(10, 16 * scale);
+        ctx.font = `600 ${pauseFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
         ctx.fillText(
           gameState.isPaused ? t("game.resume") : t("game.pause"),
           pauseButtonX + pauseButtonWidth / 2,
-          pauseButtonY + pauseButtonHeight / 2 + pauseFontSize * 0.35
+          pauseButtonY + pauseButtonHeight / 2
         );
+
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
       }
 
-      // 일시정지 오버레이
+      // 일시정지 오버레이 (프리미엄 스타일)
       if (gameState.isPaused && !gameState.isGameOver) {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        // 반투명 배경
+        ctx.fillStyle = "rgba(15, 15, 30, 0.85)";
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-        ctx.fillStyle = "#fff";
-        ctx.font = `bold ${Math.max(24, 48 * scale)}px Arial`;
+        // 글래스모피즘 카드
+        const cardWidth = 400 * scale;
+        const cardHeight = 200 * scale;
+        const cardX = (canvasWidth - cardWidth) / 2;
+        const cardY = (canvasHeight - cardHeight) / 2;
+        const cardRadius = 24 * scale;
+
+        ctx.save();
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = "rgba(26, 26, 46, 0.9)";
+        ctx.beginPath();
+        ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(102, 126, 234, 0.3)";
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.restore();
+
+        // 제목 텍스트 (그라데이션 효과)
+        ctx.shadowColor = "rgba(102, 126, 234, 0.5)";
+        ctx.shadowBlur = 12 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `700 ${Math.max(
+          28,
+          56 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(t("game.pause"), canvasWidth / 2, canvasHeight / 2);
+        ctx.fillText(
+          t("game.pause"),
+          canvasWidth / 2,
+          cardY + cardHeight / 2 - 30 * scale
+        );
 
-        ctx.fillStyle = "#ccc";
-        ctx.font = `bold ${Math.max(16, 24 * scale)}px Arial`;
+        // 안내 텍스트
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.font = `500 ${Math.max(
+          14,
+          20 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.fillText(
           t("game.resume"),
           canvasWidth / 2,
-          canvasHeight / 2 + 50 * scale
+          cardY + cardHeight / 2 + 20 * scale
         );
       }
 
-      // 게임 오버/클리어 메시지
+      // 게임 오버 메시지 (프리미엄 스타일)
       if (gameState.isGameOver) {
-        ctx.fillStyle = "rgba(0, 0, 0, 0.7)";
+        // 반투명 배경
+        ctx.fillStyle = "rgba(15, 15, 30, 0.9)";
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
+        // 글래스모피즘 카드
+        const cardWidth = 450 * scale;
+        const cardHeight = 300 * scale;
+        const cardX = (canvasWidth - cardWidth) / 2;
+        const cardY = (canvasHeight - cardHeight) / 2;
+        const cardRadius = 24 * scale;
+
+        ctx.save();
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = "rgba(26, 26, 46, 0.9)";
+        ctx.beginPath();
+        ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 107, 107, 0.3)";
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.restore();
+
+        // 제목 텍스트
+        ctx.shadowColor = "rgba(255, 107, 107, 0.5)";
+        ctx.shadowBlur = 12 * scale;
         ctx.fillStyle = "#ff6b6b";
-        ctx.font = `bold ${Math.max(24, 48 * scale)}px Arial`;
+        ctx.font = `700 ${Math.max(
+          28,
+          56 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Game Over!", canvasWidth / 2, canvasHeight / 2);
+        ctx.fillText("Game Over!", canvasWidth / 2, cardY + 60 * scale);
 
-        ctx.fillStyle = "#fff";
-        ctx.font = `bold ${Math.max(16, 24 * scale)}px Arial`;
+        // 점수 표시
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.font = `600 ${Math.max(
+          16,
+          24 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.fillText(
-          `Final Score: ${gameState.score}`,
+          `Final Score: ${gameState.score.toLocaleString()}`,
           canvasWidth / 2,
-          canvasHeight / 2 + 50 * scale
+          cardY + 120 * scale
         );
 
-        // 재시작 버튼
-        const buttonX = canvasWidth / 2 - 100 * scale;
-        const buttonY = canvasHeight / 2 + 100 * scale;
-        const buttonWidth = 200 * scale;
-        const buttonHeight = 50 * scale;
+        // 재시작 버튼 (프리미엄 스타일)
+        const buttonX = canvasWidth / 2 - 110 * scale;
+        const buttonY = cardY + 180 * scale;
+        const buttonWidth = 220 * scale;
+        const buttonHeight = 56 * scale;
+        const buttonRadius = 14 * scale;
 
         const gradient = ctx.createLinearGradient(
           buttonX,
           buttonY,
-          buttonX + buttonWidth,
+          buttonX,
           buttonY + buttonHeight
         );
         gradient.addColorStop(0, "#ff6b6b");
         gradient.addColorStop(1, "#ee5a6f");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
 
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = Math.max(2, 3 * scale);
-        ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-        ctx.fillStyle = "#fff";
-        ctx.font = `bold ${Math.max(14, 20 * scale)}px Arial`;
-        ctx.fillText(
-          "Retry",
-          canvasWidth / 2,
-          buttonY + buttonHeight / 2 + 8 * scale
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(
+          buttonX,
+          buttonY,
+          buttonWidth,
+          buttonHeight,
+          buttonRadius
         );
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.shadowColor = "rgba(255, 107, 107, 0.4)";
+        ctx.shadowBlur = 8 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `600 ${Math.max(
+          16,
+          22 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Retry", canvasWidth / 2, buttonY + buttonHeight / 2);
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
       }
 
       // 클리어 상태 확인
@@ -828,78 +1010,125 @@ const GameBoard: React.FC<GameBoardProps> = ({
         particleSystemRef.current.render();
       }
 
-      // 클리어 화면 오버레이 (젬 렌더링 이후에 그려서 최상단에 표시)
+      // 클리어 화면 오버레이 (프리미엄 스타일)
       if (isCleared && !gameState.isAnimating && !gameState.isGameOver) {
         const stars = calculateStarRating(gameState);
 
-        // 더 불투명한 오버레이
-        ctx.fillStyle = "rgba(0, 0, 0, 0.95)";
+        // 반투명 배경
+        ctx.fillStyle = "rgba(15, 15, 30, 0.92)";
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
-        // 클리어 메시지
+        // 글래스모피즘 카드
+        const cardWidth = 500 * scale;
+        const cardHeight = 400 * scale;
+        const cardX = (canvasWidth - cardWidth) / 2;
+        const cardY = (canvasHeight - cardHeight) / 2;
+        const cardRadius = 28 * scale;
+
+        ctx.save();
+        ctx.globalAlpha = 0.96;
+        ctx.fillStyle = "rgba(26, 26, 46, 0.9)";
+        ctx.beginPath();
+        ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+        ctx.fill();
+        ctx.strokeStyle = "rgba(78, 205, 196, 0.4)";
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.restore();
+
+        // 클리어 메시지 (그라데이션 효과)
+        ctx.shadowColor = "rgba(78, 205, 196, 0.5)";
+        ctx.shadowBlur = 12 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
         ctx.fillStyle = "#4ecdc4";
-        ctx.font = `bold ${Math.max(24, 48 * scale)}px Arial`;
+        ctx.font = `700 ${Math.max(
+          32,
+          64 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(
-          "Stage Cleared!",
-          canvasWidth / 2,
-          canvasHeight / 2 - 100 * scale
-        );
+        ctx.fillText("Stage Cleared!", canvasWidth / 2, cardY + 80 * scale);
 
-        // 별점 표시
-        const starSize = Math.max(20, 40 * scale);
-        const starSpacing = starSize * 1.5;
-        const starStartX = canvasWidth / 2 - starSpacing * 1.5;
-        const starY = canvasHeight / 2 - 30 * scale;
+        // 별점 표시 (프리미엄 스타일)
+        const starSize = Math.max(24, 48 * scale);
+        const starSpacing = starSize * 1.8;
+        const starStartX = canvasWidth / 2 - starSpacing;
+        const starY = cardY + 160 * scale;
 
         for (let i = 0; i < 3; i++) {
           const starX = starStartX + i * starSpacing;
-          ctx.fillStyle = i < stars ? "#ffd93d" : "#666";
+          ctx.shadowColor =
+            i < stars ? "rgba(255, 217, 61, 0.6)" : "transparent";
+          ctx.shadowBlur = i < stars ? 12 * scale : 0;
+          ctx.fillStyle = i < stars ? "#ffd93d" : "rgba(102, 102, 102, 0.5)";
           ctx.font = `${starSize}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
           ctx.fillText("★", starX, starY);
         }
 
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+
         // 점수 표시
-        ctx.fillStyle = "#fff";
-        ctx.font = `bold ${Math.max(16, 24 * scale)}px Arial`;
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.font = `600 ${Math.max(
+          18,
+          28 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.fillText(
-          `Score: ${gameState.score}`,
+          `Score: ${gameState.score.toLocaleString()}`,
           canvasWidth / 2,
-          canvasHeight / 2 + 30 * scale
+          cardY + 220 * scale
         );
 
-        // 다음 스테이지 버튼
-        const buttonX = canvasWidth / 2 - 100 * scale;
-        const buttonY = canvasHeight / 2 + 80 * scale;
-        const buttonWidth = 200 * scale;
-        const buttonHeight = 50 * scale;
+        // 다음 스테이지 버튼 (프리미엄 스타일)
+        const buttonX = canvasWidth / 2 - 120 * scale;
+        const buttonY = cardY + 280 * scale;
+        const buttonWidth = 240 * scale;
+        const buttonHeight = 60 * scale;
+        const buttonRadius = 16 * scale;
 
-        // 버튼 배경
         const gradient = ctx.createLinearGradient(
           buttonX,
           buttonY,
-          buttonX + buttonWidth,
+          buttonX,
           buttonY + buttonHeight
         );
         gradient.addColorStop(0, "#667eea");
         gradient.addColorStop(1, "#764ba2");
-        ctx.fillStyle = gradient;
-        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
 
-        // 버튼 테두리
-        ctx.strokeStyle = "#fff";
-        ctx.lineWidth = Math.max(2, 3 * scale);
-        ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-        // 버튼 텍스트
-        ctx.fillStyle = "#fff";
-        ctx.font = `bold ${Math.max(14, 20 * scale)}px Arial`;
-        ctx.fillText(
-          "Next Stage",
-          canvasWidth / 2,
-          buttonY + buttonHeight / 2 + 8 * scale
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(
+          buttonX,
+          buttonY,
+          buttonWidth,
+          buttonHeight,
+          buttonRadius
         );
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.shadowColor = "rgba(102, 126, 234, 0.4)";
+        ctx.shadowBlur = 8 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
+        ctx.fillStyle = "#ffffff";
+        ctx.font = `600 ${Math.max(
+          16,
+          22 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("Next Stage", canvasWidth / 2, buttonY + buttonHeight / 2);
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
       }
     },
     [config, gameState, showHint]
