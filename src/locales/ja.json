@@ -1,6 +1,7 @@
 {
   "header": {
     "logo": "CHIP GAMES",
+    "gameTitle": "マッチパズルゲーム",
     "playGame": "ゲーム開始",
     "guide": "ガイド",
     "gameDescription": "ゲーム説明",

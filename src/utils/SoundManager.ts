@@ -17,7 +17,19 @@ export class SoundManager {
           this.enabled = false;
           return null;
         }
-        this.audioCtx = new Ctor();
+        try {
+          this.audioCtx = new Ctor();
+          // AudioContext 상태 확인 및 재개 (일부 브라우저에서 필요)
+          if (this.audioCtx.state === "suspended") {
+            this.audioCtx.resume().catch((err) => {
+              console.warn("Failed to resume AudioContext", err);
+            });
+          }
+        } catch (err) {
+          console.warn("Failed to create AudioContext", err);
+          this.enabled = false;
+          return null;
+        }
       }
       return this.audioCtx;
     } catch (e) {

@@ -85,71 +85,76 @@ export class GemRenderer {
    */
   private getBorderColor(color: GemColor): string {
     const borderColors: Record<GemColor, string> = {
-      red: "rgba(255, 71, 87, 0.8)",
-      yellow: "rgba(255, 211, 42, 0.8)",
-      blue: "rgba(55, 66, 250, 0.8)",
-      green: "rgba(46, 213, 115, 0.8)",
-      purple: "rgba(165, 94, 234, 0.8)",
-      orange: "rgba(255, 99, 72, 0.8)",
+      red: "rgba(231, 76, 60, 0.9)", // 더 진한 빨강 테두리
+      yellow: "rgba(241, 196, 15, 0.9)", // 더 선명한 노랑 테두리
+      blue: "rgba(52, 152, 219, 0.9)", // 더 선명한 파랑 테두리
+      green: "rgba(46, 204, 113, 0.9)", // 더 선명한 초록 테두리
+      purple: "rgba(155, 89, 182, 0.9)", // 더 선명한 보라 테두리
+      orange: "rgba(230, 126, 34, 0.9)", // 더 선명한 주황 테두리 (빨강과 명확히 구분)
     };
     return borderColors[color];
   }
 
   /**
-   * 색상별 구분 패턴 렌더링
+   * 색상별 구분 패턴 렌더링 (더 명확한 구분을 위해 패턴 강화)
    */
   private renderColorPattern(color: GemColor, _offset: number, size: number) {
     this.ctx.save();
-    this.ctx.globalAlpha = 0.3;
+    this.ctx.globalAlpha = 0.5; // 패턴을 더 선명하게
 
     switch (color) {
       case "red":
-        // 빨강: 중앙 원
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        // 빨강: 중앙 원 (더 크고 선명하게)
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
         this.ctx.beginPath();
-        this.ctx.arc(0, 0, size * 0.15, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, size * 0.18, 0, Math.PI * 2);
+        this.ctx.fill();
+        // 내부 어두운 원으로 더 명확하게
+        this.ctx.fillStyle = "rgba(192, 57, 43, 0.5)";
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, size * 0.1, 0, Math.PI * 2);
         this.ctx.fill();
         break;
       case "yellow":
-        // 노랑: 별 모양
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-        this.drawStar(0, 0, size * 0.08, size * 0.15, 5);
+        // 노랑: 별 모양 (더 크고 선명하게)
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        this.drawStar(0, 0, size * 0.1, size * 0.18, 5);
         this.ctx.fill();
         break;
       case "blue":
-        // 파랑: 다이아몬드
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        // 파랑: 다이아몬드 (더 크고 선명하게)
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
         this.ctx.beginPath();
-        this.ctx.moveTo(0, -size * 0.15);
-        this.ctx.lineTo(size * 0.15, 0);
-        this.ctx.lineTo(0, size * 0.15);
-        this.ctx.lineTo(-size * 0.15, 0);
+        this.ctx.moveTo(0, -size * 0.18);
+        this.ctx.lineTo(size * 0.18, 0);
+        this.ctx.lineTo(0, size * 0.18);
+        this.ctx.lineTo(-size * 0.18, 0);
         this.ctx.closePath();
         this.ctx.fill();
         break;
       case "green":
-        // 초록: 삼각형
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        // 초록: 삼각형 (더 크고 선명하게)
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
         this.ctx.beginPath();
-        this.ctx.moveTo(0, -size * 0.15);
-        this.ctx.lineTo(-size * 0.13, size * 0.1);
-        this.ctx.lineTo(size * 0.13, size * 0.1);
+        this.ctx.moveTo(0, -size * 0.18);
+        this.ctx.lineTo(-size * 0.15, size * 0.12);
+        this.ctx.lineTo(size * 0.15, size * 0.12);
         this.ctx.closePath();
         this.ctx.fill();
         break;
       case "purple":
-        // 보라: 사각형
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
-        this.ctx.fillRect(-size * 0.1, -size * 0.1, size * 0.2, size * 0.2);
+        // 보라: 사각형 (더 크고 선명하게)
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
+        this.ctx.fillRect(-size * 0.12, -size * 0.12, size * 0.24, size * 0.24);
         break;
       case "orange":
-        // 주황: 육각형
-        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        // 주황: 육각형 (더 크고 선명하게, 빨강과 명확히 구분)
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.6)";
         this.ctx.beginPath();
         for (let i = 0; i < 6; i++) {
           const angle = (Math.PI / 3) * i;
-          const x = Math.cos(angle) * size * 0.12;
-          const y = Math.sin(angle) * size * 0.12;
+          const x = Math.cos(angle) * size * 0.15;
+          const y = Math.sin(angle) * size * 0.15;
           if (i === 0) {
             this.ctx.moveTo(x, y);
           } else {
@@ -157,6 +162,11 @@ export class GemRenderer {
           }
         }
         this.ctx.closePath();
+        this.ctx.fill();
+        // 내부 점으로 더 명확하게
+        this.ctx.fillStyle = "rgba(211, 84, 0, 0.5)";
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, size * 0.08, 0, Math.PI * 2);
         this.ctx.fill();
         break;
     }

@@ -1,0 +1,78 @@
+<svg width="400" height="120" viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Text outline effect -->
+    <filter id="textOutline">
+      <feMorphology operator="dilate" radius="0.8" in="SourceAlpha" result="dilated"/>
+      <feFlood flood-color="#2ecc71" result="tealFlood"/>
+      <feFlood flood-color="#3498db" result="blueFlood"/>
+    </filter>
+  </defs>
+  
+  <!-- Circular graphic element on the left -->
+  <g>
+    <!-- Outer teal circle -->
+    <circle cx="60" cy="60" r="55" fill="#2ecc71" stroke="none"/>
+    
+    <!-- Inner blue circle -->
+    <circle cx="60" cy="60" r="40" fill="#3498db" stroke="none"/>
+    
+    <!-- Letter G in darker blue -->
+    <path d="M 60 25 
+             A 35 35 0 0 1 60 95
+             A 35 35 0 0 1 25 60
+             L 25 48
+             L 60 48
+             L 60 35
+             L 25 35
+             L 25 60
+             L 60 60
+             L 60 95
+             L 95 95
+             L 95 60
+             L 60 60
+             L 60 48
+             L 95 48
+             L 95 25
+             Z" 
+          fill="#2980b9" 
+          stroke="none"/>
+    
+    <!-- Extended horizontal bar of G breaking through inner circle -->
+    <rect x="60" y="45" width="32" height="6" fill="#2980b9"/>
+  </g>
+  
+  <!-- Text "CHIP GAMES" on the right -->
+  <g>
+    <!-- CHIP text with teal outline -->
+    <text x="140" y="48" 
+          font-family="Arial, sans-serif" 
+          font-size="32" 
+          font-weight="bold" 
+          fill="none" 
+          stroke="#2ecc71" 
+          stroke-width="2"
+          text-anchor="start">CHIP</text>
+    <text x="140" y="48" 
+          font-family="Arial, sans-serif" 
+          font-size="32" 
+          font-weight="bold" 
+          fill="#2c3e50" 
+          text-anchor="start">CHIP</text>
+    
+    <!-- GAMES text with blue outline -->
+    <text x="140" y="88" 
+          font-family="Arial, sans-serif" 
+          font-size="32" 
+          font-weight="bold" 
+          fill="none" 
+          stroke="#3498db" 
+          stroke-width="2"
+          text-anchor="start">GAMES</text>
+    <text x="140" y="88" 
+          font-family="Arial, sans-serif" 
+          font-size="32" 
+          font-weight="bold" 
+          fill="#2c3e50" 
+          text-anchor="start">GAMES</text>
+  </g>
+</svg>

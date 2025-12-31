@@ -52,9 +52,23 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
           <div 
             className="header-logo" 
             onClick={() => handleMenuClick("stageSelect")}
-            style={{ cursor: "pointer" }}
+            style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
           >
-            {t("header.logo")}
+            <img 
+              src="/ChipGames_Logo.png" 
+              onError={(e) => {
+                // PNG 파일이 없으면 SVG 사용
+                const target = e.target as HTMLImageElement;
+                if (target.src && !target.src.includes('.svg')) {
+                  target.src = '/ChipGames_Logo.svg';
+                }
+              }}
+              alt="CHIP GAMES" 
+              style={{ height: "40px", width: "auto" }}
+            />
+            <span className="header-game-title">
+              {t("header.gameTitle")}
+            </span>
           </div>
         </div>
         <nav className="header-nav">

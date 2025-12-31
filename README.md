@@ -35,6 +35,13 @@ npm run build
 npm run deploy
 ```
 
+**중요**: 배포 후 GitHub에서 Pages 설정을 확인하세요:
+1. 저장소 Settings > Pages로 이동
+2. Source를 `gh-pages` 브랜치, `/ (root)` 폴더로 설정
+3. 접속 URL: https://chipgames.github.io/ChipPuzzleGame/
+
+자세한 내용은 [DEPLOYMENT.md](./DEPLOYMENT.md) 참고
+
 ## 프로젝트 구조
 
 ```

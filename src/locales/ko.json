@@ -1,6 +1,7 @@
 {
   "header": {
     "logo": "CHIP GAMES",
+    "gameTitle": "매칭 퍼즐 게임",
     "playGame": "게임하기",
     "guide": "가이드",
     "gameDescription": "게임 설명",

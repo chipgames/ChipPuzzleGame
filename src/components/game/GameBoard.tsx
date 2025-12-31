@@ -11,6 +11,7 @@ import { calculateStarRating } from "@/utils/starRating";
 import { ParticleSystem } from "@/utils/particles";
 import { findPossibleMatches, Hint } from "@/utils/hintSystem";
 import { soundManager } from "@/utils/SoundManager";
+import { findMatches } from "@/utils/matchDetection";
 import "./GameBoard.css";
 
 interface GameBoardProps {
@@ -53,6 +54,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [showHint, setShowHint] = useState(false);
   const { t } = useLanguage();
   const [unlockedStages, setUnlockedStages] = useState<number>(1);
+  const [currentPage, setCurrentPage] = useState<number>(1);
 
   // 게임 상태 관리
   const { gameState, selectGem, swapGems, processMatches, togglePause } =
@@ -133,11 +135,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
         (canvasWidth - (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
         2;
       const startY = 100 * scale;
-      const totalStages = 50;
-      const currentPage = 1;
+      const totalStages = 1000;
+      const stagesPerPage = 50;
+      const totalPages = Math.ceil(totalStages / stagesPerPage);
+      const startStage = (currentPage - 1) * stagesPerPage + 1;
+      const endStage = Math.min(startStage + stagesPerPage - 1, totalStages);
 
-      for (let i = 0; i < totalStages; i++) {
-        const stageNumber = (currentPage - 1) * totalStages + i + 1;
+      for (let i = 0; i < stagesPerPage && startStage + i <= endStage; i++) {
+        const stageNumber = startStage + i;
         const row = Math.floor(i / stagesPerRow);
         const col = i % stagesPerRow;
         const x = startX + col * (stageSize + gap);
@@ -188,8 +193,59 @@ const GameBoard: React.FC<GameBoardProps> = ({
           ctx.fillText("🔒", x + stageSize / 2, y + stageSize / 2 - 10 * scale);
         }
       }
+
+      // 페이지네이션 정보 표시
+      const pageInfoY = canvasHeight - 60 * scale;
+      ctx.fillStyle = "#fff";
+      ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
+      ctx.textAlign = "center";
+      ctx.fillText(
+        `${t("stageSelect.page")} ${currentPage} / ${totalPages}`,
+        canvasWidth / 2,
+        pageInfoY
+      );
+
+      // 페이지네이션 버튼
+      const buttonHeight = 30 * scale;
+      const buttonWidth = 80 * scale;
+      const buttonY = pageInfoY + 20 * scale;
+      const buttonGap = 10 * scale;
+
+      // 이전 페이지 버튼
+      if (currentPage > 1) {
+        const prevButtonX = canvasWidth / 2 - buttonWidth - buttonGap / 2;
+        ctx.fillStyle = currentPage > 1 ? "#667eea" : "#444";
+        ctx.fillRect(prevButtonX, buttonY, buttonWidth, buttonHeight);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = Math.max(1, 2 * scale);
+        ctx.strokeRect(prevButtonX, buttonY, buttonWidth, buttonHeight);
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.max(10, 14 * scale)}px Arial`;
+        ctx.fillText(
+          "«",
+          prevButtonX + buttonWidth / 2,
+          buttonY + buttonHeight / 2 + 4 * scale
+        );
+      }
+
+      // 다음 페이지 버튼
+      if (currentPage < totalPages) {
+        const nextButtonX = canvasWidth / 2 + buttonGap / 2;
+        ctx.fillStyle = currentPage < totalPages ? "#667eea" : "#444";
+        ctx.fillRect(nextButtonX, buttonY, buttonWidth, buttonHeight);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = Math.max(1, 2 * scale);
+        ctx.strokeRect(nextButtonX, buttonY, buttonWidth, buttonHeight);
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.max(10, 14 * scale)}px Arial`;
+        ctx.fillText(
+          "»",
+          nextButtonX + buttonWidth / 2,
+          buttonY + buttonHeight / 2 + 4 * scale
+        );
+      }
     },
-    [unlockedStages, t]
+    [unlockedStages, t, currentPage]
   );
 
   const renderGameBoard = useCallback(
@@ -264,7 +320,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const infoLineHeight = infoFontSize + 6 * scale;
       const infoY = infoMarginY;
 
-      ctx.fillText(`Score: ${gameState.score}`, infoMarginX, infoY);
+      // 점수 표시 (개선된 스타일 - 천 단위 구분)
+      ctx.fillText(
+        `Score: ${gameState.score.toLocaleString()}`,
+        infoMarginX,
+        infoY
+      );
       ctx.fillText(
         `Moves: ${gameState.moves}`,
         infoMarginX,
@@ -281,10 +342,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
       }
 
-      // 콤보 표시 (콤보가 있을 때만)
+      // 콤보 표시 (콤보가 있을 때만) - 개선된 표시
       if (gameState.comboCount > 0) {
         ctx.fillStyle = "#ffd93d";
-        ctx.font = `bold ${Math.max(10, infoFontSize + 2 * scale)}px Arial`;
+        ctx.font = `bold ${Math.max(12, 20 * scale)}px Arial`;
+        ctx.textAlign = "left";
         ctx.fillText(
           `Combo x${gameState.comboCount}!`,
           infoMarginX,
@@ -441,6 +503,48 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const isCleared = gameState.goals.every(
         (goal) => goal.current >= goal.target
       );
+
+      // 매칭된 젬 하이라이트 (젬 렌더링 전에 그리기)
+      if (gameState.isAnimating) {
+        const matches = findMatches(gameState.board);
+        const matchedPositions = new Set<string>();
+
+        for (const match of matches) {
+          for (const pos of match.positions) {
+            matchedPositions.add(`${pos.row},${pos.col}`);
+          }
+        }
+
+        // 매칭된 젬 하이라이트
+        matchedPositions.forEach((key) => {
+          const [rowStr, colStr] = key.split(",");
+          const row = Number(rowStr);
+          const col = Number(colStr);
+
+          if (
+            !Number.isNaN(row) &&
+            !Number.isNaN(col) &&
+            row >= 0 &&
+            row < gridRows &&
+            col >= 0 &&
+            col < gridCols
+          ) {
+            const gemX = gridStartX + col * cellSize;
+            const gemY = gridStartY + row * cellSize;
+
+            // 펄싱 효과를 위한 애니메이션
+            const pulseTime = Date.now() % 1000;
+            const pulseAlpha =
+              0.3 + Math.sin((pulseTime / 1000) * Math.PI * 2) * 0.2;
+
+            ctx.fillStyle = `rgba(255, 215, 61, ${pulseAlpha})`;
+            ctx.strokeStyle = "#ffd93d";
+            ctx.lineWidth = Math.max(2, 3 * scale);
+            ctx.strokeRect(gemX, gemY, cellSize, cellSize);
+            ctx.fillRect(gemX, gemY, cellSize, cellSize);
+          }
+        });
+      }
 
       // 젬 렌더링 (클리어 시에는 어둡게)
       if (
@@ -813,11 +917,19 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [currentScreen, renderStageSelect, renderGameBoard]);
 
-  // 애니메이션 루프 시작
+  // 애니메이션 루프 시작 (성능 최적화: 필요할 때만 렌더링)
   useEffect(() => {
+    let lastRenderTime = 0;
+    const targetFPS = 60;
+    const frameInterval = 1000 / targetFPS;
+
     const startRenderLoop = () => {
-      const animate = () => {
-        render();
+      const animate = (currentTime: number) => {
+        // FPS 제한으로 성능 최적화
+        if (currentTime - lastRenderTime >= frameInterval) {
+          render();
+          lastRenderTime = currentTime;
+        }
         animationFrameRef.current = requestAnimationFrame(animate);
       };
       animationFrameRef.current = requestAnimationFrame(animate);
@@ -1091,6 +1203,46 @@ const GameBoard: React.FC<GameBoardProps> = ({
           return;
         }
 
+        // 페이지네이션 버튼 클릭 확인
+        const stagesPerPage = 50;
+        const totalStages = 1000;
+        const totalPages = Math.ceil(totalStages / stagesPerPage);
+        const buttonHeight = 30 * scale;
+        const buttonWidth = 80 * scale;
+        const pageInfoY = canvasHeight - 60 * scale;
+        const buttonY = pageInfoY + 20 * scale;
+        const buttonGap = 10 * scale;
+
+        // 이전 페이지 버튼
+        if (currentPage > 1) {
+          const prevButtonX = canvasWidth / 2 - buttonWidth - buttonGap / 2;
+          if (
+            x >= prevButtonX &&
+            x <= prevButtonX + buttonWidth &&
+            y >= buttonY &&
+            y <= buttonY + buttonHeight
+          ) {
+            setCurrentPage(currentPage - 1);
+            soundManager.playClick();
+            return;
+          }
+        }
+
+        // 다음 페이지 버튼
+        if (currentPage < totalPages) {
+          const nextButtonX = canvasWidth / 2 + buttonGap / 2;
+          if (
+            x >= nextButtonX &&
+            x <= nextButtonX + buttonWidth &&
+            y >= buttonY &&
+            y <= buttonY + buttonHeight
+          ) {
+            setCurrentPage(currentPage + 1);
+            soundManager.playClick();
+            return;
+          }
+        }
+
         // 스테이지 그리드 클릭 감지
         const stagesPerRow = 8;
         const baseStageSize = 60;
@@ -1107,8 +1259,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const row = Math.floor((y - startY) / (stageSize + gap));
 
         if (col >= 0 && col < stagesPerRow && row >= 0) {
-          const stageNumber = row * stagesPerRow + col + 1;
-          if (stageNumber <= unlockedStages && stageNumber <= 50) {
+          const startStage = (currentPage - 1) * stagesPerPage + 1;
+          const stageNumber = startStage + row * stagesPerRow + col;
+          if (stageNumber <= unlockedStages && stageNumber <= totalStages) {
             onStartStage(stageNumber);
           }
         }
@@ -1118,6 +1271,35 @@ const GameBoard: React.FC<GameBoardProps> = ({
         // 기준 크기 (1200px 기준으로 설계)
         const baseWidth = 1200;
         const scale = canvasWidth / baseWidth;
+
+        // 클리어 상태 확인
+        const isCleared = gameState.goals.every(
+          (goal) => goal.current >= goal.target
+        );
+
+        // 클리어 화면의 다음 스테이지 버튼 클릭 확인
+        if (isCleared && !gameState.isAnimating && !gameState.isGameOver) {
+          const buttonX = canvasWidth / 2 - 100 * scale;
+          const buttonY = canvasHeight / 2 + 80 * scale;
+          const buttonWidth = 200 * scale;
+          const buttonHeight = 50 * scale;
+
+          if (
+            x >= buttonX &&
+            x <= buttonX + buttonWidth &&
+            y >= buttonY &&
+            y <= buttonY + buttonHeight
+          ) {
+            // 다음 스테이지로 이동
+            if (onStartStage) {
+              const nextStage = stageNumber + 1;
+              onStartStage(nextStage);
+            }
+            soundManager.playClick();
+            return;
+          }
+          return; // 클리어 화면에서는 다른 클릭 무시
+        }
 
         // 게임 오버 화면의 재시작 버튼 클릭 확인
         if (gameState.isGameOver) {

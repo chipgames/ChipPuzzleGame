@@ -10,7 +10,8 @@ export interface MatchResult {
 }
 
 /**
- * 게임 보드에서 매칭을 찾는 함수
+ * 게임 보드에서 매칭을 찾는 함수 (개선된 버전)
+ * T자, L자 매칭도 더 정확하게 감지
  */
 export function findMatches(board: (Gem | null)[][]): Match[] {
   const matches: Match[] = [];

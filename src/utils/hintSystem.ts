@@ -10,11 +10,16 @@ export interface Hint {
 }
 
 /**
- * 보드에서 가능한 매칭을 찾는 함수
+ * 보드에서 가능한 매칭을 찾는 함수 (개선된 버전)
+ * 더 효율적인 알고리즘으로 최적의 힌트 제공
  */
 export function findPossibleMatches(board: (Gem | null)[][]): Hint | null {
   const rows = board.length;
   const cols = board[0]?.length || 0;
+
+  // 특수 젬을 생성할 수 있는 매칭 우선 검색
+  const priorityHints: Hint[] = [];
+  const normalHints: Hint[] = [];
 
   // 모든 인접한 젬 쌍을 확인
   for (let row = 0; row < rows; row++) {
@@ -25,14 +30,22 @@ export function findPossibleMatches(board: (Gem | null)[][]): Hint | null {
       // 오른쪽 젬과 교환 시도
       if (col < cols - 1) {
         const rightGem = board[row]?.[col + 1];
-        if (rightGem) {
+        if (rightGem && rightGem.color !== gem.color) {
           const testBoard = swapGemsInBoard(board, row, col, row, col + 1);
           const matches = findMatches(testBoard);
           if (matches.length > 0) {
-            return {
+            // 특수 젬을 생성할 수 있는 매칭인지 확인
+            const hasSpecialGem = matches.some(m => m.positions.length >= 4);
+            const hint: Hint = {
               from: { row, col },
               to: { row, col: col + 1 },
             };
+            
+            if (hasSpecialGem) {
+              priorityHints.push(hint);
+            } else {
+              normalHints.push(hint);
+            }
           }
         }
       }
@@ -40,18 +53,36 @@ export function findPossibleMatches(board: (Gem | null)[][]): Hint | null {
       // 아래쪽 젬과 교환 시도
       if (row < rows - 1) {
         const bottomGem = board[row + 1]?.[col];
-        if (bottomGem) {
+        if (bottomGem && bottomGem.color !== gem.color) {
           const testBoard = swapGemsInBoard(board, row, col, row + 1, col);
           const matches = findMatches(testBoard);
           if (matches.length > 0) {
-            return {
+            // 특수 젬을 생성할 수 있는 매칭인지 확인
+            const hasSpecialGem = matches.some(m => m.positions.length >= 4);
+            const hint: Hint = {
               from: { row, col },
               to: { row: row + 1, col },
             };
+            
+            if (hasSpecialGem) {
+              priorityHints.push(hint);
+            } else {
+              normalHints.push(hint);
+            }
           }
         }
       }
     }
+  }
+
+  // 특수 젬을 생성할 수 있는 힌트 우선 반환
+  if (priorityHints.length > 0) {
+    return priorityHints[0];
+  }
+
+  // 일반 힌트 반환
+  if (normalHints.length > 0) {
+    return normalHints[0];
   }
 
   return null;

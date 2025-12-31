@@ -119,6 +119,9 @@ export const useGameState = (stageNumber: number) => {
               }
             }
 
+            // 중력 적용
+            const boardAfterGravity = applyGravity(newBoard, 50);
+
             // 점수 추가
             const newScore = prev.score + comboEffect.score;
 
@@ -136,16 +139,27 @@ export const useGameState = (stageNumber: number) => {
               return goal;
             });
 
+            // 중력 적용 후 새로운 매칭 확인
+            const newMatches = findMatches(boardAfterGravity);
+            const hasNewMatches = newMatches.length > 0;
+
+            // 게임 클리어 확인
+            const isCleared = newGoals.every(
+              (goal) => goal.current >= goal.target
+            );
+            const isGameOver = prev.moves <= 0 && !isCleared;
+
             // 중력 적용 후 매칭 처리 시작
             return {
               ...prev,
-              board: newBoard,
+              board: boardAfterGravity,
               score: newScore,
               goals: newGoals,
               moves: prev.moves - 1,
-              isAnimating: true,
+              isAnimating: hasNewMatches && !isCleared && !isGameOver,
               selectedGem: null,
               comboCount: 0, // 조합 효과는 콤보로 카운트하지 않음
+              isGameOver: isGameOver || prev.isGameOver,
             };
           }
         }
@@ -283,19 +297,25 @@ export const useGameState = (stageNumber: number) => {
 
       // 콤보 계산 (연쇄 매칭이면 콤보 증가, 아니면 리셋)
       const newComboCount = hasNewMatches ? prev.comboCount + 1 : 0;
-      const comboMultiplier = 1 + newComboCount * 0.1; // 콤보당 10% 보너스
+      // 콤보 보너스: 1콤보당 15% 증가 (최대 5콤보 = 75% 보너스)
+      const comboMultiplier = 1 + Math.min(newComboCount, 5) * 0.15;
 
       // 점수 계산 (일반 매칭 + 특수 젬 효과 + 콤보 보너스)
-      const matchScore = matches.reduce(
-        (sum, match) => sum + match.positions.length * 10,
-        0
-      );
+      const matchScore = matches.reduce((sum, match) => {
+        // 매칭 길이에 따른 보너스: 3개=10점, 4개=20점, 5개=40점, 6개 이상=80점
+        const length = match.positions.length;
+        let basePoints = 10;
+        if (length >= 6) basePoints = 80;
+        else if (length >= 5) basePoints = 40;
+        else if (length >= 4) basePoints = 20;
+        return sum + length * basePoints;
+      }, 0);
       const baseScore = matchScore + totalScore;
       const comboBonus = Math.floor(baseScore * (comboMultiplier - 1));
       const newScore = prev.score + baseScore + comboBonus;
 
-      // 목표 업데이트
-      const totalMatchScore = matchScore + totalScore;
+      // 목표 업데이트 (콤보 보너스 포함)
+      const totalMatchScore = matchScore + totalScore + comboBonus;
       const newGoals = prev.goals.map((goal) => {
         if (goal.type === "score") {
           return {
