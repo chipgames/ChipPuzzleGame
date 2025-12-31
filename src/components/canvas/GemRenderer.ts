@@ -65,10 +65,103 @@ export class GemRenderer {
     this.roundRect(offset, offset, size, size, size * 0.2);
     this.ctx.fill();
 
+    // 색상별 구분 패턴 추가
+    this.renderColorPattern(gem.color, offset, size);
+
     // 하이라이트
     this.ctx.fillStyle = "rgba(255, 255, 255, 0.3)";
     this.roundRect(offset, offset, size, size * 0.4, size * 0.2);
     this.ctx.fill();
+
+    // 색상별 테두리 (더 명확한 구분)
+    this.ctx.strokeStyle = this.getBorderColor(gem.color);
+    this.ctx.lineWidth = size * 0.06;
+    this.roundRect(offset, offset, size, size, size * 0.2);
+    this.ctx.stroke();
+  }
+
+  /**
+   * 색상별 테두리 색상 반환
+   */
+  private getBorderColor(color: GemColor): string {
+    const borderColors: Record<GemColor, string> = {
+      red: "rgba(255, 71, 87, 0.8)",
+      yellow: "rgba(255, 211, 42, 0.8)",
+      blue: "rgba(55, 66, 250, 0.8)",
+      green: "rgba(46, 213, 115, 0.8)",
+      purple: "rgba(165, 94, 234, 0.8)",
+      orange: "rgba(255, 99, 72, 0.8)",
+    };
+    return borderColors[color];
+  }
+
+  /**
+   * 색상별 구분 패턴 렌더링
+   */
+  private renderColorPattern(color: GemColor, _offset: number, size: number) {
+    this.ctx.save();
+    this.ctx.globalAlpha = 0.3;
+
+    switch (color) {
+      case "red":
+        // 빨강: 중앙 원
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, size * 0.15, 0, Math.PI * 2);
+        this.ctx.fill();
+        break;
+      case "yellow":
+        // 노랑: 별 모양
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.drawStar(0, 0, size * 0.08, size * 0.15, 5);
+        this.ctx.fill();
+        break;
+      case "blue":
+        // 파랑: 다이아몬드
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, -size * 0.15);
+        this.ctx.lineTo(size * 0.15, 0);
+        this.ctx.lineTo(0, size * 0.15);
+        this.ctx.lineTo(-size * 0.15, 0);
+        this.ctx.closePath();
+        this.ctx.fill();
+        break;
+      case "green":
+        // 초록: 삼각형
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, -size * 0.15);
+        this.ctx.lineTo(-size * 0.13, size * 0.1);
+        this.ctx.lineTo(size * 0.13, size * 0.1);
+        this.ctx.closePath();
+        this.ctx.fill();
+        break;
+      case "purple":
+        // 보라: 사각형
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.ctx.fillRect(-size * 0.1, -size * 0.1, size * 0.2, size * 0.2);
+        break;
+      case "orange":
+        // 주황: 육각형
+        this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.ctx.beginPath();
+        for (let i = 0; i < 6; i++) {
+          const angle = (Math.PI / 3) * i;
+          const x = Math.cos(angle) * size * 0.12;
+          const y = Math.sin(angle) * size * 0.12;
+          if (i === 0) {
+            this.ctx.moveTo(x, y);
+          } else {
+            this.ctx.lineTo(x, y);
+          }
+        }
+        this.ctx.closePath();
+        this.ctx.fill();
+        break;
+    }
+
+    this.ctx.restore();
   }
 
   private renderStripedGem(gem: Gem) {
@@ -146,7 +239,7 @@ export class GemRenderer {
     this.ctx.stroke();
   }
 
-  private renderColorBomb(gem: Gem) {
+  private renderColorBomb(_gem: Gem) {
     const size = this.cellSize * 0.85;
     const offset = -size / 2;
 

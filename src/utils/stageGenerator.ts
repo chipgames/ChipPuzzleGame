@@ -1,7 +1,6 @@
 import { Gem } from "@/types/gem";
 import { StageConfig } from "@/types/stage";
 import { GEM_COLORS } from "@/constants/gemConfig";
-import { generateNewGem } from "./gravity";
 import { findMatches } from "./matchDetection";
 
 /**
@@ -26,8 +25,6 @@ class SeededRandom {
 export function generateStage(stageNumber: number): StageConfig {
   const rng = new SeededRandom(stageNumber);
   
-  // 난이도 계산
-  const difficulty = Math.floor(stageNumber / 100) + 1;
   const gridSize = calculateGridSize(stageNumber);
   const targetScore = calculateTargetScore(stageNumber);
   const maxMoves = calculateMaxMoves(stageNumber);

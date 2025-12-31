@@ -10,7 +10,7 @@ interface HeaderProps {
   currentScreen?: GameScreen;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen }) => {
+const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScreen }) => {
   const { t } = useLanguage();
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
     const saved = localStorage.getItem("chipPuzzleGame_soundEnabled");

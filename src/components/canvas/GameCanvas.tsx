@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from "react";
+import React, { useRef, useEffect } from "react";
 import { CanvasConfig, DEFAULT_CANVAS_CONFIG } from "@/constants/canvasConfig";
 import "./GameCanvas.css";
 

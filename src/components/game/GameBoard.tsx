@@ -23,7 +23,7 @@ interface GameBoardProps {
 const GameBoard: React.FC<GameBoardProps> = ({
   stageNumber = 1,
   currentScreen = "stageSelect",
-  onNavigate,
+  onNavigate: _onNavigate,
   onStartStage,
 }) => {
   const initializedRef = useRef(false);
@@ -435,84 +435,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
           canvasWidth / 2,
           buttonY + buttonHeight / 2 + 8 * scale
         );
-      } else {
-        const isCleared = gameState.goals.every(
-          (goal) => goal.current >= goal.target
-        );
-        if (isCleared && !gameState.isAnimating) {
-          const stars = calculateStarRating(gameState);
-
-          ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
-          ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-          // 클리어 메시지
-          ctx.fillStyle = "#4ecdc4";
-          ctx.font = `bold ${Math.max(24, 48 * scale)}px Arial`;
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(
-            "Stage Cleared!",
-            canvasWidth / 2,
-            canvasHeight / 2 - 100 * scale
-          );
-
-          // 별점 표시
-          const starSize = Math.max(20, 40 * scale);
-          const starSpacing = starSize * 1.5;
-          const starStartX = canvasWidth / 2 - starSpacing * 1.5;
-          const starY = canvasHeight / 2 - 30 * scale;
-
-          for (let i = 0; i < 3; i++) {
-            const starX = starStartX + i * starSpacing;
-            ctx.fillStyle = i < stars ? "#ffd93d" : "#666";
-            ctx.font = `${starSize}px Arial`;
-            ctx.fillText("★", starX, starY);
-          }
-
-          // 점수 표시
-          ctx.fillStyle = "#fff";
-          ctx.font = `bold ${Math.max(16, 24 * scale)}px Arial`;
-          ctx.fillText(
-            `Score: ${gameState.score}`,
-            canvasWidth / 2,
-            canvasHeight / 2 + 30 * scale
-          );
-
-          // 다음 스테이지 버튼 (텍스트로 표시)
-          const buttonX = canvasWidth / 2 - 100 * scale;
-          const buttonY = canvasHeight / 2 + 80 * scale;
-          const buttonWidth = 200 * scale;
-          const buttonHeight = 50 * scale;
-
-          // 버튼 배경
-          const gradient = ctx.createLinearGradient(
-            buttonX,
-            buttonY,
-            buttonX + buttonWidth,
-            buttonY + buttonHeight
-          );
-          gradient.addColorStop(0, "#667eea");
-          gradient.addColorStop(1, "#764ba2");
-          ctx.fillStyle = gradient;
-          ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-          // 버튼 테두리
-          ctx.strokeStyle = "#fff";
-          ctx.lineWidth = Math.max(2, 3 * scale);
-          ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
-
-          // 버튼 텍스트
-          ctx.fillStyle = "#fff";
-          ctx.font = `bold ${Math.max(14, 20 * scale)}px Arial`;
-          ctx.fillText(
-            "Next Stage",
-            canvasWidth / 2,
-            buttonY + buttonHeight / 2 + 8 * scale
-          );
-        }
       }
 
-      // 젬 렌더링
+      // 클리어 상태 확인
+      const isCleared = gameState.goals.every(
+        (goal) => goal.current >= goal.target
+      );
+
+      // 젬 렌더링 (클리어 시에는 어둡게)
       if (
         gameState.board &&
         gameState.board.length > 0 &&
@@ -721,8 +651,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
               }
 
               // 젬 렌더링 (alpha가 0보다 크면 렌더링)
+              // 클리어 시에는 젬을 어둡게 렌더링
               if (alpha > 0) {
-                gemRendererRef.current!.render(gem, alpha);
+                const renderAlpha =
+                  isCleared && !gameState.isAnimating
+                    ? alpha * 0.3 // 클리어 시 30% 투명도로 어둡게
+                    : alpha;
+                gemRendererRef.current!.render(gem, renderAlpha);
               }
 
               // 제거 중인 젬에서 파티클 생성 (한 번만)
@@ -773,6 +708,80 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (particleSystemRef.current) {
         particleSystemRef.current.update(16); // 약 60fps 기준
         particleSystemRef.current.render();
+      }
+
+      // 클리어 화면 오버레이 (젬 렌더링 이후에 그려서 최상단에 표시)
+      if (isCleared && !gameState.isAnimating && !gameState.isGameOver) {
+        const stars = calculateStarRating(gameState);
+
+        // 더 불투명한 오버레이
+        ctx.fillStyle = "rgba(0, 0, 0, 0.95)";
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // 클리어 메시지
+        ctx.fillStyle = "#4ecdc4";
+        ctx.font = `bold ${Math.max(24, 48 * scale)}px Arial`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          "Stage Cleared!",
+          canvasWidth / 2,
+          canvasHeight / 2 - 100 * scale
+        );
+
+        // 별점 표시
+        const starSize = Math.max(20, 40 * scale);
+        const starSpacing = starSize * 1.5;
+        const starStartX = canvasWidth / 2 - starSpacing * 1.5;
+        const starY = canvasHeight / 2 - 30 * scale;
+
+        for (let i = 0; i < 3; i++) {
+          const starX = starStartX + i * starSpacing;
+          ctx.fillStyle = i < stars ? "#ffd93d" : "#666";
+          ctx.font = `${starSize}px Arial`;
+          ctx.fillText("★", starX, starY);
+        }
+
+        // 점수 표시
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.max(16, 24 * scale)}px Arial`;
+        ctx.fillText(
+          `Score: ${gameState.score}`,
+          canvasWidth / 2,
+          canvasHeight / 2 + 30 * scale
+        );
+
+        // 다음 스테이지 버튼
+        const buttonX = canvasWidth / 2 - 100 * scale;
+        const buttonY = canvasHeight / 2 + 80 * scale;
+        const buttonWidth = 200 * scale;
+        const buttonHeight = 50 * scale;
+
+        // 버튼 배경
+        const gradient = ctx.createLinearGradient(
+          buttonX,
+          buttonY,
+          buttonX + buttonWidth,
+          buttonY + buttonHeight
+        );
+        gradient.addColorStop(0, "#667eea");
+        gradient.addColorStop(1, "#764ba2");
+        ctx.fillStyle = gradient;
+        ctx.fillRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+        // 버튼 테두리
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = Math.max(2, 3 * scale);
+        ctx.strokeRect(buttonX, buttonY, buttonWidth, buttonHeight);
+
+        // 버튼 텍스트
+        ctx.fillStyle = "#fff";
+        ctx.font = `bold ${Math.max(14, 20 * scale)}px Arial`;
+        ctx.fillText(
+          "Next Stage",
+          canvasWidth / 2,
+          buttonY + buttonHeight / 2 + 8 * scale
+        );
       }
     },
     [config, gameState, showHint]
@@ -1314,21 +1323,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const y = event.clientY - rect.top;
       const dpr = window.devicePixelRatio || 1;
       const canvasWidth = canvas.width / dpr;
-      const canvasHeight = canvas.height / dpr;
 
       // 기준 크기 (1200px 기준으로 설계)
       const baseWidth = 1200;
       const scale = canvasWidth / baseWidth;
 
-      const baseCellSize = config.cellSize || 50;
-      const cellSize = baseCellSize * scale;
       const gridCols = config.gridCols || 9;
       const gridRows = config.gridRows || 9;
-
-      const gridWidth = cellSize * gridCols;
-      const gridHeight = cellSize * gridRows;
-      const gridStartX = (canvasWidth - gridWidth) / 2;
-      const gridStartY = (canvasHeight - gridHeight) / 2;
 
       const startPos = dragStartPosRef.current;
       const dx = x - startPos.x;

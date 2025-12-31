@@ -1,5 +1,5 @@
 import { useRef, useEffect, useCallback } from "react";
-import { TweenAnimation, Easing } from "@/utils/animation";
+import { TweenAnimation } from "@/utils/animation";
 
 /**
  * 애니메이션 관리 훅

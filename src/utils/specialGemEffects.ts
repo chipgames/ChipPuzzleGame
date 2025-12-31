@@ -1,5 +1,4 @@
 import { Gem } from "@/types/gem";
-import { Match } from "@/types/game";
 
 /**
  * 특수 젬 활성화 효과 처리
@@ -108,7 +107,7 @@ export function activateColorBomb(
  */
 export function activateStripedStriped(
   gem1: Gem,
-  gem2: Gem,
+  _gem2: Gem,
   board: (Gem | null)[][]
 ): SpecialGemEffect {
   const positionsToRemove: { row: number; col: number }[] = [];
@@ -196,7 +195,6 @@ export function activateStripedColorBomb(
 ): SpecialGemEffect {
   const positionsToRemove: { row: number; col: number }[] = [];
   const stripedGem = gem1.type === "striped" ? gem1 : gem2;
-  const colorBomb = gem1.type === "colorBomb" ? gem1 : gem2;
   const targetColor = stripedGem.color;
   const direction = stripedGem.stripedDirection || "horizontal";
 
@@ -233,7 +231,7 @@ export function activateStripedColorBomb(
  */
 export function activateWrappedWrapped(
   gem1: Gem,
-  gem2: Gem,
+  _gem2: Gem,
   board: (Gem | null)[][]
 ): SpecialGemEffect {
   const positionsToRemove: { row: number; col: number }[] = [];
@@ -265,11 +263,11 @@ export function activateWrappedWrapped(
  */
 export function activateWrappedColorBomb(
   gem1: Gem,
-  gem2: Gem,
+  _gem2: Gem,
   board: (Gem | null)[][]
 ): SpecialGemEffect {
   const positionsToRemove: { row: number; col: number }[] = [];
-  const wrappedGem = gem1.type === "wrapped" ? gem1 : gem2;
+  const wrappedGem = gem1.type === "wrapped" ? gem1 : _gem2;
   const targetColor = wrappedGem.color;
 
   // 보드 전체에서 같은 색상 찾기
@@ -292,8 +290,8 @@ export function activateWrappedColorBomb(
  * 컬러봄 + 컬러봄 = 전체 보드 제거
  */
 export function activateColorBombColorBomb(
-  gem1: Gem,
-  gem2: Gem,
+  _gem1: Gem,
+  _gem2: Gem,
   board: (Gem | null)[][]
 ): SpecialGemEffect {
   const positionsToRemove: { row: number; col: number }[] = [];

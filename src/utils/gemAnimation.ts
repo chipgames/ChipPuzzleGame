@@ -56,7 +56,6 @@ export function animateGemRemove(
   onComplete?: () => void
 ): TweenAnimation {
   const startScale = gem.scale || 1;
-  const startAlpha = 1;
 
   return new TweenAnimation(
     1,

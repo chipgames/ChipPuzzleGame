@@ -1,4 +1,4 @@
-import { Gem, GemType } from "@/types/gem";
+import { GemType } from "@/types/gem";
 import { Match } from "@/types/game";
 
 /**

@@ -28,17 +28,11 @@ export default defineConfig(({ command, mode }) => {
       outDir: "dist",
       assetsDir: "assets",
       sourcemap: false,
-      minify: "terser",
-      terserOptions: {
-        compress: {
-          drop_console: true,
-        },
-      },
+      minify: "esbuild",
       rollupOptions: {
         output: {
           manualChunks: {
             vendor: ["react", "react-dom"],
-            canvas: ["./src/components/canvas/CanvasRenderer.ts"],
           },
         },
       },

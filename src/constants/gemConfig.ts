@@ -10,12 +10,12 @@ export const GEM_COLORS: GemColor[] = [
 ];
 
 export const GEM_COLOR_HEX = {
-  red: { light: "#ff6b6b", dark: "#ee5a6f" },
-  yellow: { light: "#ffd93d", dark: "#ffc312" },
-  blue: { light: "#4ecdc4", dark: "#44a08d" },
-  green: { light: "#95e1d3", dark: "#6c5ce7" },
-  purple: { light: "#a29bfe", dark: "#6c5ce7" },
-  orange: { light: "#fd79a8", dark: "#e84393" },
+  red: { light: "#ff4757", dark: "#c44569" }, // 진한 빨강
+  yellow: { light: "#ffd32a", dark: "#feca57" }, // 밝은 노랑
+  blue: { light: "#3742fa", dark: "#2f3542" }, // 진한 파랑
+  green: { light: "#2ed573", dark: "#1e8449" }, // 진한 초록
+  purple: { light: "#a55eea", dark: "#8854d0" }, // 보라색
+  orange: { light: "#ff6348", dark: "#ff3838" }, // 주황색
 };
 
 
