@@ -22,21 +22,64 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
     const saved = localStorage.getItem("chipPuzzleGame_soundEnabled");
     return saved !== null ? JSON.parse(saved) : true;
   });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
     localStorage.setItem("chipPuzzleGame_soundEnabled", JSON.stringify(soundEnabled));
   }, [soundEnabled]);
 
+  // 모바일 메뉴가 열렸을 때 스크롤 방지
+  useEffect(() => {
+    if (isMobileMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobileMenuOpen]);
+
+  // 모바일 메뉴 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        isMobileMenuOpen &&
+        !target.closest(".header-nav") &&
+        !target.closest(".header-hamburger")
+      ) {
+        setIsMobileMenuOpen(false);
+      }
+    };
+
+    if (isMobileMenuOpen) {
+      document.addEventListener("click", handleClickOutside);
+      return () => {
+        document.removeEventListener("click", handleClickOutside);
+      };
+    }
+  }, [isMobileMenuOpen]);
+
   const handleMenuClick = (screen: GameScreen) => {
     if (onNavigate) {
       onNavigate(screen);
     }
+    // 모바일 메뉴 클릭 시 메뉴 닫기
+    setIsMobileMenuOpen(false);
   };
 
   const toggleSound = () => {
     setSoundEnabled(!soundEnabled);
     if (!soundEnabled) {
+      soundManager.playClick();
+    }
+  };
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+    if (soundEnabled) {
       soundManager.playClick();
     }
   };
@@ -77,7 +120,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
             </span>
           </div>
         </div>
-        <nav className="header-nav">
+        <nav className={`header-nav ${isMobileMenuOpen ? "mobile-open" : ""}`}>
           <button 
             className="header-nav-button"
             onClick={() => handleMenuClick("stageSelect")}
@@ -106,6 +149,16 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
             {soundEnabled ? "🔊" : "🔇"}
           </button>
           <LanguageSelector />
+          <button
+            className="header-hamburger"
+            onClick={toggleMobileMenu}
+            aria-label="메뉴"
+            aria-expanded={isMobileMenuOpen}
+          >
+            <span className={`hamburger-line ${isMobileMenuOpen ? "active" : ""}`}></span>
+            <span className={`hamburger-line ${isMobileMenuOpen ? "active" : ""}`}></span>
+            <span className={`hamburger-line ${isMobileMenuOpen ? "active" : ""}`}></span>
+          </button>
         </div>
       </div>
     </header>

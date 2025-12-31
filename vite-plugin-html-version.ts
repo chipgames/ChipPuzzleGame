@@ -8,6 +8,7 @@ import { resolve } from "path";
 export function htmlVersionPlugin(): Plugin {
   let version: string;
   let base: string;
+  let isProduction: boolean;
 
   return {
     name: "html-version",
@@ -18,6 +19,7 @@ export function htmlVersionPlugin(): Plugin {
       );
       version = packageJson.version;
       base = config.base || "/";
+      isProduction = config.command === "build";
     },
     transformIndexHtml(html) {
       // 캐시 방지 메타 태그 추가 (없는 경우에만)
@@ -29,42 +31,53 @@ export function htmlVersionPlugin(): Plugin {
         );
       }
 
-      // HTML 내의 모든 스크립트와 링크 태그에 버전 쿼리 파라미터 추가
-      result = result
-        .replace(
-          /(<script[^>]*src=["'])([^"']+)(["'][^>]*>)/g,
-          (match, prefix, src, suffix) => {
-            // 이미 쿼리 파라미터가 있으면 추가하지 않음
-            if (src.includes("?") || src.includes("v=")) {
-              return match;
+      // 프로덕션 빌드에서만 HTML 내의 모든 스크립트와 링크 태그에 버전 쿼리 파라미터 추가
+      // 개발 모드에서는 소스 파일에 쿼리 파라미터를 추가하면 Vite가 오류를 발생시킴
+      if (isProduction) {
+        result = result
+          .replace(
+            /(<script[^>]*src=["'])([^"']+)(["'][^>]*>)/g,
+            (match, prefix, src, suffix) => {
+              // 이미 쿼리 파라미터가 있으면 추가하지 않음
+              if (src.includes("?") || src.includes("v=")) {
+                return match;
+              }
+              // 개발 모드 소스 파일은 제외 (/src/로 시작하는 경로)
+              if (src.startsWith("/src/") || src.startsWith("./src/") || src.startsWith("src/")) {
+                return match;
+              }
+              const separator = src.includes("?") ? "&" : "?";
+              return `${prefix}${src}${separator}v=${version}${suffix}`;
             }
-            const separator = src.includes("?") ? "&" : "?";
-            return `${prefix}${src}${separator}v=${version}${suffix}`;
-          }
-        )
-        .replace(
-          /(<link[^>]*href=["'])([^"']+)(["'][^>]*>)/g,
-          (match, prefix, href, suffix) => {
-            // 이미 버전 쿼리 파라미터가 있으면 추가하지 않음
-            if (href.includes("v=")) {
-              return match;
+          )
+          .replace(
+            /(<link[^>]*href=["'])([^"']+)(["'][^>]*>)/g,
+            (match, prefix, href, suffix) => {
+              // 이미 버전 쿼리 파라미터가 있으면 추가하지 않음
+              if (href.includes("v=")) {
+                return match;
+              }
+              // 외부 리소스는 제외
+              if (href.startsWith("http://") || href.startsWith("https://")) {
+                return match;
+              }
+              // data: 또는 javascript: 프로토콜은 제외
+              if (href.startsWith("data:") || href.startsWith("javascript:")) {
+                return match;
+              }
+              // 빈 href는 제외
+              if (!href || href.trim() === "") {
+                return match;
+              }
+              // 개발 모드 소스 파일은 제외 (/src/로 시작하는 경로)
+              if (href.startsWith("/src/") || href.startsWith("./src/") || href.startsWith("src/")) {
+                return match;
+              }
+              const separator = href.includes("?") ? "&" : "?";
+              return `${prefix}${href}${separator}v=${version}${suffix}`;
             }
-            // 외부 리소스는 제외
-            if (href.startsWith("http://") || href.startsWith("https://")) {
-              return match;
-            }
-            // data: 또는 javascript: 프로토콜은 제외
-            if (href.startsWith("data:") || href.startsWith("javascript:")) {
-              return match;
-            }
-            // 빈 href는 제외
-            if (!href || href.trim() === "") {
-              return match;
-            }
-            const separator = href.includes("?") ? "&" : "?";
-            return `${prefix}${href}${separator}v=${version}${suffix}`;
-          }
-        );
+          );
+      }
 
       return result;
     },
