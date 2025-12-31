@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { readFileSync } from "fs";
+import { htmlVersionPlugin } from "./vite-plugin-html-version";
 
 // package.json에서 버전 읽기
 const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
@@ -16,7 +17,7 @@ export default defineConfig(({ command, mode }) => {
       : "/ChipPuzzleGame/";
 
   return {
-    plugins: [react()],
+    plugins: [react(), htmlVersionPlugin()],
     base,
     define: {
       __APP_VERSION__: JSON.stringify(version),
