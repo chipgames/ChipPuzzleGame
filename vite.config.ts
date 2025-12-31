@@ -1,6 +1,11 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
+import { readFileSync } from "fs";
+
+// package.json에서 버전 읽기
+const packageJson = JSON.parse(readFileSync("./package.json", "utf-8"));
+const version = packageJson.version;
 
 // 개발 환경에서는 "/", 프로덕션 빌드에서는 "/ChipPuzzleGame/"
 export default defineConfig(({ command, mode }) => {
@@ -13,6 +18,9 @@ export default defineConfig(({ command, mode }) => {
   return {
     plugins: [react()],
     base,
+    define: {
+      __APP_VERSION__: JSON.stringify(version),
+    },
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src"),
@@ -34,6 +42,10 @@ export default defineConfig(({ command, mode }) => {
           manualChunks: {
             vendor: ["react", "react-dom"],
           },
+          // 버전 정보를 파일명에 포함하여 캐시 무효화
+          entryFileNames: `assets/[name]-${version}-[hash].js`,
+          chunkFileNames: `assets/[name]-${version}-[hash].js`,
+          assetFileNames: `assets/[name]-${version}-[hash].[ext]`,
         },
       },
       chunkSizeWarningLimit: 1000,
