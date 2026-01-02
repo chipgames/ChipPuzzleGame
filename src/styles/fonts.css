@@ -1,0 +1,83 @@
+/**
+ * 폰트 최적화 전략
+ * 
+ * 이 프로젝트는 시스템 폰트를 사용하여:
+ * - 추가 다운로드 없이 즉시 렌더링
+ * - 플랫폼별 최적 폰트 자동 선택
+ * - 네트워크 요청 없음 (성능 최적화)
+ */
+
+/**
+ * 시스템 폰트 폴백 체인
+ * 
+ * 플랫폼별로 최적의 폰트를 자동으로 선택합니다:
+ * - macOS/iOS: San Francisco (SF Pro)
+ * - Windows: Segoe UI
+ * - Android: Roboto
+ * - Linux: Oxygen, Ubuntu, Cantarell, Fira Sans
+ */
+:root {
+  /* 기본 시스템 폰트 스택 */
+  --font-system: 
+    -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto",
+    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue",
+    sans-serif;
+  
+  /* 모노스페이스 폰트 스택 (코드/에러 메시지용) */
+  --font-mono:
+    "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Droid Sans Mono",
+    "Courier New", monospace;
+}
+
+/**
+ * 폰트 로딩 최적화
+ * 
+ * 시스템 폰트를 사용하므로:
+ * - font-display: swap (즉시 표시)
+ * - 추가 네트워크 요청 없음
+ * - FOUT (Flash of Unstyled Text) 없음
+ * - FOIT (Flash of Invisible Text) 없음
+ */
+
+/**
+ * 폰트 렌더링 최적화
+ * 
+ * -webkit-font-smoothing: antialiased
+ * - macOS/iOS에서 폰트 렌더링 개선
+ * 
+ * -moz-osx-font-smoothing: grayscale
+ * - Firefox macOS에서 폰트 렌더링 개선
+ * 
+ * text-rendering: optimizeLegibility
+ * - 텍스트 가독성 최적화
+ * 
+ * font-feature-settings: "kern" 1
+ * - 커닝(자간) 활성화
+ */
+
+/**
+ * 웹 폰트를 사용하는 경우의 최적화 전략
+ * 
+ * 1. font-display: swap
+ *    - 폰트 로딩 중에도 텍스트 표시
+ *    - 폰트 로딩 완료 후 교체
+ * 
+ * 2. preload
+ *    - 중요한 폰트 파일 미리 로드
+ *    <link rel="preload" href="/fonts/font.woff2" as="font" type="font/woff2" crossorigin>
+ * 
+ * 3. font subset
+ *    - 필요한 문자만 포함하여 파일 크기 감소
+ *    - Google Fonts의 경우 &text= 파라미터 사용
+ * 
+ * 4. local() 우선
+ *    - 시스템에 설치된 폰트 우선 사용
+ *    @font-face {
+ *      font-family: 'Custom Font';
+ *      src: local('Custom Font'), url('/fonts/custom-font.woff2') format('woff2');
+ *      font-display: swap;
+ *    }
+ */
+

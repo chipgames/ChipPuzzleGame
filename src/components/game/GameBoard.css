@@ -78,7 +78,10 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  /* 시스템 폰트 사용 (최적화된 폴백 체인) */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", sans-serif;
+  font-display: swap;
+  text-rendering: optimizeLegibility;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 

@@ -86,7 +86,11 @@
   border-radius: 4px;
   padding: 12px;
   font-size: 0.85rem;
-  font-family: "Courier New", monospace;
+  /* 모노스페이스 폰트 (에러 메시지용) */
+  font-family: 
+    "SF Mono", "Monaco", "Inconsolata", "Fira Code", "Droid Sans Mono",
+    "Courier New", monospace;
+  font-display: swap;
   color: #ff6b6b;
   overflow-x: auto;
   white-space: pre-wrap;

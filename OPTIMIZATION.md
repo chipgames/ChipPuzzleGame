@@ -136,13 +136,22 @@ self.addEventListener('install', (event) => {
 });
 ```
 
-#### 2. 폰트 최적화
+#### 2. 폰트 최적화 ✅
 
-웹 폰트를 사용하는 경우:
+프로젝트는 시스템 폰트를 사용하여 최적화되었습니다:
+
+- **시스템 폰트 사용**: 추가 다운로드 없이 즉시 렌더링
+- **플랫폼별 최적 폰트**: macOS/iOS, Windows, Android, Linux 자동 선택
+- **font-display: swap**: 즉시 텍스트 표시
+- **폰트 렌더링 최적화**: antialiased, optimizeLegibility
+- **폴백 체인 개선**: 플랫폼별 최적 폰트 우선순위
+
+웹 폰트를 사용하는 경우의 권장 사항:
 
 - **font-display: swap** 사용
 - **preload**로 중요한 폰트 미리 로드
 - **subset**으로 필요한 문자만 포함
+- **local() 우선**: 시스템 폰트 우선 사용
 
 #### 3. 애니메이션 최적화
 
@@ -178,11 +187,12 @@ Canvas 애니메이션 최적화:
 - [x] Tree shaking
 - [x] Minification
 - [x] 번들 분석 도구
-- [ ] WebP 이미지 변환
-- [ ] Service Worker
-- [ ] 폰트 최적화
+- [ ] WebP 이미지 변환 (가이드 제공)
+- [x] Service Worker
+- [x] 폰트 최적화
 - [x] Lazy loading
 - [x] 성능 모니터링
+- [x] GPU 가속 (Canvas 애니메이션)
 
 ## 🛠️ 도구
 
