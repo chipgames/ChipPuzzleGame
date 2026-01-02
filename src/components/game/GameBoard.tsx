@@ -339,17 +339,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
         particleSystemRef.current = new ParticleSystem(ctx);
       }
 
-      // 그리드 배경 (프리미엄 스타일)
+      // 그리드 배경 (프리미엄 스타일) - 테마에 맞는 색상
+      const { bgTertiary } = getThemeColors();
       ctx.save();
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = "rgba(22, 22, 46, 0.8)";
+      ctx.fillStyle = isLight ? hexToRgba(bgTertiary, 0.6) : "rgba(22, 22, 46, 0.8)";
       ctx.beginPath();
       ctx.roundRect(gridStartX, gridStartY, gridWidth, gridHeight, 8 * scale);
       ctx.fill();
       ctx.restore();
 
-      // 그리드 선 그리기 (개선된 스타일)
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.08)";
+      // 그리드 선 그리기 (개선된 스타일) - 테마에 맞는 색상
+      ctx.strokeStyle = isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.08)";
       ctx.lineWidth = Math.max(0.5, 1 * scale);
 
       for (let i = 0; i <= gridRows; i++) {
