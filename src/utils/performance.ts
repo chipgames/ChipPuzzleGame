@@ -3,7 +3,10 @@
  * FPS, 렌더링 시간, 메모리 사용량 등을 모니터링
  */
 
-interface PerformanceMetrics {
+import { logger } from "./logger";
+import { performanceAnalytics } from "./performanceAnalytics";
+
+export interface PerformanceMetrics {
   fps: number;
   frameTime: number;
   memoryUsage?: {
@@ -61,6 +64,16 @@ class PerformanceMonitor {
       // 메트릭 생성 및 콜백 호출
       const metrics = this.getMetrics(avgFrameTime);
       this.callbacks.forEach((callback) => callback(metrics));
+      
+      // 성능 분석에 추가
+      try {
+        performanceAnalytics.addGamePerformance(metrics);
+      } catch (error) {
+        // 에러 발생 시 무시 (선택적 기능)
+        if (process.env.NODE_ENV === "development") {
+          logger.warn("Failed to add game performance metric", { error });
+        }
+      }
 
       // 성능 저하 감지
       if (this.currentFps < 30) {

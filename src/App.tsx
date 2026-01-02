@@ -7,6 +7,7 @@ import GameBoard from "@/components/game/GameBoard";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
 import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
+import { getWebVitals, logWebVitals } from "@/utils/webVitals";
 import "@/styles/App.css";
 
 // Lazy loading for large components
@@ -41,6 +42,25 @@ const App: React.FC = () => {
       initializeAdSense();
       setupAdObserver();
     }
+  }, []);
+
+  // Web Vitals 측정
+  useEffect(() => {
+    getWebVitals(logWebVitals);
+
+    // 페이지 언로드 시 성능 리포트 로깅
+    const handleBeforeUnload = () => {
+      // 동적 import로 순환 참조 방지
+      import("@/utils/performanceAnalytics").then(({ performanceAnalytics }) => {
+        performanceAnalytics.logReport();
+      });
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
   }, []);
 
   const handleNavigate = (screen: GameScreen) => {

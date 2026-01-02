@@ -29,45 +29,52 @@ function validateStorageData(data: unknown): data is StorageData {
     return false;
   }
 
+  const obj = data as Record<string, unknown>;
+
   // version 검증
-  if (typeof data.version !== "string" || !data.version) {
+  if (typeof obj.version !== "string" || !obj.version) {
     return false;
   }
 
   // progress 검증
-  if (!data.progress || typeof data.progress !== "object") {
+  if (!obj.progress || typeof obj.progress !== "object") {
     return false;
   }
 
-  if (typeof data.progress.highestStage !== "number" || data.progress.highestStage < 1) {
+  const progress = obj.progress as Record<string, unknown>;
+
+  if (typeof progress.highestStage !== "number" || progress.highestStage < 1) {
     return false;
   }
 
-  if (!data.progress.stageRecords || typeof data.progress.stageRecords !== "object") {
+  if (!progress.stageRecords || typeof progress.stageRecords !== "object") {
     return false;
   }
 
   // stageRecords 검증
-  for (const key in data.progress.stageRecords) {
-    const record = data.progress.stageRecords[key];
+  const stageRecords = progress.stageRecords as Record<string, unknown>;
+  for (const key in stageRecords) {
+    const record = stageRecords[key];
     if (!record || typeof record !== "object") {
       return false;
     }
     // StageRecord의 기본 필드 검증
-    if (typeof record.stageNumber !== "number" || record.stageNumber < 1) {
+    const recordObj = record as Record<string, unknown>;
+    if (typeof recordObj.stageNumber !== "number" || recordObj.stageNumber < 1) {
       return false;
     }
   }
 
   // settings 검증 (선택적)
-  if (data.settings !== undefined) {
-    if (typeof data.settings !== "object" || data.settings === null) {
+  if (obj.settings !== undefined) {
+    if (typeof obj.settings !== "object" || obj.settings === null) {
       return false;
     }
-    if (data.settings.language !== undefined && typeof data.settings.language !== "string") {
+    const settings = obj.settings as Record<string, unknown>;
+    if (settings.language !== undefined && typeof settings.language !== "string") {
       return false;
     }
-    if (data.settings.soundEnabled !== undefined && typeof data.settings.soundEnabled !== "boolean") {
+    if (settings.soundEnabled !== undefined && typeof settings.soundEnabled !== "boolean") {
       return false;
     }
   }
@@ -86,11 +93,13 @@ function validateGameProgress(data: unknown): data is GameProgress {
     return false;
   }
 
-  if (typeof data.highestStage !== "number" || data.highestStage < 1 || data.highestStage > 1000) {
+  const obj = data as Record<string, unknown>;
+
+  if (typeof obj.highestStage !== "number" || obj.highestStage < 1 || obj.highestStage > 1000) {
     return false;
   }
 
-  if (!data.stageRecords || typeof data.stageRecords !== "object") {
+  if (!obj.stageRecords || typeof obj.stageRecords !== "object") {
     return false;
   }
 
@@ -181,20 +190,20 @@ class StorageManager {
       if (memoryValue !== null) {
         return memoryValue;
       }
-      return options.fallback ?? null;
+      return (options.fallback as T) ?? null;
     }
 
     if (!available) {
       if (!options.silent) {
         logger.warn("LocalStorage is not available", { key });
       }
-      return options.fallback ?? null;
+      return (options.fallback as T) ?? null;
     }
 
     try {
       const item = localStorage.getItem(key);
       if (item === null) {
-        return options.fallback ?? null;
+        return (options.fallback as T) ?? null;
       }
       
       // JSON 파싱 시도
@@ -216,7 +225,7 @@ class StorageManager {
           if (!options.silent) {
             logger.warn("Removed invalid storage data", { key, value: item });
           }
-          return options.fallback ?? null;
+          return (options.fallback as T) ?? null;
         }
       }
 
@@ -226,13 +235,13 @@ class StorageManager {
           if (!validateGameProgress(parsed)) {
             logger.warn("Invalid game progress data, removing", { key });
             localStorage.removeItem(key);
-            return options.fallback ?? null;
+            return (options.fallback as T) ?? null;
           }
         } else if (key === "chipPuzzleGame_data") {
           if (!validateStorageData(parsed)) {
             logger.warn("Invalid storage data, removing", { key });
             localStorage.removeItem(key);
-            return options.fallback ?? null;
+            return (options.fallback as T) ?? null;
           }
         }
       }
@@ -241,7 +250,7 @@ class StorageManager {
     } catch (error) {
       // SyntaxError는 silent 옵션에 따라 처리
       if (error instanceof SyntaxError && options.silent) {
-        return options.fallback ?? null;
+        return (options.fallback as T) ?? null;
       }
       if (!options.silent) {
         logger.error("Failed to get item from LocalStorage", {

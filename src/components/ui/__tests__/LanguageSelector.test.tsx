@@ -1,4 +1,3 @@
-import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LanguageSelector from "../LanguageSelector";
@@ -18,6 +17,7 @@ describe("LanguageSelector", () => {
       language: "ko",
       setLanguage: mockSetLanguage,
       t: (key: string) => key,
+      isLoading: false,
     });
   });
 
@@ -32,6 +32,7 @@ describe("LanguageSelector", () => {
       language: "en",
       setLanguage: mockSetLanguage,
       t: (key: string) => key,
+      isLoading: false,
     });
 
     render(<LanguageSelector />);

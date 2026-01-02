@@ -136,8 +136,21 @@ src/
 - **Canvas 렌더링**: 고성능 2D 그래픽 렌더링
 - **타입 안정성**: TypeScript로 타입 안정성 보장
 - **성능 최적화**: React.memo, Lazy Loading 적용
+- **성능 모니터링**: Web Vitals 측정 및 분석
 - **보안**: CSP 적용, 데이터 검증
 - **SEO 최적화**: 구조화된 데이터, 메타 태그
+
+### 성능 모니터링
+
+프로젝트는 Google의 Core Web Vitals를 측정하고 분석합니다:
+
+- **LCP (Largest Contentful Paint)**: 가장 큰 콘텐츠 렌더링 시간
+- **FID (First Input Delay)**: 첫 사용자 입력 지연 시간
+- **CLS (Cumulative Layout Shift)**: 누적 레이아웃 이동
+- **FCP (First Contentful Paint)**: 첫 콘텐츠 렌더링 시간
+- **TTFB (Time to First Byte)**: 첫 바이트 도착 시간
+
+성능 메트릭은 자동으로 수집되며, 개발 환경에서는 상세 로그가 출력되고, 프로덕션에서는 나쁜 점수만 경고로 표시됩니다.
 
 ## 테스트
 
