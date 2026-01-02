@@ -77,12 +77,20 @@ export function improveAdAccessibility(): void {
   });
 }
 
+// AdSense 초기화 플래그 (전역 변수로 중복 방지)
+let adSenseInitialized = false;
+
 /**
  * AdSense 초기화 (React 컴포넌트에서 사용)
  */
 export function initializeAdSense(): void {
   // 개발 환경에서는 AdSense 초기화를 건너뜀 (localhost에서 광고가 작동하지 않음)
   if (isDevelopment()) {
+    return;
+  }
+  
+  // 이미 초기화되었으면 건너뛰기
+  if (adSenseInitialized) {
     return;
   }
   
@@ -94,10 +102,18 @@ export function initializeAdSense(): void {
   
   try {
     if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
-      window.adsbygoogle.push({
-        google_ad_client: "ca-pub-2533613198240039",
-        enable_page_level_ads: true,
-      });
+      // enable_page_level_ads가 이미 설정되어 있는지 다시 확인
+      const hasPageLevelAds = window.adsbygoogle.some(
+        (ad: AdSenseConfig) => ad.enable_page_level_ads === true
+      );
+      
+      if (!hasPageLevelAds) {
+        window.adsbygoogle.push({
+          google_ad_client: "ca-pub-2533613198240039",
+          enable_page_level_ads: true,
+        });
+        adSenseInitialized = true;
+      }
     }
   } catch (error) {
     // AdSense 설정 오류는 조용히 처리
