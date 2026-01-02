@@ -6,8 +6,11 @@
   position: relative;
   z-index: 1;
   background: var(--bg-primary);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(102, 126, 234, 0.1) 0px, transparent 50%),
+  background-image: radial-gradient(
+      at 0% 0%,
+      rgba(102, 126, 234, 0.1) 0px,
+      transparent 50%
+    ),
     radial-gradient(at 100% 100%, rgba(118, 75, 162, 0.1) 0px, transparent 50%);
 }
 
@@ -49,7 +52,8 @@
   font-weight: 600;
 }
 
-.guide-text ol {
+.guide-text ol,
+.guide-text ul {
   padding-left: 24px;
 }
 
@@ -76,7 +80,7 @@
 }
 
 .back-button::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: -100%;
@@ -106,4 +110,3 @@
     font-size: 1rem;
   }
 }
-

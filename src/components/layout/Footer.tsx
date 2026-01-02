@@ -169,6 +169,10 @@ const Footer: React.FC = () => {
                 <h3>{t("footer.contactSection3Title")}</h3>
                 <p>{t("footer.contactSection3Content")}</p>
               </div>
+              <div className="footer-modal-section">
+                <h3>{t("footer.contactSection4Title")}</h3>
+                <p>{t("footer.contactSection4Content")}</p>
+              </div>
             </div>
           </div>
         </div>

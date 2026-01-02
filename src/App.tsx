@@ -6,6 +6,7 @@ import GameContainer from "@/components/layout/GameContainer";
 import GameBoard from "@/components/game/GameBoard";
 import GuideScreen from "@/components/screens/GuideScreen";
 import HelpScreen from "@/components/screens/HelpScreen";
+import AboutScreen from "@/components/screens/AboutScreen";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
 import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
@@ -60,6 +61,8 @@ const App: React.FC = () => {
             <GuideScreen onNavigate={handleNavigate} />
           ) : currentScreen === "help" ? (
             <HelpScreen onNavigate={handleNavigate} />
+          ) : currentScreen === "about" ? (
+            <AboutScreen onNavigate={handleNavigate} />
           ) : (
             <GameBoard 
               stageNumber={currentStage || 1} 

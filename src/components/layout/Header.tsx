@@ -144,6 +144,12 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
           >
             {t("header.help")}
           </button>
+          <button 
+            className="header-nav-button"
+            onClick={() => handleMenuClick("about")}
+          >
+            {t("header.about")}
+          </button>
         </nav>
         <div className="header-right">
           <button

@@ -3,7 +3,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import "./HelpScreen.css";
 
 interface HelpScreenProps {
-  onNavigate: (screen: "menu" | "stageSelect" | "game" | "guide" | "help") => void;
+  onNavigate: (screen: "menu" | "stageSelect" | "game" | "guide" | "help" | "about") => void;
 }
 
 const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate: _onNavigate }) => {
@@ -34,6 +34,14 @@ const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate: _onNavigate }) => {
           <div className="help-section">
             <h3>{t("help.section5Title")}</h3>
             <p>{t("help.section5Content")}</p>
+          </div>
+          <div className="help-section">
+            <h3>{t("help.section6Title")}</h3>
+            <p>{t("help.section6Content")}</p>
+          </div>
+          <div className="help-section">
+            <h3>{t("help.section7Title")}</h3>
+            <p>{t("help.section7Content")}</p>
           </div>
         </div>
       </div>
