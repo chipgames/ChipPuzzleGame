@@ -1,0 +1,30 @@
+{
+  "name": "매칭 퍼즐 게임 - CHIP GAMES",
+  "short_name": "매칭 퍼즐",
+  "description": "무료 온라인 매칭 퍼즐 게임. 1000개의 도전적인 스테이지를 플레이하세요!",
+  "start_url": "/ChipPuzzleGame/",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#667eea",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/ChipPuzzleGame/ChipGames_favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/ChipPuzzleGame/ChipGames_favicon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["games", "entertainment"],
+  "lang": "ko",
+  "dir": "ltr",
+  "scope": "/ChipPuzzleGame/",
+  "prefer_related_applications": false
+}
+

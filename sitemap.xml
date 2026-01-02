@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://chipgames.github.io/ChipPuzzleGame/</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://chipgames.github.io/ChipPuzzleGame/?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://chipgames.github.io/ChipPuzzleGame/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://chipgames.github.io/ChipPuzzleGame/?lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://chipgames.github.io/ChipPuzzleGame/?lang=zh"/>
+  </url>
+  <url>
+    <loc>https://chipgames.github.io/ChipPuzzleGame/?screen=guide</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://chipgames.github.io/ChipPuzzleGame/?screen=guide&amp;lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://chipgames.github.io/ChipPuzzleGame/?screen=guide&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://chipgames.github.io/ChipPuzzleGame/?screen=guide&amp;lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://chipgames.github.io/ChipPuzzleGame/?screen=guide&amp;lang=zh"/>
+  </url>
+  <url>
+    <loc>https://chipgames.github.io/ChipPuzzleGame/?screen=help</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://chipgames.github.io/ChipPuzzleGame/?screen=help&amp;lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://chipgames.github.io/ChipPuzzleGame/?screen=help&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://chipgames.github.io/ChipPuzzleGame/?screen=help&amp;lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://chipgames.github.io/ChipPuzzleGame/?screen=help&amp;lang=zh"/>
+  </url>
+  <url>
+    <loc>https://chipgames.github.io/ChipPuzzleGame/?screen=about</loc>
+    <lastmod>2025-01-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://chipgames.github.io/ChipPuzzleGame/?screen=about&amp;lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://chipgames.github.io/ChipPuzzleGame/?screen=about&amp;lang=en"/>
+    <xhtml:link rel="alternate" hreflang="ja" href="https://chipgames.github.io/ChipPuzzleGame/?screen=about&amp;lang=ja"/>
+    <xhtml:link rel="alternate" hreflang="zh" href="https://chipgames.github.io/ChipPuzzleGame/?screen=about&amp;lang=zh"/>
+  </url>
+</urlset>
