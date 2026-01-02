@@ -12,6 +12,10 @@ import { ParticleSystem } from "@/utils/particles";
 import { findPossibleMatches, Hint } from "@/utils/hintSystem";
 import { soundManager } from "@/utils/SoundManager";
 import { findMatches } from "@/utils/matchDetection";
+import { performanceMonitor } from "@/utils/performance";
+import { logger } from "@/utils/logger";
+import { storageManager } from "@/utils/storage";
+import { GameProgress } from "@/types/storage";
 import "./GameBoard.css";
 
 interface GameBoardProps {
@@ -60,7 +64,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
   >(() => {
     // localStorage에서 사용자의 방향 선호도 불러오기
     if (typeof window !== "undefined") {
-      return localStorage.getItem("chipPuzzleGame_orientationPreference");
+      return storageManager.get<string>(
+        "chipPuzzleGame_orientationPreference",
+        { silent: true }
+      );
     }
     return null;
   });
@@ -102,14 +109,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   useEffect(() => {
     // LocalStorage에서 해제된 스테이지 확인
-    const saved = localStorage.getItem("chipPuzzleGame_progress");
-    if (saved) {
-      try {
-        const progress = JSON.parse(saved);
-        setUnlockedStages(Math.max(1, progress.highestStage || 1));
-      } catch (e) {
-        console.error("Failed to load progress", e);
-      }
+    const progress = storageManager.get<GameProgress>(
+      "chipPuzzleGame_progress",
+      { fallback: null }
+    );
+    
+    if (progress) {
+      setUnlockedStages(Math.max(1, progress.highestStage || 1));
+      logger.info("Game progress loaded", {
+        highestStage: progress.highestStage || 1,
+      });
     }
   }, []);
 
@@ -1190,11 +1199,27 @@ const GameBoard: React.FC<GameBoardProps> = ({
     const targetFPS = 60;
     const frameInterval = 1000 / targetFPS;
 
+    // 성능 모니터링 구독
+    const unsubscribe = performanceMonitor.subscribe((metrics) => {
+      // 개발 환경에서만 성능 메트릭 로깅
+      if (process.env.NODE_ENV === "development") {
+        if (metrics.fps < 30) {
+          logger.warn("Low FPS detected", {
+            fps: metrics.fps,
+            frameTime: metrics.frameTime,
+            memoryUsage: metrics.memoryUsage,
+          });
+        }
+      }
+    });
+
     const startRenderLoop = () => {
       const animate = (currentTime: number) => {
         // FPS 제한으로 성능 최적화
         if (currentTime - lastRenderTime >= frameInterval) {
           render();
+          // 성능 모니터링 업데이트
+          performanceMonitor.update();
           lastRenderTime = currentTime;
         }
         animationFrameRef.current = requestAnimationFrame(animate);
@@ -1204,6 +1229,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
     if (canvasRef.current && ctxRef.current) {
       startRenderLoop();
+      logger.info("GameBoard render loop started", {
+        stage: stageNumber,
+        screen: currentScreen,
+      });
     }
 
     return () => {
@@ -1211,8 +1240,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
+      unsubscribe();
+      logger.debug("GameBoard render loop stopped");
     };
-  }, [render]);
+  }, [render, stageNumber, currentScreen]);
 
   // useCallback으로 메모이제이션하여 무한 루프 방지
   const handleCanvasReady = useCallback(
@@ -1331,28 +1362,35 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
     // 게임 오버 전환 감지
     if (!prevIsGameOverRef.current && gameState.isGameOver) {
-      console.log("Game Over!", gameState.score);
+      logger.info("Game Over", {
+        stage: gameState.currentStage,
+        score: gameState.score,
+        moves: gameState.moves,
+      });
       soundManager.playGameOver();
     }
 
     // 스테이지 클리어 전환 감지 (게임오버가 아닌 상태에서만)
     if (!prevIsClearedRef.current && isCleared && !gameState.isGameOver) {
-      console.log("Stage Cleared!", gameState.score);
+      const stars = calculateStarRating(gameState);
+      logger.info("Stage Cleared", {
+        stage: gameState.currentStage,
+        score: gameState.score,
+        moves: gameState.moves,
+        stars,
+      });
       soundManager.playStageClear();
 
       // 스테이지 클리어 정보 저장
-      try {
-        const stars = calculateStarRating(gameState);
-        const saved = localStorage.getItem("chipPuzzleGame_progress");
-        let progress: any = { highestStage: 1, stageRecords: {} };
-
-        if (saved) {
-          try {
-            progress = JSON.parse(saved);
-          } catch (e) {
-            console.error("Failed to parse progress", e);
-          }
-        }
+      const saved = storageManager.get<GameProgress>(
+        "chipPuzzleGame_progress",
+        { fallback: null }
+      );
+      
+      const progress: GameProgress = saved || {
+        highestStage: 1,
+        stageRecords: {},
+      };
 
         // 최고 스테이지 업데이트
         const currentStage = gameState.currentStage;
@@ -1386,13 +1424,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
           };
         }
 
-        localStorage.setItem(
-          "chipPuzzleGame_progress",
-          JSON.stringify(progress)
-        );
-      } catch (e) {
-        console.error("Failed to save progress", e);
-      }
+        const saveResult = storageManager.set("chipPuzzleGame_progress", progress);
+        if (!saveResult) {
+          logger.error("Failed to save progress", {
+            stage: gameState.currentStage,
+          });
+        }
     }
 
     prevIsGameOverRef.current = gameState.isGameOver;
@@ -2004,7 +2041,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
     const newPreference =
       orientationPreference === "landscape" ? "portrait" : "landscape";
     setOrientationPreference(newPreference);
-    localStorage.setItem("chipPuzzleGame_orientationPreference", newPreference);
+    storageManager.set("chipPuzzleGame_orientationPreference", newPreference, {
+      silent: true,
+    });
 
     // Screen Orientation API를 사용하여 실제 화면 방향 전환 시도
     const orientation = screen.orientation as any;

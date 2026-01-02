@@ -1,5 +1,7 @@
 // 간단한 사운드 매니저 (Web Audio API 기반, 외부 음원 필요 없음)
 
+import { logger } from "./logger";
+
 type WaveType = OscillatorType;
 
 export class SoundManager {
@@ -13,7 +15,7 @@ export class SoundManager {
       if (!this.audioCtx) {
         const Ctor = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
         if (!Ctor) {
-          console.warn("Web Audio API is not supported in this browser.");
+          logger.warn("Web Audio API is not supported in this browser");
           this.enabled = false;
           return null;
         }
@@ -22,18 +24,18 @@ export class SoundManager {
           // AudioContext 상태 확인 및 재개 (일부 브라우저에서 필요)
           if (this.audioCtx.state === "suspended") {
             this.audioCtx.resume().catch((err) => {
-              console.warn("Failed to resume AudioContext", err);
+              logger.warn("Failed to resume AudioContext", { error: err });
             });
           }
         } catch (err) {
-          console.warn("Failed to create AudioContext", err);
+          logger.warn("Failed to create AudioContext", { error: err });
           this.enabled = false;
           return null;
         }
       }
       return this.audioCtx;
     } catch (e) {
-      console.warn("Failed to initialize AudioContext", e);
+      logger.warn("Failed to initialize AudioContext", { error: e });
       this.enabled = false;
       return null;
     }

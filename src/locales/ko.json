@@ -63,11 +63,38 @@
   "footer": {
     "privacyPolicy": "개인정보처리방침",
     "contactUs": "문의하기",
-    "copyright": "© 2025 ChipGames. All rights reserved."
+    "copyright": "© 2025 ChipGames. All rights reserved.",
+    "navigation": "푸터 네비게이션",
+    "privacyContent": "개인정보처리방침 내용이 여기에 표시됩니다. 실제 개인정보처리방침 내용을 추가해주세요.",
+    "contactContent": "문의사항이 있으시면 이메일 또는 문의 양식을 통해 연락해주세요. 실제 연락처 정보를 추가해주세요.",
+    "privacySection1Title": "1. 수집하는 개인정보 항목",
+    "privacySection1Content": "본 게임은 게임 진행을 위해 최소한의 정보만 수집합니다. 게임 진행 상황, 설정 정보 등은 사용자의 기기 내에만 저장되며, 서버로 전송되지 않습니다.",
+    "privacySection2Title": "2. 개인정보의 처리 목적",
+    "privacySection2Content": "수집된 정보는 게임 서비스 제공, 게임 진행 상황 저장, 사용자 경험 개선을 목적으로 사용됩니다.",
+    "privacySection3Title": "3. 개인정보의 보유 및 이용기간",
+    "privacySection3Content": "게임 진행 정보는 사용자가 게임을 삭제하거나 데이터를 초기화할 때까지 기기 내에 보관됩니다.",
+    "privacySection4Title": "4. 개인정보의 제3자 제공",
+    "privacySection4Content": "본 게임은 사용자의 개인정보를 제3자에게 제공하지 않습니다. 다만, 법령에 의해 요구되는 경우 예외로 합니다.",
+    "contactSection1Title": "게임 관련 문의",
+    "contactSection1Content": "게임 플레이 중 문제가 발생하거나 건의사항이 있으시면 언제든지 연락해주세요. 빠른 시일 내에 답변드리겠습니다.",
+    "contactSection2Title": "버그 신고",
+    "contactSection2Content": "게임에서 버그를 발견하셨다면, 발생한 상황과 재현 방법을 함께 알려주시면 도움이 됩니다.",
+    "contactSection3Title": "피드백",
+    "contactSection3Content": "게임 개선을 위한 여러분의 소중한 의견을 기다리고 있습니다. 새로운 기능 제안이나 개선 아이디어를 보내주세요."
+  },
+  "common": {
+    "back": "뒤로",
+    "close": "닫기"
   },
   "error": {
     "canvasNotSupported": "이 브라우저는 Canvas를 지원하지 않습니다",
+    "canvasFallbackMessage": "게임을 플레이하려면 Canvas를 지원하는 브라우저가 필요합니다. 최신 브라우저로 업데이트해주세요.",
     "dataSaveFailed": "데이터 저장에 실패했습니다",
-    "gameLoadFailed": "게임 로드에 실패했습니다"
+    "gameLoadFailed": "게임 로드에 실패했습니다",
+    "title": "오류가 발생했습니다",
+    "message": "게임을 새로고침해주세요.",
+    "details": "에러 상세 정보",
+    "reload": "새로고침",
+    "reset": "다시 시도"
   }
 }

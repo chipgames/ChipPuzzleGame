@@ -1,5 +1,7 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { CanvasConfig, DEFAULT_CANVAS_CONFIG } from "@/constants/canvasConfig";
+import { logger } from "@/utils/logger";
+import { useLanguage } from "@/hooks/useLanguage";
 import "./GameCanvas.css";
 
 interface GameCanvasProps {
@@ -14,6 +16,8 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ config, onReady, onResize }) =>
   const onReadyRef = useRef(onReady);
   const onResizeRef = useRef(onResize);
   const initializedRef = useRef(false);
+  const [canvasError, setCanvasError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   // onReady, onResize ref 업데이트
   useEffect(() => {
@@ -31,8 +35,15 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ config, onReady, onResize }) =>
 
     const ctx = canvas.getContext("2d");
     if (!ctx) {
-      console.error("Failed to get 2D context");
+      const errorMsg = "Canvas 2D context is not supported";
+      logger.error(errorMsg);
+      setCanvasError(errorMsg);
       return;
+    }
+    
+    // Canvas 초기화 성공 시 에러 상태 초기화
+    if (canvasError) {
+      setCanvasError(null);
     }
 
     const setupCanvas = () => {
@@ -106,6 +117,28 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ config, onReady, onResize }) =>
       initializedRef.current = false; // cleanup 시 초기화 플래그 리셋
     };
   }, [config]); // onReady를 dependency에서 제거
+
+  // Canvas 초기화 실패 시 fallback UI
+  if (canvasError) {
+    return (
+      <div className="game-canvas-error" role="alert">
+        <div className="game-canvas-error-content">
+          <div className="game-canvas-error-icon">⚠️</div>
+          <h3>{t("error.canvasNotSupported")}</h3>
+          <p>{t("error.canvasFallbackMessage")}</p>
+          <button
+            onClick={() => {
+              setCanvasError(null);
+              window.location.reload();
+            }}
+            className="game-canvas-error-button"
+          >
+            {t("error.reload")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div ref={containerRef} className="game-canvas-wrapper">

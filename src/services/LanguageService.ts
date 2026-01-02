@@ -3,6 +3,7 @@ import {
   DEFAULT_LANGUAGE,
   type SupportedLanguage,
 } from "@/constants/languages";
+import { logger } from "@/utils/logger";
 
 export class LanguageService {
   private supportedLanguages = SUPPORTED_LANGUAGES;
@@ -24,7 +25,7 @@ export class LanguageService {
     try {
       return localStorage.getItem("language");
     } catch (error) {
-      console.error("Failed to get stored language:", error);
+      logger.error("Failed to get stored language", { error });
       return null;
     }
   }
@@ -38,8 +39,9 @@ export class LanguageService {
         window.dispatchEvent(
           new CustomEvent("languageChanged", { detail: lang })
         );
+        logger.debug("Language changed", { language: lang });
       } catch (error) {
-        console.error("Failed to set language:", error);
+        logger.error("Failed to set language", { error, language: lang });
       }
     }
   }

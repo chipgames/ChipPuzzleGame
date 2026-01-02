@@ -39,16 +39,18 @@
   gap: 24px;
 }
 
-.footer-links a {
+.footer-link {
   color: var(--text-secondary);
   text-decoration: none;
   font-size: 0.9rem;
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  cursor: pointer;
+  outline: none;
 }
 
-.footer-links a::after {
+.footer-link::after {
   content: '';
   position: absolute;
   bottom: -4px;
@@ -59,13 +61,159 @@
   transition: width 0.3s;
 }
 
-.footer-links a:hover {
+.footer-link:hover,
+.footer-link:focus {
   color: var(--text-primary);
   transform: translateY(-2px);
 }
 
-.footer-links a:hover::after {
+.footer-link:hover::after,
+.footer-link:focus::after {
   width: 100%;
+}
+
+.footer-link:focus-visible {
+  outline: 2px solid var(--gradient-primary);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.footer-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 모달 스타일 */
+.footer-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.footer-modal {
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  border-radius: 16px;
+  padding: 0;
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.footer-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px;
+  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+}
+
+.footer-modal-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.footer-modal-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.2s;
+  outline: none;
+}
+
+.footer-modal-close:hover,
+.footer-modal-close:focus {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+.footer-modal-close:focus-visible {
+  outline: 2px solid var(--gradient-primary);
+  outline-offset: 2px;
+}
+
+.footer-modal-content {
+  padding: 24px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  overflow-y: auto;
+  max-height: calc(80vh - 100px);
+}
+
+.footer-modal-content p {
+  margin: 0 0 16px 0;
+}
+
+.footer-modal-content p:last-child {
+  margin-bottom: 0;
+}
+
+.footer-modal-section {
+  margin-bottom: 24px;
+}
+
+.footer-modal-section:last-child {
+  margin-bottom: 0;
+}
+
+.footer-modal-section h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #ffffff);
+}
+
+.footer-modal-section p {
+  margin: 0;
+  color: var(--text-secondary, rgba(255, 255, 255, 0.7));
+  line-height: 1.8;
 }
 
 .footer-copyright {
@@ -76,18 +224,49 @@
 
 @media (max-width: 768px) {
   .footer {
-    height: 40px;
-    padding: 0 10px;
+    height: auto;
+    min-height: 40px;
+    padding: 10px;
     font-size: 0.8rem;
   }
 
   .footer-content {
     flex-direction: column;
-    gap: 5px;
+    gap: 8px;
+    align-items: center;
   }
 
   .footer-links {
-    gap: 10px;
+    gap: 16px;
+    order: 1;
+  }
+
+  .footer-center {
+    order: 2;
+  }
+
+  .footer-copyright {
+    order: 3;
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .footer-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .footer-modal-header {
+    padding: 16px;
+  }
+
+  .footer-modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .footer-modal-content {
+    padding: 16px;
+    font-size: 0.9rem;
   }
 }
 

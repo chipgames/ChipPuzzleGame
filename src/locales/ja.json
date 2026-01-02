@@ -63,11 +63,38 @@
   "footer": {
     "privacyPolicy": "プライバシーポリシー",
     "contactUs": "お問い合わせ",
-    "copyright": "© 2025 ChipGames. All rights reserved."
+    "copyright": "© 2025 ChipGames. All rights reserved.",
+    "navigation": "フッターナビゲーション",
+    "privacyContent": "プライバシーポリシーの内容がここに表示されます。実際のプライバシーポリシーの内容を追加してください。",
+    "contactContent": "お問い合わせがある場合は、メールまたはお問い合わせフォームからご連絡ください。実際の連絡先情報を追加してください。",
+    "privacySection1Title": "1. 収集する個人情報の項目",
+    "privacySection1Content": "本ゲームは、ゲーム進行のために最小限の情報のみを収集します。ゲーム進行状況、設定情報などはユーザーのデバイス内にのみ保存され、サーバーに送信されることはありません。",
+    "privacySection2Title": "2. 個人情報の処理目的",
+    "privacySection2Content": "収集された情報は、ゲームサービスの提供、ゲーム進行状況の保存、ユーザー体験の向上を目的として使用されます。",
+    "privacySection3Title": "3. 個人情報の保有および利用期間",
+    "privacySection3Content": "ゲーム進行情報は、ユーザーがゲームを削除するか、データをリセットするまでデバイス内に保管されます。",
+    "privacySection4Title": "4. 個人情報の第三者提供",
+    "privacySection4Content": "本ゲームは、ユーザーの個人情報を第三者に提供することはありません。ただし、法令により要求される場合は例外とします。",
+    "contactSection1Title": "ゲーム関連のお問い合わせ",
+    "contactSection1Content": "ゲームプレイ中に問題が発生したり、ご提案がある場合は、いつでもご連絡ください。できるだけ早く返信いたします。",
+    "contactSection2Title": "バグ報告",
+    "contactSection2Content": "ゲームでバグを発見された場合は、発生した状況と再現方法を一緒にお知らせいただけると助かります。",
+    "contactSection3Title": "フィードバック",
+    "contactSection3Content": "ゲーム改善のための皆様の貴重なご意見をお待ちしております。新機能の提案や改善アイデアをお送りください。"
+  },
+  "common": {
+    "back": "戻る",
+    "close": "閉じる"
   },
   "error": {
     "canvasNotSupported": "このブラウザはCanvasをサポートしていません",
+    "canvasFallbackMessage": "ゲームをプレイするには、Canvasをサポートするブラウザが必要です。最新のブラウザに更新してください。",
     "dataSaveFailed": "データの保存に失敗しました",
-    "gameLoadFailed": "ゲームの読み込みに失敗しました"
+    "gameLoadFailed": "ゲームの読み込みに失敗しました",
+    "title": "エラーが発生しました",
+    "message": "ゲームをリフレッシュしてください。",
+    "details": "エラー詳細",
+    "reload": "リロード",
+    "reset": "再試行"
   }
 }

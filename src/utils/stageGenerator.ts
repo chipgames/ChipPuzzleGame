@@ -2,6 +2,7 @@ import { Gem } from "@/types/gem";
 import { StageConfig } from "@/types/stage";
 import { GEM_COLORS } from "@/constants/gemConfig";
 import { findMatches } from "./matchDetection";
+import { logger } from "./logger";
 
 /**
  * 시드 기반 랜덤 생성기
@@ -201,7 +202,7 @@ function ensureNoInitialMatches(
       attempts++;
     }
   } catch (error) {
-    console.error("Error in ensureNoInitialMatches:", error);
+    logger.error("Error in ensureNoInitialMatches", { error });
     // 에러 발생 시 현재 보드 반환
   }
   

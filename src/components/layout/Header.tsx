@@ -3,6 +3,7 @@ import { useLanguage } from "@/hooks/useLanguage";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { GameScreen } from "@/types/ui";
 import { soundManager } from "@/utils/SoundManager";
+import { storageManager } from "@/utils/storage";
 import "./Header.css";
 
 // Base URL을 고려한 로고 경로
@@ -19,14 +20,18 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScreen }) => {
   const { t } = useLanguage();
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
-    const saved = localStorage.getItem("chipPuzzleGame_soundEnabled");
-    return saved !== null ? JSON.parse(saved) : true;
+    return storageManager.get<boolean>("chipPuzzleGame_soundEnabled", {
+      fallback: true,
+      silent: true,
+    }) ?? true;
   });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
   useEffect(() => {
     soundManager.setEnabled(soundEnabled);
-    localStorage.setItem("chipPuzzleGame_soundEnabled", JSON.stringify(soundEnabled));
+    storageManager.set("chipPuzzleGame_soundEnabled", soundEnabled, {
+      silent: true,
+    });
   }, [soundEnabled]);
 
   // 모바일 메뉴가 열렸을 때 스크롤 방지

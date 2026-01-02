@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { LanguageService } from "@/services/LanguageService";
 import type { SupportedLanguage } from "@/constants/languages";
+import { logger } from "@/utils/logger";
 
 const translationsCache: Record<string, any> = {};
 
@@ -28,14 +29,18 @@ export const useLanguage = () => {
         const module = await import(`../locales/${language}.json`);
         translationsCache[language] = module.default;
         setTranslations(module.default);
+        logger.debug("Translations loaded", { language });
       } catch (error) {
-        console.error(`Failed to load translations for ${language}:`, error);
+        logger.error("Failed to load translations", { language, error });
         // 폴백: 영어 로드
         try {
           const fallback = await import(`../locales/en.json`);
           setTranslations(fallback.default);
+          logger.info("Fallback translations loaded", { language: "en" });
         } catch (fallbackError) {
-          console.error("Failed to load fallback translations:", fallbackError);
+          logger.error("Failed to load fallback translations", {
+            error: fallbackError,
+          });
         }
       } finally {
         setIsLoading(false);
