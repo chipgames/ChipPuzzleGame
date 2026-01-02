@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { soundManager } from "@/utils/SoundManager";
@@ -10,7 +10,7 @@ declare const __APP_VERSION__: string;
 const APP_VERSION =
   typeof __APP_VERSION__ !== "undefined" ? __APP_VERSION__ : "1.1.0";
 
-const Footer: React.FC = () => {
+const Footer: React.FC = memo(() => {
   const { t } = useLanguage();
   const [showPrivacyModal, setShowPrivacyModal] = useState(false);
   const [showContactModal, setShowContactModal] = useState(false);
@@ -179,6 +179,8 @@ const Footer: React.FC = () => {
       )}
     </>
   );
-};
+});
+
+Footer.displayName = "Footer";
 
 export default Footer;

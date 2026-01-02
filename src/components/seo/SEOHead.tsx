@@ -240,6 +240,12 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <link rel="alternate" hrefLang="zh" href={`${url}?lang=zh`} />
       <link rel="alternate" hrefLang="x-default" href={url} />
 
+      {/* Content Security Policy */}
+      <meta
+        httpEquiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://pagead2.googlesyndication.com; frame-src 'self' https://googleads.g.doubleclick.net https://tpc.googlesyndication.com; object-src 'none'; base-uri 'self'; form-action 'self';"
+      />
+
       {/* 구조화된 데이터 */}
       {structuredDataArray.map((schema, index) => (
         <script key={index} type="application/ld+json">

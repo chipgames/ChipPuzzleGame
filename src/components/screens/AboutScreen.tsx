@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import "./AboutScreen.css";
 
@@ -6,7 +6,7 @@ interface AboutScreenProps {
   onNavigate: (screen: "menu" | "stageSelect" | "game" | "guide" | "help" | "about") => void;
 }
 
-const AboutScreen: React.FC<AboutScreenProps> = ({ onNavigate: _onNavigate }) => {
+const AboutScreen: React.FC<AboutScreenProps> = memo(({ onNavigate: _onNavigate }) => {
   const { t } = useLanguage();
 
   return (
@@ -68,7 +68,9 @@ const AboutScreen: React.FC<AboutScreenProps> = ({ onNavigate: _onNavigate }) =>
       </div>
     </div>
   );
-};
+});
+
+AboutScreen.displayName = "AboutScreen";
 
 export default AboutScreen;
 

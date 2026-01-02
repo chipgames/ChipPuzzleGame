@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import LanguageSelector from "@/components/ui/LanguageSelector";
 import { GameScreen } from "@/types/ui";
@@ -17,7 +17,7 @@ interface HeaderProps {
   currentScreen?: GameScreen;
 }
 
-const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScreen }) => {
+const Header: React.FC<HeaderProps> = memo(({ onNavigate, currentScreen: _currentScreen }) => {
   const { t } = useLanguage();
   const [soundEnabled, setSoundEnabled] = useState<boolean>(() => {
     return storageManager.get<boolean>("chipPuzzleGame_soundEnabled", {
@@ -177,7 +177,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
       </div>
     </header>
   );
-};
+});
+
+Header.displayName = "Header";
 
 export default Header;
 

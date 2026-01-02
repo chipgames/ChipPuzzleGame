@@ -59,6 +59,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const { t } = useLanguage();
   const [unlockedStages, setUnlockedStages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  // 키보드 접근성: 현재 선택된 젬 위치
+  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
 
   // 게임 상태 관리
   const { gameState, selectGem, swapGems, processMatches, togglePause } =
@@ -698,6 +700,26 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const isCleared = gameState.goals.every(
         (goal) => goal.current >= goal.target
       );
+
+      // 키보드로 선택된 셀 하이라이트 (젬 렌더링 전에 그리기)
+      if (selectedCell && !gameState.isPaused && !gameState.isGameOver) {
+        const gemX = gridStartX + selectedCell.col * cellSize;
+        const gemY = gridStartY + selectedCell.row * cellSize;
+
+        // 펄싱 효과를 위한 애니메이션
+        const pulseTime = Date.now() % 1000;
+        const pulseAlpha =
+          0.4 + Math.sin((pulseTime / 1000) * Math.PI * 2) * 0.3;
+
+        ctx.save();
+        ctx.strokeStyle = "#667eea";
+        ctx.lineWidth = Math.max(3, 4 * scale);
+        ctx.setLineDash([5 * scale, 5 * scale]);
+        ctx.strokeRect(gemX, gemY, cellSize, cellSize);
+        ctx.fillStyle = `rgba(102, 126, 234, ${pulseAlpha * 0.3})`;
+        ctx.fillRect(gemX, gemY, cellSize, cellSize);
+        ctx.restore();
+      }
 
       // 매칭된 젬 하이라이트 (젬 렌더링 전에 그리기)
       if (gameState.isAnimating) {
@@ -1925,6 +1947,114 @@ const GameBoard: React.FC<GameBoardProps> = ({
       canvas.removeEventListener("pointercancel", handlePointerUp);
     };
   }, [handlePointerDown, handlePointerMove, handlePointerUp]);
+
+  // 키보드 이벤트 핸들러 (접근성)
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      // 게임 화면에서만 키보드 입력 처리
+      if (currentScreen !== "game" || gameState.isPaused || gameState.isAnimating) {
+        return;
+      }
+
+      const gridRows = config.gridRows || 9;
+      const gridCols = config.gridCols || 9;
+
+      // 현재 선택된 셀이 없으면 첫 번째 셀 선택
+      if (!selectedCell) {
+        setSelectedCell({ row: 0, col: 0 });
+        return;
+      }
+
+      let newRow = selectedCell.row;
+      let newCol = selectedCell.col;
+
+      switch (event.key) {
+        case "ArrowUp":
+          event.preventDefault();
+          newRow = Math.max(0, selectedCell.row - 1);
+          setSelectedCell({ row: newRow, col: selectedCell.col });
+          break;
+        case "ArrowDown":
+          event.preventDefault();
+          newRow = Math.min(gridRows - 1, selectedCell.row + 1);
+          setSelectedCell({ row: newRow, col: selectedCell.col });
+          break;
+        case "ArrowLeft":
+          event.preventDefault();
+          newCol = Math.max(0, selectedCell.col - 1);
+          setSelectedCell({ row: selectedCell.row, col: newCol });
+          break;
+        case "ArrowRight":
+          event.preventDefault();
+          newCol = Math.min(gridCols - 1, selectedCell.col + 1);
+          setSelectedCell({ row: selectedCell.row, col: newCol });
+          break;
+        case " ":
+        case "Enter":
+          event.preventDefault();
+          // 현재 선택된 젬 선택
+          if (gameState.board[selectedCell.row] && gameState.board[selectedCell.row][selectedCell.col]) {
+            selectGem(selectedCell.row, selectedCell.col);
+          }
+          break;
+        case "Escape":
+          event.preventDefault();
+          // 일시정지 토글
+          togglePause();
+          break;
+        case "h":
+        case "H":
+          event.preventDefault();
+          // 힌트 토글
+          if (showHint) {
+            setShowHint(false);
+            hintRef.current = null;
+          } else {
+            const hint = findPossibleMatches(gameState.board);
+            if (hint) {
+              hintRef.current = hint;
+              setShowHint(true);
+              setTimeout(() => {
+                setShowHint(false);
+                hintRef.current = null;
+              }, 3000);
+            }
+          }
+          break;
+      }
+    },
+    [
+      currentScreen,
+      gameState.isPaused,
+      gameState.isAnimating,
+      gameState.board,
+      selectedCell,
+      config.gridRows,
+      config.gridCols,
+      selectGem,
+      togglePause,
+      showHint,
+    ]
+  );
+
+  // 키보드 이벤트 등록
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    canvas.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      canvas.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [handleKeyDown]);
+
+  // 게임 화면이 변경되거나 보드가 변경되면 선택된 셀 초기화
+  useEffect(() => {
+    if (currentScreen !== "game") {
+      setSelectedCell(null);
+    }
+  }, [currentScreen, gameState.board]);
 
   // CSS transform을 사용하여 게임 화면 회전
   // 이전에 저장된 orientationPreference 데이터 정리

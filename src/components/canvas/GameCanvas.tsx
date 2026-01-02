@@ -142,7 +142,15 @@ const GameCanvas: React.FC<GameCanvasProps> = ({ config, onReady, onResize }) =>
 
   return (
     <div ref={containerRef} className="game-canvas-wrapper">
-      <canvas ref={canvasRef} className="game-canvas" />
+      <canvas
+        ref={canvasRef}
+        className="game-canvas"
+        tabIndex={0}
+        role="application"
+        aria-label="매칭 퍼즐 게임 보드"
+        aria-live="polite"
+        aria-atomic="true"
+      />
     </div>
   );
 };

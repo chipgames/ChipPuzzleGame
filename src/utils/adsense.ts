@@ -105,8 +105,8 @@ export function initializeAdSense(): void {
     }
   } catch (error) {
     // AdSense 설정 오류는 조용히 처리
-    // 개발 환경이 아닐 때만 경고 표시
-    if (!isDevelopment()) {
+    // 개발 환경에서만 경고 표시 (프로덕션에서는 console이 제거됨)
+    if (isDevelopment()) {
       console.warn("AdSense initialization error:", error);
     }
   }

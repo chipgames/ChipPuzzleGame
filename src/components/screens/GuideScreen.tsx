@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import "./GuideScreen.css";
 
@@ -6,7 +6,7 @@ interface GuideScreenProps {
   onNavigate: (screen: "menu" | "stageSelect" | "game" | "guide" | "help" | "about") => void;
 }
 
-const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate: _onNavigate }) => {
+const GuideScreen: React.FC<GuideScreenProps> = memo(({ onNavigate: _onNavigate }) => {
   const { t } = useLanguage();
 
   return (
@@ -82,7 +82,9 @@ const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate: _onNavigate }) =>
       </div>
     </div>
   );
-};
+});
+
+GuideScreen.displayName = "GuideScreen";
 
 export default GuideScreen;
 

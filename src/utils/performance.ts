@@ -97,9 +97,12 @@ class PerformanceMonitor {
 
   private handlePerformanceDegradation() {
     // FPS가 30 이하로 떨어지면 경고
-    console.warn(
-      `Performance degradation detected: FPS = ${this.currentFps.toFixed(1)}`
-    );
+    // 개발 환경에서만 경고 출력 (프로덕션에서는 console이 제거됨)
+    if (process.env.NODE_ENV === "development") {
+      console.warn(
+        `Performance degradation detected: FPS = ${this.currentFps.toFixed(1)}`
+      );
+    }
   }
 
   /**

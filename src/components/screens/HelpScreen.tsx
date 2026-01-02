@@ -1,4 +1,4 @@
-import React from "react";
+import React, { memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
 import "./HelpScreen.css";
 
@@ -6,7 +6,7 @@ interface HelpScreenProps {
   onNavigate: (screen: "menu" | "stageSelect" | "game" | "guide" | "help" | "about") => void;
 }
 
-const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate: _onNavigate }) => {
+const HelpScreen: React.FC<HelpScreenProps> = memo(({ onNavigate: _onNavigate }) => {
   const { t } = useLanguage();
 
   return (
@@ -72,7 +72,9 @@ const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate: _onNavigate }) => {
       </div>
     </div>
   );
-};
+});
+
+HelpScreen.displayName = "HelpScreen";
 
 export default HelpScreen;
 

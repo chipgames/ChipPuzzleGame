@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
 import { ErrorBoundary } from "@/components/layout/ErrorBoundary";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import GameContainer from "@/components/layout/GameContainer";
 import GameBoard from "@/components/game/GameBoard";
-import GuideScreen from "@/components/screens/GuideScreen";
-import HelpScreen from "@/components/screens/HelpScreen";
-import AboutScreen from "@/components/screens/AboutScreen";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
 import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
 import "@/styles/App.css";
+
+// Lazy loading for large components
+const GuideScreen = lazy(() => import("@/components/screens/GuideScreen"));
+const HelpScreen = lazy(() => import("@/components/screens/HelpScreen"));
+const AboutScreen = lazy(() => import("@/components/screens/AboutScreen"));
 
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>("stageSelect");
@@ -99,11 +101,17 @@ const App: React.FC = () => {
         <Header onNavigate={handleNavigate} currentScreen={currentScreen} />
         <GameContainer>
           {currentScreen === "guide" ? (
-            <GuideScreen onNavigate={handleNavigate} />
+            <Suspense fallback={<div style={{ padding: "20px", textAlign: "center" }}>로딩 중...</div>}>
+              <GuideScreen onNavigate={handleNavigate} />
+            </Suspense>
           ) : currentScreen === "help" ? (
-            <HelpScreen onNavigate={handleNavigate} />
+            <Suspense fallback={<div style={{ padding: "20px", textAlign: "center" }}>로딩 중...</div>}>
+              <HelpScreen onNavigate={handleNavigate} />
+            </Suspense>
           ) : currentScreen === "about" ? (
-            <AboutScreen onNavigate={handleNavigate} />
+            <Suspense fallback={<div style={{ padding: "20px", textAlign: "center" }}>로딩 중...</div>}>
+              <AboutScreen onNavigate={handleNavigate} />
+            </Suspense>
           ) : (
             <GameBoard 
               stageNumber={currentStage || 1} 

@@ -37,7 +37,7 @@ export default defineConfig(({ command, mode }) => {
       outDir: "dist",
       assetsDir: "assets",
       sourcemap: false,
-      minify: "esbuild",
+      minify: mode === "production" ? "esbuild" : false,
       cssCodeSplit: true,
       rollupOptions: {
         output: {
@@ -56,6 +56,10 @@ export default defineConfig(({ command, mode }) => {
       reportCompressedSize: true,
       // 빌드 성능 최적화
       target: "es2015",
+    },
+    esbuild: {
+      // 프로덕션 빌드 시 console 제거
+      drop: mode === "production" ? ["console", "debugger"] : [],
     },
     server: {
       port: 3000,

@@ -29,9 +29,10 @@ npm run deploy
 
 이 명령은 다음을 자동으로 수행합니다:
 
-1. TypeScript 타입 체크 (`tsc`)
-2. 프로덕션 빌드 생성 (`npm run build:gh`)
-3. `gh-pages` 브랜치에 배포 (`gh-pages -d dist`)
+1. 프로덕션 빌드 생성 (`npm run build:gh`)
+2. `gh-pages` 브랜치에 배포 (`npx gh-pages -d dist`)
+
+**참고**: Windows 환경에서는 `npx`를 사용해야 하므로, `npm run deploy` 명령어를 사용하는 것이 가장 안전합니다.
 
 ### 방법 2: 수동 배포
 
@@ -207,9 +208,10 @@ npx gh-pages -d dist
    - Vite 프로덕션 빌드 (`--mode production`)
    - `dist/` 폴더에 빌드 결과 생성
 
-2. `gh-pages -d dist` 실행
+2. `npx gh-pages -d dist` 실행
    - `dist/` 폴더의 내용을 `gh-pages` 브랜치에 푸시
    - GitHub Pages가 자동으로 배포
+   - **Windows 환경에서는 반드시 `npx`를 사용해야 합니다**
 
 ### 주의사항
 
