@@ -35,10 +35,10 @@ interface GameBoardProps {
 
 /**
  * 게임 보드 컴포넌트
- * 
+ *
  * Canvas를 사용하여 게임을 렌더링하고, 사용자 입력을 처리합니다.
  * 스테이지 선택 화면과 게임 플레이 화면을 모두 렌더링합니다.
- * 
+ *
  * @param props - GameBoardProps
  * @returns 게임 보드 JSX
  */
@@ -77,7 +77,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const [unlockedStages, setUnlockedStages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
   // 키보드 접근성: 현재 선택된 젬 위치
-  const [selectedCell, setSelectedCell] = useState<{ row: number; col: number } | null>(null);
+  const [selectedCell, setSelectedCell] = useState<{
+    row: number;
+    col: number;
+  } | null>(null);
 
   // 게임 상태 관리
   const { gameState, selectGem, swapGems, processMatches, togglePause } =
@@ -121,7 +124,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         "chipPuzzleGame_progress",
         { fallback: null, silent: true }
       );
-      
+
       if (progress) {
         setUnlockedStages(Math.max(1, progress.highestStage || 1));
         logger.info("Game progress loaded", {
@@ -146,8 +149,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const scale = canvasWidth / baseWidth;
 
       // 배경 및 테마 색상 (먼저 선언)
-      const { canvasBg, textPrimary, accentPrimary: accentPrimaryStage, accentSecondary: accentSecondaryStage, bgTertiary } = getThemeColors();
-      const isLightStage = document.documentElement.getAttribute("data-theme") === "light";
+      const {
+        canvasBg,
+        textPrimary,
+        accentPrimary: accentPrimaryStage,
+        accentSecondary: accentSecondaryStage,
+        bgTertiary,
+      } = getThemeColors();
+      const isLightStage =
+        document.documentElement.getAttribute("data-theme") === "light";
       ctx.fillStyle = canvasBg;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
@@ -159,20 +169,26 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.fillText(t("stageSelect.title"), canvasWidth / 2, 50 * scale);
 
       // 스테이지 그리드 렌더링
-      const stagesPerRow = 8;
-      const baseStageSize = 60;
-      const baseGap = 15;
+      const baseStageSize = 75; // 70 → 75로 증가
+      const baseGap = 20; // 18 → 20로 증가
       const stageSize = baseStageSize * scale;
       const gap = baseGap * scale;
-      const startX =
-        (canvasWidth - (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
-        2;
-      const startY = 100 * scale;
       const totalStages = 1000;
       const stagesPerPage = 50;
       const totalPages = Math.ceil(totalStages / stagesPerPage);
       const startStage = (currentPage - 1) * stagesPerPage + 1;
       const endStage = Math.min(startStage + stagesPerPage - 1, totalStages);
+      const stagesToShow = endStage - startStage + 1;
+
+      // 스테이지 수에 따라 동적으로 열 수 계산
+      // 50개일 때는 10열 × 5행으로 표시 (가로로 10개, 세로로 5개)
+      // 그 이상이면 8열로 표시
+      let stagesPerRow = stagesToShow === 50 ? 10 : 8;
+
+      const startX =
+        (canvasWidth - (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
+        2;
+      const startY = 100 * scale;
 
       for (let i = 0; i < stagesPerPage && startStage + i <= endStage; i++) {
         const stageNumber = startStage + i;
@@ -203,7 +219,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.fillRect(x, y, stageSize, stageSize);
 
         // 테두리 - 테마에 맞는 색상
-        ctx.strokeStyle = isUnlocked ? accentPrimaryStage : (isLightStage ? "#cccccc" : "#444");
+        ctx.strokeStyle = isUnlocked
+          ? accentPrimaryStage
+          : isLightStage
+          ? "#cccccc"
+          : "#444";
         ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.strokeRect(x, y, stageSize, stageSize);
 
@@ -254,17 +274,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const buttonY = pageInfoY;
       const buttonGap = 15 * scale;
       const buttonRadius = 10 * scale;
-      const buttonBorderColor = isLightStage ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+      const buttonBorderColor = isLightStage
+        ? "rgba(255, 255, 255, 0.5)"
+        : "rgba(255, 255, 255, 0.3)";
       const shadowAlpha = isLightStage ? 0.2 : 0.4;
       const { textTertiary: textTertiaryStage } = getThemeColors();
 
       // 페이지 정보 텍스트 너비 계산
-      const pageInfoText = `${t("stageSelect.page")} ${currentPage} / ${totalPages}`;
+      const pageInfoText = `${t(
+        "stageSelect.page"
+      )} ${currentPage} / ${totalPages}`;
       ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
       const pageInfoWidth = ctx.measureText(pageInfoText).width;
 
       // 전체 너비 계산 (이전 버튼 + 간격 + 페이지 정보 + 간격 + 다음 버튼)
-      const totalWidth = buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
+      const totalWidth =
+        buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
       const paginationStartX = (canvasWidth - totalWidth) / 2;
 
       // 이전 페이지 버튼 (항상 표시, 비활성화 상태 포함)
@@ -290,10 +315,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.save();
       ctx.globalAlpha = isPrevDisabled ? 0.4 : 1;
       ctx.beginPath();
-      ctx.roundRect(prevButtonX, buttonY, buttonWidth, buttonHeight, buttonRadius);
+      ctx.roundRect(
+        prevButtonX,
+        buttonY,
+        buttonWidth,
+        buttonHeight,
+        buttonRadius
+      );
       ctx.fillStyle = prevGradient;
       ctx.fill();
-      ctx.strokeStyle = isPrevDisabled ? (isLightStage ? "#aaaaaa" : "#555") : buttonBorderColor;
+      ctx.strokeStyle = isPrevDisabled
+        ? isLightStage
+          ? "#aaaaaa"
+          : "#555"
+        : buttonBorderColor;
       ctx.lineWidth = Math.max(1, 1.5 * scale);
       ctx.stroke();
       ctx.restore();
@@ -310,7 +345,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       }
 
       ctx.fillStyle = isPrevDisabled ? textTertiaryStage : textPrimary;
-      ctx.font = `600 ${Math.max(12, 16 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.font = `600 ${Math.max(
+        12,
+        16 * scale
+      )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(
@@ -354,10 +392,20 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.save();
       ctx.globalAlpha = isNextDisabled ? 0.4 : 1;
       ctx.beginPath();
-      ctx.roundRect(nextButtonX, buttonY, buttonWidth, buttonHeight, buttonRadius);
+      ctx.roundRect(
+        nextButtonX,
+        buttonY,
+        buttonWidth,
+        buttonHeight,
+        buttonRadius
+      );
       ctx.fillStyle = nextGradient;
       ctx.fill();
-      ctx.strokeStyle = isNextDisabled ? (isLightStage ? "#aaaaaa" : "#555") : buttonBorderColor;
+      ctx.strokeStyle = isNextDisabled
+        ? isLightStage
+          ? "#aaaaaa"
+          : "#555"
+        : buttonBorderColor;
       ctx.lineWidth = Math.max(1, 1.5 * scale);
       ctx.stroke();
       ctx.restore();
@@ -374,7 +422,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       }
 
       ctx.fillStyle = isNextDisabled ? textTertiaryStage : textPrimary;
-      ctx.font = `600 ${Math.max(12, 16 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.font = `600 ${Math.max(
+        12,
+        16 * scale
+      )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(
@@ -398,8 +449,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 기준 크기 (1200px 기준으로 설계)
       const baseWidth = 1200;
       const scale = canvasWidth / baseWidth;
-      const { canvasBg, textPrimary, accentPrimary, accentSecondary, accentSuccess } = getThemeColors();
-      const isLight = document.documentElement.getAttribute("data-theme") === "light";
+      const {
+        canvasBg,
+        textPrimary,
+        accentPrimary,
+        accentSecondary,
+        accentSuccess,
+      } = getThemeColors();
+      const isLight =
+        document.documentElement.getAttribute("data-theme") === "light";
 
       // 배경
       ctx.fillStyle = canvasBg;
@@ -431,14 +489,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const { bgTertiary } = getThemeColors();
       ctx.save();
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = isLight ? hexToRgba(bgTertiary, 0.6) : "rgba(22, 22, 46, 0.8)";
+      ctx.fillStyle = isLight
+        ? hexToRgba(bgTertiary, 0.6)
+        : "rgba(22, 22, 46, 0.8)";
       ctx.beginPath();
       ctx.roundRect(gridStartX, gridStartY, gridWidth, gridHeight, 8 * scale);
       ctx.fill();
       ctx.restore();
 
       // 그리드 선 그리기 (개선된 스타일) - 테마에 맞는 색상
-      ctx.strokeStyle = isLight ? "rgba(0, 0, 0, 0.08)" : "rgba(255, 255, 255, 0.08)";
+      ctx.strokeStyle = isLight
+        ? "rgba(0, 0, 0, 0.08)"
+        : "rgba(255, 255, 255, 0.08)";
       ctx.lineWidth = Math.max(0.5, 1 * scale);
 
       for (let i = 0; i <= gridRows; i++) {
@@ -496,13 +558,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.shadowOffsetY = 2 * scale;
 
       // 스테이지 번호 표시 (가장 위에)
-      ctx.font = `700 ${Math.max(14, infoFontSize * 1.1)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.font = `700 ${Math.max(
+        14,
+        infoFontSize * 1.1
+      )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.fillStyle = accentPrimary; // 강조 색상
-      ctx.fillText(
-        `${t("game.stage")} ${stageNumber}`,
-        infoMarginX,
-        infoY
-      );
+      ctx.fillText(`${t("game.stage")} ${stageNumber}`, infoMarginX, infoY);
 
       // 점수 표시 (그라데이션 효과)
       ctx.font = `600 ${infoFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
@@ -608,7 +669,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.fillStyle = hintGradient;
         ctx.fill();
         // 테마에 맞는 테두리 색상
-        const buttonBorderColor = isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+        const buttonBorderColor = isLight
+          ? "rgba(255, 255, 255, 0.5)"
+          : "rgba(255, 255, 255, 0.3)";
         ctx.strokeStyle = buttonBorderColor;
         ctx.lineWidth = Math.max(1, 1.5 * scale);
         ctx.stroke();
@@ -701,8 +764,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 일시정지 오버레이 (프리미엄 스타일)
       if (gameState.isPaused && !gameState.isGameOver) {
-        const { bgOverlayDark, bgCard, accentPrimary: accentPrimaryPause, textSecondary: textSecondaryPause } = getThemeColors();
-        
+        const {
+          bgOverlayDark,
+          bgCard,
+          accentPrimary: accentPrimaryPause,
+          textSecondary: textSecondaryPause,
+        } = getThemeColors();
+
         // 반투명 배경
         ctx.fillStyle = bgOverlayDark;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -760,10 +828,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 게임 오버 메시지 (프리미엄 스타일)
       if (gameState.isGameOver) {
-        const { bgOverlayDark, bgCard, accentDanger: accentDangerGameOver } = getThemeColors();
-        const buttonBorderColorGameOver = isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+        const {
+          bgOverlayDark,
+          bgCard,
+          accentDanger: accentDangerGameOver,
+        } = getThemeColors();
+        const buttonBorderColorGameOver = isLight
+          ? "rgba(255, 255, 255, 0.5)"
+          : "rgba(255, 255, 255, 0.3)";
         const shadowAlphaGameOver = isLight ? 0.2 : 0.4;
-        
+
         // 반투명 배경
         ctx.fillStyle = bgOverlayDark;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
@@ -1217,8 +1291,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 클리어 화면 오버레이 (프리미엄 스타일)
       if (isCleared && !gameState.isAnimating && !gameState.isGameOver) {
         const stars = calculateStarRating(gameState);
-        const { bgOverlayDark, bgCard, accentSuccess, textTertiary } = getThemeColors();
-        const buttonBorderColorClear = isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+        const { bgOverlayDark, bgCard, accentSuccess, textTertiary } =
+          getThemeColors();
+        const buttonBorderColorClear = isLight
+          ? "rgba(255, 255, 255, 0.5)"
+          : "rgba(255, 255, 255, 0.3)";
         const shadowAlphaClear = isLight ? 0.2 : 0.4;
 
         // 반투명 배경
@@ -1271,7 +1348,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         for (let i = 0; i < 3; i++) {
           const starX = starStartX + i * starSpacing;
           ctx.shadowColor =
-            i < stars ? hexToRgba(accentWarning, isLight ? 0.4 : 0.6) : "transparent";
+            i < stars
+              ? hexToRgba(accentWarning, isLight ? 0.4 : 0.6)
+              : "transparent";
           ctx.shadowBlur = i < stars ? 12 * scale : 0;
           ctx.fillStyle = i < stars ? accentWarning : textTertiary;
           ctx.font = `${starSize}px Arial`;
@@ -1571,52 +1650,55 @@ const GameBoard: React.FC<GameBoardProps> = ({
         "chipPuzzleGame_progress",
         { fallback: null }
       );
-      
+
       const progress: GameProgress = saved || {
         highestStage: 1,
         stageRecords: {},
       };
 
-        // 최고 스테이지 업데이트
-        const currentStage = gameState.currentStage;
-        if (currentStage >= progress.highestStage) {
-          progress.highestStage = currentStage + 1;
-        }
+      // 최고 스테이지 업데이트
+      const currentStage = gameState.currentStage;
+      if (currentStage >= progress.highestStage) {
+        progress.highestStage = currentStage + 1;
+      }
 
-        // 스테이지 기록 업데이트
-        if (!progress.stageRecords) {
-          progress.stageRecords = {};
-        }
+      // 스테이지 기록 업데이트
+      if (!progress.stageRecords) {
+        progress.stageRecords = {};
+      }
 
-        const stageKey = currentStage.toString();
-        const existingRecord = progress.stageRecords[stageKey];
+      const stageKey = currentStage.toString();
+      const existingRecord = progress.stageRecords[stageKey];
 
-        if (!existingRecord || gameState.score > existingRecord.bestScore) {
-          progress.stageRecords[stageKey] = {
-            stageNumber: currentStage,
-            stars: Math.max(existingRecord?.stars || 0, stars),
-            score: gameState.score,
-            bestScore: gameState.score,
-            completedAt: new Date().toISOString(),
-            attempts: (existingRecord?.attempts || 0) + 1,
-          };
-        } else {
-          // 점수는 낮지만 별점이 더 높을 수 있음
-          progress.stageRecords[stageKey] = {
-            ...existingRecord,
-            stars: Math.max(existingRecord.stars, stars),
-            attempts: existingRecord.attempts + 1,
-          };
-        }
+      if (!existingRecord || gameState.score > existingRecord.bestScore) {
+        progress.stageRecords[stageKey] = {
+          stageNumber: currentStage,
+          stars: Math.max(existingRecord?.stars || 0, stars),
+          score: gameState.score,
+          bestScore: gameState.score,
+          completedAt: new Date().toISOString(),
+          attempts: (existingRecord?.attempts || 0) + 1,
+        };
+      } else {
+        // 점수는 낮지만 별점이 더 높을 수 있음
+        progress.stageRecords[stageKey] = {
+          ...existingRecord,
+          stars: Math.max(existingRecord.stars, stars),
+          attempts: existingRecord.attempts + 1,
+        };
+      }
 
-        const saveResult = storageManager.set("chipPuzzleGame_progress", progress);
-        if (!saveResult) {
-          logger.error("Failed to save progress", {
-            stage: gameState.currentStage,
-          });
-          // 사용자에게 알림 (조용히 처리하여 게임 플레이 방해 최소화)
-          // 메모리 저장소를 사용 중이면 세션 동안만 유지됨을 알림
-        }
+      const saveResult = storageManager.set(
+        "chipPuzzleGame_progress",
+        progress
+      );
+      if (!saveResult) {
+        logger.error("Failed to save progress", {
+          stage: gameState.currentStage,
+        });
+        // 사용자에게 알림 (조용히 처리하여 게임 플레이 방해 최소화)
+        // 메모리 저장소를 사용 중이면 세션 동안만 유지됨을 알림
+      }
     }
 
     prevIsGameOverRef.current = gameState.isGameOver;
@@ -1648,7 +1730,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const dpr = window.devicePixelRatio || 1;
       const canvasWidth = canvas.width / dpr;
       const canvasHeight = canvas.height / dpr;
-      
+
       // 캔버스 컨텍스트 가져오기 (텍스트 너비 측정용)
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
@@ -1660,6 +1742,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
         // 기준 크기 (1200px 기준으로 설계)
         const baseWidth = 1200;
         const scale = canvasWidth / baseWidth;
+
+        // 공통 상수
+        const totalStages = 1000;
+        const stagesPerPage = 50;
 
         // 힌트 버튼 클릭 확인 (렌더링과 동일한 크기/위치 계산)
         const baseButtonWidth = 120;
@@ -1697,8 +1783,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         }
 
         // 페이지네이션 버튼 클릭 확인
-        const stagesPerPage = 50;
-        const totalStages = 1000;
         const totalPages = Math.ceil(totalStages / stagesPerPage);
         const buttonHeight = 40 * scale;
         const buttonWidth = 90 * scale;
@@ -1707,12 +1791,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const buttonGap = 15 * scale;
 
         // 페이지 정보 텍스트 너비 측정 (렌더링과 동일한 방식)
-        const pageInfoText = `${t("stageSelect.page")} ${currentPage} / ${totalPages}`;
+        const pageInfoText = `${t(
+          "stageSelect.page"
+        )} ${currentPage} / ${totalPages}`;
         ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
         const pageInfoWidth = ctx.measureText(pageInfoText).width;
 
         // 전체 너비 계산 (렌더링과 동일)
-        const totalWidth = buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
+        const totalWidth =
+          buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
         const paginationStartX = (canvasWidth - totalWidth) / 2;
 
         // 이전 페이지 버튼 클릭 감지
@@ -1720,7 +1807,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const isPrevDisabled = currentPage <= 1;
         const prevButtonRight = prevButtonX + buttonWidth;
         const prevButtonBottom = buttonY + buttonHeight;
-        
+
         if (
           !isPrevDisabled &&
           x >= prevButtonX &&
@@ -1748,7 +1835,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const isNextDisabled = currentPage >= totalPages;
         const nextButtonRight = nextButtonX + buttonWidth;
         const nextButtonBottom = buttonY + buttonHeight;
-        
+
         if (
           !isNextDisabled &&
           x >= nextButtonX &&
@@ -1772,11 +1859,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
         }
 
         // 스테이지 그리드 클릭 감지
-        const stagesPerRow = 8;
-        const baseStageSize = 60;
-        const baseGap = 15;
+        const baseStageSize = 75; // 70 → 75로 증가 (렌더링과 동일)
+        const baseGap = 20; // 18 → 20로 증가 (렌더링과 동일)
         const stageSize = baseStageSize * scale;
         const gap = baseGap * scale;
+        const startStage = (currentPage - 1) * stagesPerPage + 1;
+        const endStage = Math.min(startStage + stagesPerPage - 1, totalStages);
+        const stagesToShow = endStage - startStage + 1;
+
+        // 스테이지 수에 따라 동적으로 열 수 계산 (렌더링과 동일)
+        // 50개일 때는 10열 × 5행으로 표시 (가로로 10개, 세로로 5개)
+        const stagesPerRow = stagesToShow === 50 ? 10 : 8;
+
         const startX =
           (canvasWidth -
             (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
@@ -1787,7 +1881,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const row = Math.floor((y - startY) / (stageSize + gap));
 
         if (col >= 0 && col < stagesPerRow && row >= 0) {
-          const startStage = (currentPage - 1) * stagesPerPage + 1;
           const stageNumber = startStage + row * stagesPerRow + col;
           if (stageNumber <= unlockedStages && stageNumber <= totalStages) {
             onStartStage(stageNumber);
@@ -1969,7 +2062,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
     ]
   );
 
-
   // 포인터(마우스/터치) 기반 드래그 스와이프 처리
   const handlePointerDown = useCallback(
     (event: PointerEvent) => {
@@ -2016,12 +2108,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         isDraggingRef.current = true;
       }
     },
-    [
-      currentScreen,
-      config,
-      gameState.board,
-      gameState.isPaused,
-    ]
+    [currentScreen, config, gameState.board, gameState.isPaused]
   );
 
   const handlePointerMove = useCallback(
@@ -2170,7 +2257,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       // 게임 화면에서만 키보드 입력 처리
-      if (currentScreen !== "game" || gameState.isPaused || gameState.isAnimating) {
+      if (
+        currentScreen !== "game" ||
+        gameState.isPaused ||
+        gameState.isAnimating
+      ) {
         return;
       }
 
@@ -2211,7 +2302,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
         case "Enter":
           event.preventDefault();
           // 현재 선택된 젬 선택
-          if (gameState.board[selectedCell.row] && gameState.board[selectedCell.row][selectedCell.col]) {
+          if (
+            gameState.board[selectedCell.row] &&
+            gameState.board[selectedCell.row][selectedCell.col]
+          ) {
             selectGem(selectedCell.row, selectedCell.col);
           }
           break;
@@ -2278,7 +2372,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
   // 이전에 저장된 orientationPreference 데이터 정리
   useEffect(() => {
     if (typeof window !== "undefined") {
-      storageManager.remove("chipPuzzleGame_orientationPreference", { silent: true });
+      storageManager.remove("chipPuzzleGame_orientationPreference", {
+        silent: true,
+      });
     }
   }, []);
 
