@@ -8,6 +8,7 @@ import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
 import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
 import { getWebVitals, logWebVitals } from "@/utils/webVitals";
+import { registerServiceWorker } from "@/utils/serviceWorker";
 import "@/styles/App.css";
 
 // Lazy loading for large components
@@ -61,6 +62,11 @@ const App: React.FC = () => {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
+  }, []);
+
+  // Service Worker 등록
+  useEffect(() => {
+    registerServiceWorker();
   }, []);
 
   const handleNavigate = (screen: GameScreen) => {

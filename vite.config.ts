@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import path from "path";
 import { readFileSync } from "fs";
+import { visualizer } from "rollup-plugin-visualizer";
 import { htmlVersionPlugin } from "./vite-plugin-html-version";
 
 // package.json에서 버전 읽기
@@ -16,8 +17,23 @@ export default defineConfig(({ command, mode }) => {
       ? "/"
       : "/ChipPuzzleGame/";
 
+  const plugins = [react(), htmlVersionPlugin()];
+
+  // 번들 분석 (프로덕션 빌드 시에만)
+  if (mode === "production" && process.env.ANALYZE === "true") {
+    plugins.push(
+      visualizer({
+        open: true,
+        filename: "dist/stats.html",
+        gzipSize: true,
+        brotliSize: true,
+        template: "treemap", // sunburst, treemap, network
+      })
+    );
+  }
+
   return {
-    plugins: [react(), htmlVersionPlugin()],
+    plugins,
     base,
     define: {
       __APP_VERSION__: JSON.stringify(version),
