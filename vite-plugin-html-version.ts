@@ -31,6 +31,37 @@ export function htmlVersionPlugin(): Plugin {
         );
       }
 
+      // 개발 환경에서는 AdSense 스크립트 제거
+      if (!isProduction) {
+        // AdSense 스크립트 태그 제거 (googlesyndication.com 또는 adsbygoogle 포함)
+        result = result.replace(
+          /<script[^>]*googlesyndication[^>]*>[\s\S]*?<\/script>/gi,
+          '<!-- AdSense 스크립트는 프로덕션 환경에서만 로드됩니다 -->'
+        );
+        result = result.replace(
+          /<script[^>]*adsbygoogle[^>]*>[\s\S]*?<\/script>/gi,
+          '<!-- AdSense 스크립트는 프로덕션 환경에서만 로드됩니다 -->'
+        );
+        // self-closing 스크립트 태그도 제거
+        result = result.replace(
+          /<script[^>]*googlesyndication[^>]*\/>/gi,
+          '<!-- AdSense 스크립트는 프로덕션 환경에서만 로드됩니다 -->'
+        );
+        result = result.replace(
+          /<script[^>]*adsbygoogle[^>]*\/>/gi,
+          '<!-- AdSense 스크립트는 프로덕션 환경에서만 로드됩니다 -->'
+        );
+        // AdSense DNS 프리페치 제거
+        result = result.replace(
+          /<link[^>]*dns-prefetch[^>]*googlesyndication[^>]*>/gi,
+          '<!-- AdSense DNS 프리페치는 프로덕션 환경에서만 로드됩니다 -->'
+        );
+        result = result.replace(
+          /<link[^>]*googlesyndication[^>]*dns-prefetch[^>]*>/gi,
+          '<!-- AdSense DNS 프리페치는 프로덕션 환경에서만 로드됩니다 -->'
+        );
+      }
+
       // 프로덕션 빌드에서만 HTML 내의 모든 스크립트와 링크 태그에 버전 쿼리 파라미터 추가
       // 개발 모드에서는 소스 파일에 쿼리 파라미터를 추가하면 Vite가 오류를 발생시킴
       if (isProduction) {

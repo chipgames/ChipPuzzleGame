@@ -47,7 +47,10 @@ npm run build:gh
 # 3. GitHub Pages에 배포
 npx gh-pages -d dist
 
-**참고**: Windows 환경에서는 `gh-pages` 명령어를 직접 실행할 수 없으므로 반드시 `npx`를 사용해야 합니다.
+**중요**:
+- Windows 환경에서는 `gh-pages` 명령어를 직접 실행할 수 없으므로 반드시 `npx`를 사용해야 합니다.
+- `gh-pages -d dist` (X) → `npx gh-pages -d dist` (O)
+- 또는 `npm run deploy` 명령어를 사용하세요 (권장)
 ```
 
 ## 배포 후 설정

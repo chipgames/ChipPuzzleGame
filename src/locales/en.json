@@ -75,6 +75,10 @@
     "privacySection3Content": "Game progress information is retained on your device until you delete the game or reset the data.",
     "privacySection4Title": "4. Provision of Personal Information to Third Parties",
     "privacySection4Content": "This game does not provide personal information to third parties. However, exceptions may apply when required by law.",
+    "privacySection5Title": "5. Advertising and Cookies",
+    "privacySection5Content": "This game displays advertisements through Google AdSense. Google may use cookies to serve ads and provide personalized advertising based on your interests. You can view Google's privacy policy at https://policies.google.com/privacy. You can block cookies in your browser settings if you do not wish to use them.",
+    "privacySection6Title": "6. Privacy Officer",
+    "privacySection6Content": "If you have any questions regarding privacy protection, please contact us at any time.",
     "contactSection1Title": "Game Inquiries",
     "contactSection1Content": "If you encounter any problems while playing or have suggestions, please contact us anytime. We will respond as soon as possible.",
     "contactSection2Title": "Bug Reports",
@@ -96,5 +100,10 @@
     "details": "Error Details",
     "reload": "Reload",
     "reset": "Try Again"
+  },
+  "seo": {
+    "title": "Match Puzzle Game - CHIP GAMES | Free Online Puzzle Game",
+    "description": "Free online match puzzle game. Play 1000 challenging stages! Match colorful gems to achieve goals in this fun puzzle game. Play instantly in your browser - HTML5 game.",
+    "keywords": "match game, puzzle game, free game, online game, puzzle, match 3, candy crush, browser game, HTML5 game, free puzzle game, match puzzle"
   }
 }

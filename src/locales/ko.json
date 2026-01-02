@@ -75,6 +75,10 @@
     "privacySection3Content": "게임 진행 정보는 사용자가 게임을 삭제하거나 데이터를 초기화할 때까지 기기 내에 보관됩니다.",
     "privacySection4Title": "4. 개인정보의 제3자 제공",
     "privacySection4Content": "본 게임은 사용자의 개인정보를 제3자에게 제공하지 않습니다. 다만, 법령에 의해 요구되는 경우 예외로 합니다.",
+    "privacySection5Title": "5. 광고 및 쿠키",
+    "privacySection5Content": "본 게임은 Google AdSense를 통해 광고를 표시합니다. Google은 광고 제공을 위해 쿠키를 사용할 수 있으며, 이를 통해 사용자의 관심사에 맞는 광고를 제공합니다. Google의 개인정보 처리방침은 https://policies.google.com/privacy 에서 확인할 수 있습니다. 쿠키 사용을 원하지 않으시면 브라우저 설정에서 쿠키를 차단할 수 있습니다.",
+    "privacySection6Title": "6. 개인정보 보호책임자",
+    "privacySection6Content": "개인정보 보호와 관련한 문의사항이 있으시면 언제든지 연락해주시기 바랍니다.",
     "contactSection1Title": "게임 관련 문의",
     "contactSection1Content": "게임 플레이 중 문제가 발생하거나 건의사항이 있으시면 언제든지 연락해주세요. 빠른 시일 내에 답변드리겠습니다.",
     "contactSection2Title": "버그 신고",
@@ -96,5 +100,10 @@
     "details": "에러 상세 정보",
     "reload": "새로고침",
     "reset": "다시 시도"
+  },
+  "seo": {
+    "title": "매칭 퍼즐 게임 - CHIP GAMES | 무료 온라인 퍼즐 게임",
+    "description": "무료 온라인 매칭 퍼즐 게임. 1000개의 도전적인 스테이지를 플레이하세요! 다양한 색상의 젬을 매칭하여 목표를 달성하는 재미있는 퍼즐 게임입니다. 브라우저에서 바로 플레이 가능한 HTML5 게임.",
+    "keywords": "매칭게임, 퍼즐게임, 무료게임, 온라인게임, 퍼즐, 매칭3, 캔디크러시, 게임, 브라우저게임, HTML5게임, 무료퍼즐게임, 매칭퍼즐, 퍼즐매칭게임"
   }
 }

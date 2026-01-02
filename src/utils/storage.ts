@@ -38,12 +38,35 @@ class StorageManager {
       if (item === null) {
         return options.fallback ?? null;
       }
-      return JSON.parse(item) as T;
+      
+      // JSON 파싱 시도
+      try {
+        return JSON.parse(item) as T;
+      } catch (parseError) {
+        // JSON이 아닌 경우 (예: 이전에 문자열로 저장된 경우)
+        // 문자열로 저장된 값이면 그대로 반환
+        if (typeof item === "string" && item.startsWith('"') && item.endsWith('"')) {
+          // JSON 문자열로 감싸진 경우
+          return JSON.parse(item) as T;
+        }
+        // 순수 문자열인 경우 타입에 맞게 반환
+        if (typeof options.fallback === "string") {
+          return item as T;
+        }
+        // 파싱 실패 시 오래된 데이터로 간주하고 제거
+        localStorage.removeItem(key);
+        if (!options.silent) {
+          logger.warn("Removed invalid storage data", { key, value: item });
+        }
+        return options.fallback ?? null;
+      }
     } catch (error) {
-      logger.error("Failed to get item from LocalStorage", {
-        key,
-        error,
-      });
+      if (!options.silent) {
+        logger.error("Failed to get item from LocalStorage", {
+          key,
+          error,
+        });
+      }
       return options.fallback ?? null;
     }
   }

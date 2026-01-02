@@ -75,6 +75,10 @@
     "privacySection3Content": "游戏进度信息在用户删除游戏或重置数据之前，将保留在设备内。",
     "privacySection4Title": "4. 向第三方提供个人信息",
     "privacySection4Content": "本游戏不会向第三方提供用户的个人信息。但法律要求的情况除外。",
+    "privacySection5Title": "5. 广告和Cookie",
+    "privacySection5Content": "本游戏通过Google AdSense显示广告。Google可能使用Cookie来提供广告，并根据您的兴趣提供个性化广告。您可以在 https://policies.google.com/privacy 查看Google的隐私政策。如果您不希望使用Cookie，可以在浏览器设置中阻止Cookie。",
+    "privacySection6Title": "6. 个人信息保护负责人",
+    "privacySection6Content": "如果您对个人信息保护有任何疑问，请随时联系我们。",
     "contactSection1Title": "游戏相关咨询",
     "contactSection1Content": "如果在游戏过程中遇到问题或有建议，请随时联系我们。我们将尽快回复。",
     "contactSection2Title": "错误报告",
@@ -96,5 +100,10 @@
     "details": "错误详情",
     "reload": "重新加载",
     "reset": "重试"
+  },
+  "seo": {
+    "title": "匹配益智游戏 - CHIP GAMES | 免费在线益智游戏",
+    "description": "免费在线匹配益智游戏。玩1000个挑战关卡！匹配彩色宝石达成目标的趣味益智游戏。在浏览器中即时游玩 - HTML5游戏。",
+    "keywords": "匹配游戏, 益智游戏, 免费游戏, 在线游戏, 益智, 三消, 糖果粉碎, 游戏, 浏览器游戏, HTML5游戏, 免费益智游戏, 匹配益智"
   }
 }

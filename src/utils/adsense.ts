@@ -10,6 +10,27 @@ declare global {
 }
 
 /**
+ * 개발 환경인지 확인
+ */
+function isDevelopment(): boolean {
+  // Vite의 import.meta.env를 사용하거나, hostname으로 확인
+  try {
+    // @ts-ignore - Vite의 import.meta.env는 런타임에 사용 가능
+    if (import.meta.env?.DEV) {
+      return true;
+    }
+  } catch {
+    // import.meta.env를 사용할 수 없는 경우 hostname으로 확인
+  }
+  
+  return (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1" ||
+    window.location.hostname.includes("localhost")
+  );
+}
+
+/**
  * AdSense 오류 방지
  */
 export function preventAdSenseErrors(): void {
@@ -64,6 +85,11 @@ export function improveAdAccessibility(): void {
  * AdSense 초기화 (React 컴포넌트에서 사용)
  */
 export function initializeAdSense(): void {
+  // 개발 환경에서는 AdSense 초기화를 건너뜀 (localhost에서 광고가 작동하지 않음)
+  if (isDevelopment()) {
+    return;
+  }
+  
   preventAdSenseErrors();
   
   if (!preventDuplicateAdSense()) {
@@ -79,7 +105,10 @@ export function initializeAdSense(): void {
     }
   } catch (error) {
     // AdSense 설정 오류는 조용히 처리
-    console.warn("AdSense initialization error:", error);
+    // 개발 환경이 아닐 때만 경고 표시
+    if (!isDevelopment()) {
+      console.warn("AdSense initialization error:", error);
+    }
   }
 }
 
@@ -87,6 +116,11 @@ export function initializeAdSense(): void {
  * 광고 동적 로드 감지 및 접근성 개선
  */
 export function setupAdObserver(): void {
+  // 개발 환경에서는 관찰자 설정을 건너뜀
+  if (isDevelopment()) {
+    return;
+  }
+  
   // 광고 로드 후 접근성 개선
   setTimeout(improveAdAccessibility, 2000);
   

@@ -75,6 +75,10 @@
     "privacySection3Content": "ゲーム進行情報は、ユーザーがゲームを削除するか、データをリセットするまでデバイス内に保管されます。",
     "privacySection4Title": "4. 個人情報の第三者提供",
     "privacySection4Content": "本ゲームは、ユーザーの個人情報を第三者に提供することはありません。ただし、法令により要求される場合は例外とします。",
+    "privacySection5Title": "5. 広告とクッキー",
+    "privacySection5Content": "本ゲームは、Google AdSenseを通じて広告を表示します。Googleは広告提供のためにクッキーを使用する場合があり、これによりユーザーの興味に合わせた広告を提供します。Googleのプライバシーポリシーは https://policies.google.com/privacy で確認できます。クッキーの使用を希望しない場合は、ブラウザ設定でクッキーをブロックできます。",
+    "privacySection6Title": "6. 個人情報保護責任者",
+    "privacySection6Content": "個人情報保護に関するお問い合わせがございましたら、いつでもご連絡ください。",
     "contactSection1Title": "ゲーム関連のお問い合わせ",
     "contactSection1Content": "ゲームプレイ中に問題が発生したり、ご提案がある場合は、いつでもご連絡ください。できるだけ早く返信いたします。",
     "contactSection2Title": "バグ報告",
@@ -96,5 +100,10 @@
     "details": "エラー詳細",
     "reload": "リロード",
     "reset": "再試行"
+  },
+  "seo": {
+    "title": "マッチパズルゲーム - CHIP GAMES | 無料オンラインパズルゲーム",
+    "description": "無料オンラインマッチパズルゲーム。1000の挑戦的なステージをプレイ！カラフルなジェムをマッチして目標を達成する楽しいパズルゲームです。ブラウザで即座にプレイ可能なHTML5ゲーム。",
+    "keywords": "マッチゲーム, パズルゲーム, 無料ゲーム, オンラインゲーム, パズル, マッチ3, キャンディークラッシュ, ゲーム, ブラウザゲーム, HTML5ゲーム, 無料パズルゲーム, マッチパズル"
   }
 }

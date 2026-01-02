@@ -59,18 +59,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
   const { t } = useLanguage();
   const [unlockedStages, setUnlockedStages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [orientationPreference, setOrientationPreference] = useState<
-    string | null
-  >(() => {
-    // localStorage에서 사용자의 방향 선호도 불러오기
-    if (typeof window !== "undefined") {
-      return storageManager.get<string>(
-        "chipPuzzleGame_orientationPreference",
-        { silent: true }
-      );
-    }
-    return null;
-  });
 
   // 게임 상태 관리
   const { gameState, selectGem, swapGems, processMatches, togglePause } =
@@ -1455,13 +1443,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
-      let x = event.clientX - rect.left;
-      let y = event.clientY - rect.top;
-
-      // 회전된 화면의 경우 좌표 변환
-      const transformed = transformClickCoordinates(x, y, rect);
-      x = transformed.x;
-      y = transformed.y;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
       const dpr = window.devicePixelRatio || 1;
       const canvasWidth = canvas.width / dpr;
@@ -1746,48 +1729,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
     ]
   );
 
-  // 회전된 좌표를 원래 좌표로 변환하는 함수
-  const transformClickCoordinates = useCallback(
-    (x: number, y: number, rect: DOMRect): { x: number; y: number } => {
-      if (orientationPreference === "landscape") {
-        // 90도 회전된 경우: 클릭 좌표를 역변환
-        // 컨테이너가 90도 시계 방향 회전되었으므로, 클릭 좌표를 90도 반시계 방향으로 역회전
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        // 컨테이너 중심점 (화면 중심)
-        const centerX = viewportWidth / 2;
-        const centerY = viewportHeight / 2;
-
-        // 클릭 좌표를 화면 중심 기준으로 변환 (회전 전 좌표계 기준)
-        // rect는 회전된 컨테이너의 위치이므로, 실제 클릭 위치를 계산해야 함
-        const clickX = x + rect.left;
-        const clickY = y + rect.top;
-
-        // 화면 중심 기준 상대 좌표
-        const relativeX = clickX - centerX;
-        const relativeY = clickY - centerY;
-
-        // 90도 반시계 방향 역회전 (시계 방향 회전의 역변환)
-        // 90도 시계 방향 회전: (x, y) -> (y, -x)
-        // 역변환: (x, y) -> (-y, x)
-        const rotatedX = -relativeY;
-        const rotatedY = relativeX;
-
-        // 다시 절대 좌표로 변환
-        const absoluteX = rotatedX + centerX;
-        const absoluteY = rotatedY + centerY;
-
-        // 캔버스 좌표로 변환 (회전 전 캔버스 위치 기준)
-        return {
-          x: absoluteX - rect.left,
-          y: absoluteY - rect.top,
-        };
-      }
-      return { x, y };
-    },
-    [orientationPreference]
-  );
 
   // 포인터(마우스/터치) 기반 드래그 스와이프 처리
   const handlePointerDown = useCallback(
@@ -1798,13 +1739,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (gameState.isPaused) return;
 
       const rect = canvas.getBoundingClientRect();
-      let x = event.clientX - rect.left;
-      let y = event.clientY - rect.top;
-
-      // 회전된 화면의 경우 좌표 변환
-      const transformed = transformClickCoordinates(x, y, rect);
-      x = transformed.x;
-      y = transformed.y;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
       const dpr = window.devicePixelRatio || 1;
       const canvasWidth = canvas.width / dpr;
@@ -1845,7 +1781,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       config,
       gameState.board,
       gameState.isPaused,
-      transformClickCoordinates,
     ]
   );
 
@@ -1863,13 +1798,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
         return;
 
       const rect = canvas.getBoundingClientRect();
-      let x = event.clientX - rect.left;
-      let y = event.clientY - rect.top;
-
-      // 회전된 화면의 경우 좌표 변환
-      const transformed = transformClickCoordinates(x, y, rect);
-      x = transformed.x;
-      y = transformed.y;
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
 
       const dpr = window.devicePixelRatio || 1;
       const canvasWidth = canvas.width / dpr;
@@ -1997,103 +1927,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
   }, [handlePointerDown, handlePointerMove, handlePointerUp]);
 
   // CSS transform을 사용하여 게임 화면 회전
-  const applyCssRotation = useCallback((preference: string) => {
-    const gameContainer = document.querySelector(
-      ".game-container"
-    ) as HTMLElement;
-    if (gameContainer) {
-      if (preference === "landscape") {
-        // 가로 모드: 90도 회전
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-
-        // 컨테이너를 90도 회전
-        gameContainer.style.transform = "rotate(90deg)";
-        gameContainer.style.transformOrigin = "center center";
-
-        // 회전 후 크기 조정: viewport의 높이와 너비를 바꿔서 적용
-        gameContainer.style.width = `${viewportHeight}px`;
-        gameContainer.style.height = `${viewportWidth}px`;
-
-        // 회전 후 위치 조정
-        gameContainer.style.position = "fixed";
-        gameContainer.style.top = "50%";
-        gameContainer.style.left = "50%";
-        gameContainer.style.marginTop = `-${viewportWidth / 2}px`;
-        gameContainer.style.marginLeft = `-${viewportHeight / 2}px`;
-      } else {
-        // 세로 모드: 원래대로
-        gameContainer.style.transform = "";
-        gameContainer.style.transformOrigin = "";
-        gameContainer.style.width = "";
-        gameContainer.style.height = "";
-        gameContainer.style.position = "";
-        gameContainer.style.top = "";
-        gameContainer.style.left = "";
-        gameContainer.style.marginTop = "";
-        gameContainer.style.marginLeft = "";
-      }
+  // 이전에 저장된 orientationPreference 데이터 정리
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      storageManager.remove("chipPuzzleGame_orientationPreference", { silent: true });
     }
   }, []);
-
-  // 방향 모드 토글
-  const toggleOrientation = () => {
-    const newPreference =
-      orientationPreference === "landscape" ? "portrait" : "landscape";
-    setOrientationPreference(newPreference);
-    storageManager.set("chipPuzzleGame_orientationPreference", newPreference, {
-      silent: true,
-    });
-
-    // Screen Orientation API를 사용하여 실제 화면 방향 전환 시도
-    const orientation = screen.orientation as any;
-    if (orientation && typeof orientation.lock === "function") {
-      if (newPreference === "landscape") {
-        const lockResult = orientation.lock("landscape");
-        if (lockResult && typeof lockResult.catch === "function") {
-          lockResult.catch(() => {
-            // API 실패 시 조용히 CSS transform으로 회전 (오류 로그 제거)
-            applyCssRotation(newPreference);
-          });
-        } else {
-          // lock이 Promise를 반환하지 않는 경우 바로 CSS transform 적용
-          applyCssRotation(newPreference);
-        }
-      } else {
-        const unlockResult = orientation.unlock();
-        if (unlockResult && typeof unlockResult.catch === "function") {
-          unlockResult.catch(() => {
-            // API 실패 시 조용히 CSS transform으로 회전 (오류 로그 제거)
-            applyCssRotation(newPreference);
-          });
-        } else {
-          // unlock이 Promise를 반환하지 않는 경우 바로 CSS transform 적용
-          applyCssRotation(newPreference);
-        }
-      }
-    } else {
-      // API가 지원되지 않는 경우 CSS transform으로 회전
-      applyCssRotation(newPreference);
-    }
-  };
-
-  // 모바일에서 게임 화면 또는 스테이지 선택 화면일 때 방향 버튼 표시
-  const showOrientationButton =
-    (currentScreen === "game" || currentScreen === "stageSelect") &&
-    window.innerWidth <= 768;
-
-  // 컴포넌트 마운트 시 저장된 방향 선호도 적용
-  useEffect(() => {
-    if (
-      (currentScreen === "game" || currentScreen === "stageSelect") &&
-      orientationPreference
-    ) {
-      // 약간의 지연을 두어 DOM이 준비된 후 적용
-      setTimeout(() => {
-        applyCssRotation(orientationPreference);
-      }, 100);
-    }
-  }, [currentScreen, orientationPreference, applyCssRotation]);
 
   return (
     <div className="game-board">
@@ -2102,26 +1941,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         onReady={handleCanvasReady}
         onResize={handleCanvasResize}
       />
-      {showOrientationButton && (
-        <button
-          className="orientation-toggle-button"
-          onClick={toggleOrientation}
-          title={
-            orientationPreference === "landscape"
-              ? t("game.switchToPortrait")
-              : t("game.switchToLandscape")
-          }
-        >
-          <span className="orientation-icon">
-            {orientationPreference === "landscape" ? "🔄" : "📱"}
-          </span>
-          <span className="orientation-text">
-            {orientationPreference === "landscape"
-              ? t("game.portraitMode")
-              : t("game.landscapeMode")}
-          </span>
-        </button>
-      )}
     </div>
   );
 };
