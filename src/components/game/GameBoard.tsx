@@ -399,13 +399,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 2 * scale;
 
+      // 스테이지 번호 표시 (가장 위에)
+      ctx.font = `700 ${Math.max(14, infoFontSize * 1.1)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.fillStyle = "#667eea"; // 강조 색상
+      ctx.fillText(
+        `${t("game.stage")} ${stageNumber}`,
+        infoMarginX,
+        infoY
+      );
+
       // 점수 표시 (그라데이션 효과)
       ctx.font = `600 ${infoFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.fillStyle = "#ffffff";
       ctx.fillText(
         `${t("game.score")}: ${gameState.score.toLocaleString()}`,
         infoMarginX,
-        infoY
+        infoY + infoLineHeight
       );
 
       // 이동 횟수 표시
@@ -413,7 +422,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.fillText(
         `${t("game.moves")}: ${gameState.moves}`,
         infoMarginX,
-        infoY + infoLineHeight
+        infoY + infoLineHeight * 2
       );
 
       // 목표 표시
@@ -426,7 +435,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
             "game.goal"
           )}: ${goal.current.toLocaleString()}/${goal.target.toLocaleString()}`,
           infoMarginX,
-          infoY + infoLineHeight * 2
+          infoY + infoLineHeight * 3
         );
       }
 
@@ -443,7 +452,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.fillText(
           `${t("game.combo")} x${gameState.comboCount}!`,
           infoMarginX,
-          infoY + infoLineHeight * 3
+          infoY + infoLineHeight * 4
         );
         ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
         ctx.shadowBlur = 4 * scale;
