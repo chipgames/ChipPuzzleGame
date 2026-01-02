@@ -10,6 +10,45 @@
     <link rel="icon" type="image/png" sizes="192x192" href="/ChipGames_favicon-192x192.png" />
     <link rel="icon" type="image/png" sizes="512x512" href="/ChipGames_favicon-512x512.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2533613198240039&v=20250127" crossorigin="anonymous"></script>
+    <script>
+        // AdSense 안전한 초기화
+        function initializeAdSense() {
+            // AdSense가 완전히 로드될 때까지 대기
+            let attempts = 0;
+            const maxAttempts = 10;
+            
+            function tryInitialize() {
+                attempts++;
+                
+                if (typeof adsbygoogle !== 'undefined' && Array.isArray(adsbygoogle)) {
+                    // 이미 enable_page_level_ads가 설정되었는지 확인
+                    const hasPageLevelAds = adsbygoogle.some(ad => ad.enable_page_level_ads);
+                    
+                    if (!hasPageLevelAds) {
+                        try {
+                            (adsbygoogle = window.adsbygoogle || []).push({
+                                google_ad_client: "ca-pub-2533613198240039",
+                                enable_page_level_ads: true
+                            });
+                        } catch (error) {
+                            // AdSense 설정 오류는 조용히 처리
+                        }
+                    }
+                } else if (attempts < maxAttempts) {
+                    setTimeout(tryInitialize, 500);
+                }
+            }
+            
+            tryInitialize();
+        }
+        
+        // 페이지 로드 완료 후 AdSense 초기화
+        window.addEventListener('load', initializeAdSense);
+    </script>
+    <!-- DNS 프리페치 (외부 리소스) -->
+    <link rel="dns-prefetch" href="//pagead2.googlesyndication.com">
     <meta
       name="description"
       content="무료 온라인 매칭 퍼즐 게임. 1000개의 스테이지를 클리어하세요!"
