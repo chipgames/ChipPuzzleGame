@@ -7,7 +7,7 @@ import GameBoard from "@/components/game/GameBoard";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
 import { useTheme } from "@/hooks/useTheme";
-import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
+import { setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
 import { getWebVitals, logWebVitals } from "@/utils/webVitals";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import "@/styles/App.css";
@@ -42,9 +42,11 @@ const App: React.FC = () => {
     }
     
     if (!isDev) {
-      // DOM 로드 후 AdSense 초기화
+      // AdSense 스크립트가 이미 index.html에 로드되어 있으므로
+      // 자동으로 초기화됩니다. 중복 초기화를 방지하기 위해
+      // initializeAdSense()는 호출하지 않습니다.
+      // 대신 오류 방지와 접근성 개선만 수행합니다.
       preventAdSenseErrors();
-      initializeAdSense();
       setupAdObserver();
     }
   }, []);

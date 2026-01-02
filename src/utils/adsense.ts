@@ -96,13 +96,27 @@ export function initializeAdSense(): void {
   
   preventAdSenseErrors();
   
+  // enable_page_level_ads가 이미 설정되어 있는지 먼저 확인
+  if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
+    const hasPageLevelAds = window.adsbygoogle.some(
+      (ad: AdSenseConfig) => ad.enable_page_level_ads === true
+    );
+    
+    if (hasPageLevelAds) {
+      // 이미 설정되어 있으면 초기화 플래그만 설정하고 리턴
+      adSenseInitialized = true;
+      return;
+    }
+  }
+  
   if (!preventDuplicateAdSense()) {
+    adSenseInitialized = true; // 중복 방지 함수가 false를 반환하면 이미 설정된 것으로 간주
     return;
   }
   
   try {
     if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
-      // enable_page_level_ads가 이미 설정되어 있는지 다시 확인
+      // 마지막으로 한 번 더 확인 (스크립트가 비동기로 로드되면서 변경될 수 있음)
       const hasPageLevelAds = window.adsbygoogle.some(
         (ad: AdSenseConfig) => ad.enable_page_level_ads === true
       );
@@ -113,6 +127,9 @@ export function initializeAdSense(): void {
           enable_page_level_ads: true,
         });
         adSenseInitialized = true;
+      } else {
+        // 이미 설정되어 있으면 플래그만 설정
+        adSenseInitialized = true;
       }
     }
   } catch (error) {
@@ -121,6 +138,8 @@ export function initializeAdSense(): void {
     if (isDevelopment()) {
       console.warn("AdSense initialization error:", error);
     }
+    // 오류가 발생해도 플래그를 설정하여 재시도 방지
+    adSenseInitialized = true;
   }
 }
 
