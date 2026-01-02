@@ -57,15 +57,22 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       "매칭게임, 퍼즐게임, 무료게임, 온라인게임, 퍼즐, 매칭3, 캔디크러시, 게임, 브라우저게임, HTML5게임";
   }
 
-  const defaultImage = "https://chipgames.github.io/ChipPuzzleGame/ChipGames_Logo.png";
+  // 구조화된 데이터 (JSON-LD)
+  const baseUrl = "https://chipgames.github.io/ChipPuzzleGame/";
+  
+  // WebP 지원 여부에 따라 이미지 경로 결정
+  const getOptimizedImageUrl = (filename: string): string => {
+    // SEO 메타 태그에서는 원본 PNG 사용 (호환성)
+    // 실제 이미지 로딩은 OptimizedImage 컴포넌트에서 처리
+    return `${baseUrl}${filename}`;
+  };
+
+  const defaultImage = getOptimizedImageUrl("ChipGames_Logo.png");
 
   const finalTitle = title || defaultTitle;
   const finalDescription = description || defaultDescription;
   const finalKeywords = keywords || defaultKeywords;
   const finalImage = image || defaultImage;
-
-  // 구조화된 데이터 (JSON-LD)
-  const baseUrl = "https://chipgames.github.io/ChipPuzzleGame/";
   const langParam = language !== "ko" ? `?lang=${language}` : "";
   
   // Organization 스키마
@@ -74,7 +81,7 @@ const SEOHead: React.FC<SEOHeadProps> = ({
     "@type": "Organization",
     name: "CHIP GAMES",
     url: "https://chipgames.github.io",
-    logo: "https://chipgames.github.io/ChipPuzzleGame/ChipGames_Logo.png",
+    logo: getOptimizedImageUrl("ChipGames_Logo.png"),
     sameAs: [],
   };
 

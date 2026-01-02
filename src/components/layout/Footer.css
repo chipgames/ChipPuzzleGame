@@ -1,7 +1,7 @@
 .footer {
   flex-shrink: 0;
   height: 60px;
-  background: rgba(15, 15, 30, 0.8);
+  background: var(--bg-card);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-top: 1px solid var(--border-color);
@@ -10,7 +10,7 @@
   justify-content: center;
   padding: 0 24px;
   position: relative;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--shadow-sm);
 }
 
 .footer::before {
@@ -110,16 +110,16 @@
 }
 
 .footer-modal {
-  background: rgba(26, 26, 46, 0.95);
+  background: var(--bg-overlay-dark);
   backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(102, 126, 234, 0.3);
+  border: 1px solid var(--border-color);
   border-radius: 16px;
   padding: 0;
   max-width: 600px;
   width: 90%;
   max-height: 80vh;
   overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-lg);
   animation: slideUp 0.3s ease-out;
 }
 
@@ -139,7 +139,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 24px;
-  border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .footer-modal-header h2 {

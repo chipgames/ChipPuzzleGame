@@ -9,7 +9,9 @@
     "help": "도움말",
     "about": "게임 소개",
     "soundOn": "사운드 켜기",
-    "soundOff": "사운드 끄기"
+    "soundOff": "사운드 끄기",
+    "lightMode": "라이트 모드",
+    "darkMode": "다크 모드"
   },
   "menu": {
     "title": "매칭 퍼즐 게임",

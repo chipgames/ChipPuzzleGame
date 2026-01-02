@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #2a2a2a;
+  background: var(--bg-primary);
   overflow: hidden;
   min-height: 0;
   position: relative;
@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(26, 26, 26, 0.75);
+  background: var(--bg-overlay, rgba(26, 26, 46, 0.75));
   backdrop-filter: blur(1px);
   z-index: 10;
   overflow-y: auto;
@@ -27,12 +27,12 @@
 
 /* 메뉴 화면은 더 어두운 배경 */
 .screen-overlay:has(.menu-screen) {
-  background: rgba(26, 26, 26, 0.9);
+  background: var(--bg-overlay-dark, rgba(26, 26, 46, 0.9));
 }
 
 /* 스테이지 선택 화면은 Canvas가 더 잘 보이도록 */
 .screen-overlay:has(.stage-select-screen) {
-  background: rgba(26, 26, 26, 0.6);
+  background: var(--bg-overlay-light, rgba(26, 26, 46, 0.6));
 }
 
 .screen-overlay > * {

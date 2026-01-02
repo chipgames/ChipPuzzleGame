@@ -1,7 +1,7 @@
 .header {
   flex-shrink: 0;
   height: 70px;
-  background: rgba(15, 15, 30, 0.8);
+  background: var(--bg-card);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-bottom: 1px solid var(--border-color);
@@ -138,7 +138,7 @@
 
 .header-nav a,
 .header-nav-button {
-  color: #fff;
+  color: var(--text-primary);
   text-decoration: none;
   background: none;
   border: none;
@@ -223,7 +223,7 @@
 
 .language-selector:hover {
   border-color: var(--border-hover);
-  background: rgba(102, 126, 234, 0.1);
+  background: var(--bg-glass);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -303,7 +303,7 @@
     top: 50px;
     left: 0;
     right: 0;
-    background: rgba(15, 15, 30, 0.98);
+    background: var(--bg-overlay-dark);
     backdrop-filter: blur(20px) saturate(180%);
     -webkit-backdrop-filter: blur(20px) saturate(180%);
     border-bottom: 1px solid var(--border-color);
@@ -358,7 +358,7 @@
   }
 
   .header-nav-button:hover {
-    background: rgba(102, 126, 234, 0.1);
+    background: var(--bg-glass);
     padding-left: 24px;
   }
 

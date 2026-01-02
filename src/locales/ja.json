@@ -9,7 +9,9 @@
     "help": "ヘルプ",
     "about": "ゲームについて",
     "soundOn": "サウンドON",
-    "soundOff": "サウンドOFF"
+    "soundOff": "サウンドOFF",
+    "lightMode": "ライトモード",
+    "darkMode": "ダークモード"
   },
   "menu": {
     "title": "マッチパズルゲーム",

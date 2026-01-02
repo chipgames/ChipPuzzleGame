@@ -9,7 +9,9 @@
     "help": "帮助",
     "about": "关于游戏",
     "soundOn": "开启声音",
-    "soundOff": "关闭声音"
+    "soundOff": "关闭声音",
+    "lightMode": "浅色模式",
+    "darkMode": "深色模式"
   },
   "menu": {
     "title": "匹配益智游戏",

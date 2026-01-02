@@ -1,42 +1,10 @@
 @import "./fonts.css";
+@import "./themes.css";
 
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-:root {
-  /* 프리미엄 색상 팔레트 */
-  --bg-primary: #0f0f1e;
-  --bg-secondary: #1a1a2e;
-  --bg-tertiary: #16213e;
-  --bg-card: rgba(26, 26, 46, 0.8);
-  --bg-glass: rgba(255, 255, 255, 0.05);
-  
-  --accent-primary: #667eea;
-  --accent-secondary: #764ba2;
-  --accent-tertiary: #f093fb;
-  --accent-success: #4ecdc4;
-  --accent-warning: #ffd93d;
-  --accent-danger: #ff6b6b;
-  
-  --text-primary: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.8);
-  --text-tertiary: rgba(255, 255, 255, 0.6);
-  
-  --border-color: rgba(255, 255, 255, 0.1);
-  --border-hover: rgba(102, 126, 234, 0.5);
-  
-  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px rgba(102, 126, 234, 0.4);
-  
-  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-  --gradient-success: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-  --gradient-glow: linear-gradient(135deg, rgba(102, 126, 234, 0.3) 0%, rgba(118, 75, 162, 0.3) 100%);
 }
 
 body {
@@ -66,9 +34,7 @@ body {
   font-display: swap; /* 시스템 폰트이므로 즉시 표시 */
   
   background: var(--bg-primary);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(102, 126, 234, 0.1) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(118, 75, 162, 0.1) 0px, transparent 50%);
+  background-image: var(--gradient-glow);
   color: var(--text-primary);
   overflow: hidden;
 }

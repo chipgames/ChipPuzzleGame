@@ -6,6 +6,7 @@ import GameContainer from "@/components/layout/GameContainer";
 import GameBoard from "@/components/game/GameBoard";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
+import { useTheme } from "@/hooks/useTheme";
 import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
 import { getWebVitals, logWebVitals } from "@/utils/webVitals";
 import { registerServiceWorker } from "@/utils/serviceWorker";
@@ -19,6 +20,9 @@ const AboutScreen = lazy(() => import("@/components/screens/AboutScreen"));
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>("stageSelect");
   const [currentStage, setCurrentStage] = useState<number | null>(null);
+  
+  // 테마 초기화
+  useTheme();
 
   // AdSense 초기화 (프로덕션 환경에서만)
   useEffect(() => {

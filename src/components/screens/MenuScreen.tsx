@@ -1,6 +1,6 @@
 import React from "react";
 import { useLanguage } from "@/hooks/useLanguage";
-import { getAssetPath } from "@/utils/pathUtils";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import "./MenuScreen.css";
 
 interface MenuScreenProps {
@@ -14,16 +14,9 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate }) => {
     <div className="menu-screen">
       <div className="menu-content">
         <div className="menu-logo-container">
-          <img 
-            src={getAssetPath("ChipGames_Logo.png")} 
-            onError={(e) => {
-              // PNG 파일이 없으면 SVG 사용
-              const target = e.target as HTMLImageElement;
-              if (target.src && !target.src.includes('.svg')) {
-                target.src = getAssetPath("ChipGames_Logo.svg");
-              }
-            }}
-            alt={t("menu.title") + " - CHIP GAMES 로고"} 
+          <OptimizedImage
+            src="ChipGames_Logo.png"
+            alt={t("menu.title") + " - CHIP GAMES 로고"}
             className="menu-logo"
             loading="eager"
             width="200"

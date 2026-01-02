@@ -1,0 +1,46 @@
+.theme-toggle {
+  background: var(--bg-glass);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 20px;
+  padding: 0;
+  margin: 0;
+  backdrop-filter: blur(10px);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:hover {
+  background: var(--bg-card);
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-toggle:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow-sm);
+}
+
+.theme-toggle:focus {
+  outline: none;
+  box-shadow: var(--shadow-md), 0 0 0 3px rgba(124, 138, 255, 0.2);
+}
+
+/* 라이트 모드에서 더 밝은 배경 */
+:root[data-theme="light"] .theme-toggle {
+  background: rgba(124, 138, 255, 0.1);
+  border-color: rgba(124, 138, 255, 0.2);
+}
+
+:root[data-theme="light"] .theme-toggle:hover {
+  background: rgba(124, 138, 255, 0.15);
+  border-color: var(--accent-primary);
+}
+

@@ -9,7 +9,9 @@
     "help": "Help",
     "about": "About",
     "soundOn": "Sound On",
-    "soundOff": "Sound Off"
+    "soundOff": "Sound Off",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode"
   },
   "menu": {
     "title": "Match Puzzle Game",

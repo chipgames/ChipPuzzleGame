@@ -28,7 +28,7 @@ npm run build:analyze
 3. **Tree Shaking**: 사용하지 않는 코드 제거
 4. **의존성 최적화**: 불필요한 의존성 제거
 
-## 🖼️ 이미지 최적화
+## 🖼️ 이미지 최적화 ✅ **구현 완료**
 
 ### 현재 이미지 파일
 
@@ -37,13 +37,47 @@ npm run build:analyze
 - `ChipGames_Logo.png` - 로고 이미지
 - `ChipGames_favicon-*.png` - 파비콘 이미지들
 
-### 이미지 최적화 권장 사항
+### 구현된 이미지 최적화
 
-#### 1. WebP 형식 변환
+#### 1. WebP 자동 선택 ✅
 
-WebP는 PNG/JPEG보다 25-35% 작은 파일 크기를 제공합니다.
+**구현 내용:**
+- `OptimizedImage` 컴포넌트가 WebP 지원 여부를 자동으로 감지
+- WebP를 지원하는 브라우저에서는 자동으로 WebP 이미지 사용
+- WebP 로드 실패 시 원본 이미지로 자동 폴백
+- SVG 폴백 지원 (PNG 로드 실패 시)
 
-**변환 방법:**
+**사용 방법:**
+
+```typescript
+import OptimizedImage from "@/components/ui/OptimizedImage";
+
+<OptimizedImage
+  src="ChipGames_Logo.png"
+  alt="Logo"
+  width={200}
+  height={200}
+  loading="lazy"
+/>
+```
+
+**유틸리티 함수:**
+
+```typescript
+import { supportsWebP, getOptimizedImagePath, getWebPPath } from "@/utils/pathUtils";
+
+// WebP 지원 여부 확인
+if (supportsWebP()) {
+  // WebP 이미지 사용
+}
+
+// 최적화된 이미지 경로 가져오기
+const path = getOptimizedImagePath("logo.png");
+```
+
+**WebP 이미지 변환 방법:**
+
+WebP 이미지 파일을 생성하려면:
 
 ```bash
 # ImageMagick 사용
@@ -53,21 +87,7 @@ magick convert ChipGames_Logo.png ChipGames_Logo.webp
 cwebp -q 80 ChipGames_Logo.png -o ChipGames_Logo.webp
 ```
 
-**코드에서 사용:**
-
-```typescript
-// WebP 지원 여부 확인 후 사용
-const getImagePath = (filename: string) => {
-  const supportsWebP = document.createElement('canvas')
-    .toDataURL('image/webp')
-    .indexOf('data:image/webp') === 0;
-  
-  if (supportsWebP) {
-    return getAssetPath(filename.replace(/\.(png|jpg)$/, '.webp'));
-  }
-  return getAssetPath(filename);
-};
-```
+변환된 WebP 파일을 `public/` 디렉토리에 배치하면 자동으로 사용됩니다.
 
 #### 2. 이미지 압축
 
@@ -106,9 +126,11 @@ const getImagePath = (filename: string) => {
    - Minification (프로덕션)
    - Gzip/Brotli 압축
 
-3. **이미지 최적화**
+3. **이미지 최적화** ✅
+   - WebP 자동 선택 (OptimizedImage 컴포넌트)
    - Lazy loading
    - 적절한 크기 사용
+   - 자동 폴백 (WebP → PNG → SVG)
 
 4. **캐싱 전략**
    - 파일명에 버전 및 해시 포함
@@ -187,7 +209,7 @@ Canvas 애니메이션 최적화:
 - [x] Tree shaking
 - [x] Minification
 - [x] 번들 분석 도구
-- [ ] WebP 이미지 변환 (가이드 제공)
+- [x] WebP 이미지 자동 선택 (코드 구현 완료, WebP 파일 변환 필요)
 - [x] Service Worker
 - [x] 폰트 최적화
 - [x] Lazy loading

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, memo } from "react";
 import { useLanguage } from "@/hooks/useLanguage";
+import OptimizedImage from "@/components/ui/OptimizedImage";
 import LanguageSelector from "@/components/ui/LanguageSelector";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import { GameScreen } from "@/types/ui";
 import { soundManager } from "@/utils/SoundManager";
 import { storageManager } from "@/utils/storage";
-import { getAssetPath } from "@/utils/pathUtils";
 import "./Header.css";
 
 interface HeaderProps {
@@ -103,16 +104,9 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, currentScreen: _curren
             onClick={() => handleMenuClick("stageSelect")}
             style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
           >
-            <img 
-              src={getAssetPath("ChipGames_Logo.png")} 
-              onError={(e) => {
-                // PNG 파일이 없으면 SVG 사용
-                const target = e.target as HTMLImageElement;
-                if (target.src && !target.src.includes('.svg')) {
-                  target.src = getAssetPath("ChipGames_Logo.svg");
-                }
-              }}
-              alt={t("header.gameTitle") + " - CHIP GAMES 로고"} 
+            <OptimizedImage
+              src="ChipGames_Logo.png"
+              alt={t("header.gameTitle") + " - CHIP GAMES 로고"}
               style={{ height: "40px", width: "auto" }}
               loading="eager"
               width="120"
@@ -150,6 +144,7 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, currentScreen: _curren
           </button>
         </nav>
         <div className="header-right">
+          <ThemeToggle />
           <button
             className="header-sound-button"
             onClick={toggleSound}

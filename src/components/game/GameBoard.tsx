@@ -16,6 +16,7 @@ import { performanceMonitor } from "@/utils/performance";
 import { logger } from "@/utils/logger";
 import { storageManager } from "@/utils/storage";
 import { GameProgress } from "@/types/storage";
+import { getThemeColors } from "@/utils/themeColors";
 import "./GameBoard.css";
 
 /**
@@ -145,11 +146,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const scale = canvasWidth / baseWidth;
 
       // 배경
-      ctx.fillStyle = "#1a1a1a";
+      const { canvasBg, textPrimary } = getThemeColors();
+      ctx.fillStyle = canvasBg;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
       // 제목
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = textPrimary;
       const titleFontSize = Math.max(16, 32 * scale); // 최소 16px
       ctx.font = `bold ${titleFontSize}px Arial`;
       ctx.textAlign = "center";
@@ -218,7 +220,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           );
 
           // 스테이지 번호 (아래쪽)
-          ctx.fillStyle = "#fff";
+          ctx.fillStyle = textPrimary;
           const numberFontSize = Math.max(10, 14 * scale); // 잠긴 스테이지는 조금 작게
           ctx.font = `bold ${numberFontSize}px Arial`;
           ctx.textAlign = "center";
@@ -230,7 +232,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           );
         } else {
           // 해제된 스테이지는 번호만 중앙에 표시
-          ctx.fillStyle = "#fff";
+          ctx.fillStyle = textPrimary;
           const numberFontSize = Math.max(12, 20 * scale); // 최소 12px
           ctx.font = `bold ${numberFontSize}px Arial`;
           ctx.textAlign = "center";
@@ -245,7 +247,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 페이지네이션 정보 표시
       const pageInfoY = canvasHeight - 60 * scale;
-      ctx.fillStyle = "#fff";
+      ctx.fillStyle = textPrimary;
       ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
       ctx.textAlign = "center";
       ctx.fillText(
@@ -259,16 +261,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const buttonWidth = 80 * scale;
       const buttonY = pageInfoY + 20 * scale;
       const buttonGap = 10 * scale;
+      const { accentPrimary: accentPrimaryStage } = getThemeColors();
 
       // 이전 페이지 버튼
       if (currentPage > 1) {
         const prevButtonX = canvasWidth / 2 - buttonWidth - buttonGap / 2;
-        ctx.fillStyle = currentPage > 1 ? "#667eea" : "#444";
+        ctx.fillStyle = currentPage > 1 ? accentPrimaryStage : "#444";
         ctx.fillRect(prevButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.strokeStyle = "#fff";
+        ctx.strokeStyle = textPrimary;
         ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.strokeRect(prevButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = textPrimary;
         ctx.font = `bold ${Math.max(10, 14 * scale)}px Arial`;
         ctx.fillText(
           "«",
@@ -280,12 +283,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 다음 페이지 버튼
       if (currentPage < totalPages) {
         const nextButtonX = canvasWidth / 2 + buttonGap / 2;
-        ctx.fillStyle = currentPage < totalPages ? "#667eea" : "#444";
+        ctx.fillStyle = currentPage < totalPages ? accentPrimaryStage : "#444";
         ctx.fillRect(nextButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.strokeStyle = "#fff";
+        ctx.strokeStyle = textPrimary;
         ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.strokeRect(nextButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.fillStyle = "#fff";
+        ctx.fillStyle = textPrimary;
         ctx.font = `bold ${Math.max(10, 14 * scale)}px Arial`;
         ctx.fillText(
           "»",
@@ -306,9 +309,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 기준 크기 (1200px 기준으로 설계)
       const baseWidth = 1200;
       const scale = canvasWidth / baseWidth;
+      const { canvasBg, textPrimary } = getThemeColors();
 
       // 배경
-      ctx.fillStyle = "#1a1a1a";
+      ctx.fillStyle = canvasBg;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
       // 그리드 배경 그리기
@@ -372,11 +376,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const infoCardRadius = 16 * scale;
 
       // 정보 카드 배경 (글래스모피즘 효과)
+      const { bgCard, borderColor } = getThemeColors();
       const infoCardWidth = 280 * scale;
       const infoCardHeight = infoLineHeight * 4 + infoCardPadding * 2;
       ctx.save();
       ctx.globalAlpha = 0.9;
-      ctx.fillStyle = "rgba(15, 15, 30, 0.8)";
+      ctx.fillStyle = bgCard;
       ctx.beginPath();
       ctx.roundRect(
         infoMarginX - infoCardPadding,
@@ -386,7 +391,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         infoCardRadius
       );
       ctx.fill();
-      ctx.strokeStyle = "rgba(102, 126, 234, 0.3)";
+      ctx.strokeStyle = borderColor;
       ctx.lineWidth = 1 * scale;
       ctx.stroke();
       ctx.restore();
@@ -400,8 +405,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.shadowOffsetY = 2 * scale;
 
       // 스테이지 번호 표시 (가장 위에)
+      const { accentPrimary } = getThemeColors();
       ctx.font = `700 ${Math.max(14, infoFontSize * 1.1)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-      ctx.fillStyle = "#667eea"; // 강조 색상
+      ctx.fillStyle = accentPrimary; // 강조 색상
       ctx.fillText(
         `${t("game.stage")} ${stageNumber}`,
         infoMarginX,
@@ -410,7 +416,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 점수 표시 (그라데이션 효과)
       ctx.font = `600 ${infoFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = textPrimary;
       ctx.fillText(
         `${t("game.score")}: ${gameState.score.toLocaleString()}`,
         infoMarginX,
@@ -418,7 +424,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       );
 
       // 이동 횟수 표시
-      ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+      const { textSecondary } = getThemeColors();
+      ctx.fillStyle = textSecondary;
       ctx.fillText(
         `${t("game.moves")}: ${gameState.moves}`,
         infoMarginX,
@@ -429,7 +436,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (gameState.goals.length > 0) {
         const goal = gameState.goals[0];
         const progress = goal.current / goal.target;
-        ctx.fillStyle = progress >= 1 ? "#4ecdc4" : "rgba(255, 255, 255, 0.9)";
+        const { accentSuccess } = getThemeColors();
+        ctx.fillStyle = progress >= 1 ? accentSuccess : textPrimary;
         ctx.fillText(
           `${t(
             "game.goal"
@@ -515,7 +523,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 2 * scale;
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = textPrimary;
         const hintFontSize = 16 * scale;
         ctx.font = `600 ${hintFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
@@ -572,7 +580,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 2 * scale;
 
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = textPrimary;
         const pauseFontSize = 16 * scale;
         ctx.font = `600 ${pauseFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
         ctx.textAlign = "center";
@@ -616,7 +624,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowBlur = 12 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = textPrimary;
         ctx.font = `700 ${Math.max(
           28,
           56 * scale
@@ -1247,11 +1255,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
     } else if (currentScreen === "game") {
       renderGameBoard(ctx, canvasWidth, canvasHeight);
     } else {
-      // 기본 배경
-      ctx.fillStyle = "#1a1a1a";
+      // 기본 배경 (테마 색상 사용)
+      const { canvasBg } = getThemeColors();
+      ctx.fillStyle = canvasBg;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     }
-  }, [currentScreen, renderStageSelect, renderGameBoard]);
+  }, [currentScreen, renderStageSelect, renderGameBoard, stageNumber]);
 
   // 애니메이션 루프 시작 (성능 최적화: 필요할 때만 렌더링)
   useEffect(() => {

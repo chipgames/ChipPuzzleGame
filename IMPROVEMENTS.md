@@ -316,7 +316,12 @@
 
 ### 📋 선택적 개선 사항
 
-- **이미지 최적화**: WebP 형식 변환 (가이드는 OPTIMIZATION.md에 제공됨)
+- ✅ **이미지 최적화**: WebP 자동 선택 기능 구현 완료
+  - ✅ `OptimizedImage` 컴포넌트 생성
+  - ✅ WebP 지원 감지 유틸리티 함수 (`supportsWebP`, `getOptimizedImagePath`)
+  - ✅ Header, MenuScreen에서 최적화된 이미지 사용
+  - ✅ 자동 폴백 (WebP → PNG → SVG)
+  - 📝 **남은 작업**: 실제 WebP 이미지 파일 변환 (가이드는 OPTIMIZATION.md에 제공됨)
 
 ### 🎉 프로젝트 상태
 
