@@ -247,56 +247,144 @@ const GameBoard: React.FC<GameBoardProps> = ({
         }
       }
 
-      // 페이지네이션 정보 표시
+      // 페이지네이션 (프리미엄 스타일) - << 페이지 2/20 >> 형식
+      const buttonHeight = 40 * scale;
+      const buttonWidth = 90 * scale;
       const pageInfoY = canvasHeight - 60 * scale;
-      ctx.fillStyle = textPrimary;
+      const buttonY = pageInfoY;
+      const buttonGap = 15 * scale;
+      const buttonRadius = 10 * scale;
+      const buttonBorderColor = isLightStage ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+      const shadowAlpha = isLightStage ? 0.2 : 0.4;
+      const { textTertiary: textTertiaryStage } = getThemeColors();
+
+      // 페이지 정보 텍스트 너비 계산
+      const pageInfoText = `${t("stageSelect.page")} ${currentPage} / ${totalPages}`;
       ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
+      const pageInfoWidth = ctx.measureText(pageInfoText).width;
+
+      // 전체 너비 계산 (이전 버튼 + 간격 + 페이지 정보 + 간격 + 다음 버튼)
+      const totalWidth = buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
+      const paginationStartX = (canvasWidth - totalWidth) / 2;
+
+      // 이전 페이지 버튼 (항상 표시, 비활성화 상태 포함)
+      const prevButtonX = paginationStartX;
+      const isPrevDisabled = currentPage <= 1;
+      const isNextDisabled = currentPage >= totalPages;
+
+      // 버튼 배경 (그라데이션 또는 비활성화 색상)
+      const prevGradient = ctx.createLinearGradient(
+        prevButtonX,
+        buttonY,
+        prevButtonX,
+        buttonY + buttonHeight
+      );
+      if (isPrevDisabled) {
+        prevGradient.addColorStop(0, isLightStage ? "#cccccc" : "#444");
+        prevGradient.addColorStop(1, isLightStage ? "#bbbbbb" : "#333");
+      } else {
+        prevGradient.addColorStop(0, accentPrimaryStage);
+        prevGradient.addColorStop(1, accentSecondaryStage);
+      }
+
+      ctx.save();
+      ctx.globalAlpha = isPrevDisabled ? 0.4 : 1;
+      ctx.beginPath();
+      ctx.roundRect(prevButtonX, buttonY, buttonWidth, buttonHeight, buttonRadius);
+      ctx.fillStyle = prevGradient;
+      ctx.fill();
+      ctx.strokeStyle = isPrevDisabled ? (isLightStage ? "#aaaaaa" : "#555") : buttonBorderColor;
+      ctx.lineWidth = Math.max(1, 1.5 * scale);
+      ctx.stroke();
+      ctx.restore();
+
+      // 그림자 효과 (활성화된 경우만)
+      if (!isPrevDisabled) {
+        ctx.shadowColor = hexToRgba(accentPrimaryStage, shadowAlpha);
+        ctx.shadowBlur = 6 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
+      } else {
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+      }
+
+      ctx.fillStyle = isPrevDisabled ? textTertiaryStage : textPrimary;
+      ctx.font = `600 ${Math.max(12, 16 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
       ctx.fillText(
-        `${t("stageSelect.page")} ${currentPage} / ${totalPages}`,
-        canvasWidth / 2,
-        pageInfoY
+        "«",
+        prevButtonX + buttonWidth / 2,
+        buttonY + buttonHeight / 2
       );
 
-      // 페이지네이션 버튼
-      const buttonHeight = 30 * scale;
-      const buttonWidth = 80 * scale;
-      const buttonY = pageInfoY + 20 * scale;
-      const buttonGap = 10 * scale;
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
 
-      // 이전 페이지 버튼
-      if (currentPage > 1) {
-        const prevButtonX = canvasWidth / 2 - buttonWidth - buttonGap / 2;
-        ctx.fillStyle = currentPage > 1 ? accentPrimaryStage : "#444";
-        ctx.fillRect(prevButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.strokeStyle = textPrimary;
-        ctx.lineWidth = Math.max(1, 2 * scale);
-        ctx.strokeRect(prevButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.fillStyle = textPrimary;
-        ctx.font = `bold ${Math.max(10, 14 * scale)}px Arial`;
-        ctx.fillText(
-          "«",
-          prevButtonX + buttonWidth / 2,
-          buttonY + buttonHeight / 2 + 4 * scale
-        );
+      // 페이지 정보 표시
+      const pageInfoX = prevButtonX + buttonWidth + buttonGap;
+      ctx.fillStyle = textPrimary;
+      ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
+      ctx.textAlign = "left";
+      ctx.fillText(
+        pageInfoText,
+        pageInfoX,
+        buttonY + buttonHeight / 2 + 4 * scale
+      );
+
+      // 다음 페이지 버튼 (항상 표시, 비활성화 상태 포함)
+      const nextButtonX = pageInfoX + pageInfoWidth + buttonGap;
+
+      // 버튼 배경 (그라데이션 또는 비활성화 색상)
+      const nextGradient = ctx.createLinearGradient(
+        nextButtonX,
+        buttonY,
+        nextButtonX,
+        buttonY + buttonHeight
+      );
+      if (isNextDisabled) {
+        nextGradient.addColorStop(0, isLightStage ? "#cccccc" : "#444");
+        nextGradient.addColorStop(1, isLightStage ? "#bbbbbb" : "#333");
+      } else {
+        nextGradient.addColorStop(0, accentPrimaryStage);
+        nextGradient.addColorStop(1, accentSecondaryStage);
       }
 
-      // 다음 페이지 버튼
-      if (currentPage < totalPages) {
-        const nextButtonX = canvasWidth / 2 + buttonGap / 2;
-        ctx.fillStyle = currentPage < totalPages ? accentPrimaryStage : "#444";
-        ctx.fillRect(nextButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.strokeStyle = textPrimary;
-        ctx.lineWidth = Math.max(1, 2 * scale);
-        ctx.strokeRect(nextButtonX, buttonY, buttonWidth, buttonHeight);
-        ctx.fillStyle = textPrimary;
-        ctx.font = `bold ${Math.max(10, 14 * scale)}px Arial`;
-        ctx.fillText(
-          "»",
-          nextButtonX + buttonWidth / 2,
-          buttonY + buttonHeight / 2 + 4 * scale
-        );
+      ctx.save();
+      ctx.globalAlpha = isNextDisabled ? 0.4 : 1;
+      ctx.beginPath();
+      ctx.roundRect(nextButtonX, buttonY, buttonWidth, buttonHeight, buttonRadius);
+      ctx.fillStyle = nextGradient;
+      ctx.fill();
+      ctx.strokeStyle = isNextDisabled ? (isLightStage ? "#aaaaaa" : "#555") : buttonBorderColor;
+      ctx.lineWidth = Math.max(1, 1.5 * scale);
+      ctx.stroke();
+      ctx.restore();
+
+      // 그림자 효과 (활성화된 경우만)
+      if (!isNextDisabled) {
+        ctx.shadowColor = hexToRgba(accentPrimaryStage, shadowAlpha);
+        ctx.shadowBlur = 6 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
+      } else {
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
       }
+
+      ctx.fillStyle = isNextDisabled ? textTertiaryStage : textPrimary;
+      ctx.font = `600 ${Math.max(12, 16 * scale)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(
+        "»",
+        nextButtonX + buttonWidth / 2,
+        buttonY + buttonHeight / 2
+      );
+
+      ctx.shadowColor = "transparent";
+      ctx.shadowBlur = 0;
     },
     [unlockedStages, t, currentPage]
   );
@@ -1608,36 +1696,48 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const stagesPerPage = 50;
         const totalStages = 1000;
         const totalPages = Math.ceil(totalStages / stagesPerPage);
-        const buttonHeight = 30 * scale;
-        const buttonWidth = 80 * scale;
+        const buttonHeight = 40 * scale;
+        const buttonWidth = 90 * scale;
         const pageInfoY = canvasHeight - 60 * scale;
-        const buttonY = pageInfoY + 20 * scale;
-        const buttonGap = 10 * scale;
+        const buttonY = pageInfoY;
+        const buttonGap = 15 * scale;
 
-        // 이전 페이지 버튼
-        if (currentPage > 1) {
-          const prevButtonX = canvasWidth / 2 - buttonWidth - buttonGap / 2;
-          if (
-            x >= prevButtonX &&
-            x <= prevButtonX + buttonWidth &&
-            y >= buttonY &&
-            y <= buttonY + buttonHeight
-          ) {
+        // 페이지 정보 텍스트 너비 추정 (렌더링과 동일한 폰트 크기 기준)
+        const pageInfoText = `${t("stageSelect.page")} ${currentPage} / ${totalPages}`;
+        const estimatedFontSize = Math.max(12, 18 * scale);
+        // 대략적인 텍스트 너비 추정 (문자당 평균 너비)
+        const estimatedCharWidth = estimatedFontSize * 0.6;
+        const pageInfoWidth = pageInfoText.length * estimatedCharWidth;
+
+        // 전체 너비 계산
+        const totalWidth = buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
+        const paginationStartX = (canvasWidth - totalWidth) / 2;
+
+        // 이전 페이지 버튼 (항상 표시되지만 비활성화 상태일 수 있음)
+        const prevButtonX = paginationStartX;
+        if (
+          x >= prevButtonX &&
+          x <= prevButtonX + buttonWidth &&
+          y >= buttonY &&
+          y <= buttonY + buttonHeight
+        ) {
+          if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
             soundManager.playClick();
             return;
           }
         }
 
-        // 다음 페이지 버튼
-        if (currentPage < totalPages) {
-          const nextButtonX = canvasWidth / 2 + buttonGap / 2;
-          if (
-            x >= nextButtonX &&
-            x <= nextButtonX + buttonWidth &&
-            y >= buttonY &&
-            y <= buttonY + buttonHeight
-          ) {
+        // 다음 페이지 버튼 (항상 표시되지만 비활성화 상태일 수 있음)
+        const pageInfoX = prevButtonX + buttonWidth + buttonGap;
+        const nextButtonX = pageInfoX + pageInfoWidth + buttonGap;
+        if (
+          x >= nextButtonX &&
+          x <= nextButtonX + buttonWidth &&
+          y >= buttonY &&
+          y <= buttonY + buttonHeight
+        ) {
+          if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
             soundManager.playClick();
             return;
