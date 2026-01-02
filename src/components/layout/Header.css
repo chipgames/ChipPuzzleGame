@@ -219,6 +219,13 @@
   font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   backdrop-filter: blur(10px);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 32px;
 }
 
 .language-selector:hover {
@@ -226,6 +233,24 @@
   background: var(--bg-glass);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
+}
+
+.language-selector:focus {
+  outline: none;
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-md), 0 0 0 3px var(--gradient-glow);
+}
+
+/* 셀렉트 박스 옵션 스타일 (다크 모드) */
+.language-selector option {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  padding: 8px;
+}
+
+/* 라이트 모드에서 드롭다운 아이콘 색상 조정 */
+:root[data-theme="light"] .language-selector {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%232a2a3e' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
 }
 
 /* 햄버거 메뉴 버튼 */
