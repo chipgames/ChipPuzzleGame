@@ -46,8 +46,10 @@ export function improveAdAccessibility(): void {
   );
   adIframes.forEach((iframe) => {
     try {
-      if (iframe.contentDocument) {
-        const body = iframe.contentDocument.body;
+      // HTMLIFrameElement로 타입 캐스팅
+      const iframeElement = iframe as HTMLIFrameElement;
+      if (iframeElement.contentDocument) {
+        const body = iframeElement.contentDocument.body;
         if (body && body.getAttribute("aria-hidden") === "true") {
           body.removeAttribute("aria-hidden");
         }
