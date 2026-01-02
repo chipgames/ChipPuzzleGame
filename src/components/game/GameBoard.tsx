@@ -1648,6 +1648,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const dpr = window.devicePixelRatio || 1;
       const canvasWidth = canvas.width / dpr;
       const canvasHeight = canvas.height / dpr;
+      
+      // 캔버스 컨텍스트 가져오기 (텍스트 너비 측정용)
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
 
       if (currentScreen === "stageSelect") {
         // 스테이지 선택 화면
@@ -1702,46 +1706,69 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const buttonY = pageInfoY;
         const buttonGap = 15 * scale;
 
-        // 페이지 정보 텍스트 너비 추정 (렌더링과 동일한 폰트 크기 기준)
+        // 페이지 정보 텍스트 너비 측정 (렌더링과 동일한 방식)
         const pageInfoText = `${t("stageSelect.page")} ${currentPage} / ${totalPages}`;
-        const estimatedFontSize = Math.max(12, 18 * scale);
-        // 대략적인 텍스트 너비 추정 (문자당 평균 너비)
-        const estimatedCharWidth = estimatedFontSize * 0.6;
-        const pageInfoWidth = pageInfoText.length * estimatedCharWidth;
+        ctx.font = `bold ${Math.max(12, 18 * scale)}px Arial`;
+        const pageInfoWidth = ctx.measureText(pageInfoText).width;
 
-        // 전체 너비 계산
+        // 전체 너비 계산 (렌더링과 동일)
         const totalWidth = buttonWidth + buttonGap + pageInfoWidth + buttonGap + buttonWidth;
         const paginationStartX = (canvasWidth - totalWidth) / 2;
 
-        // 이전 페이지 버튼 (항상 표시되지만 비활성화 상태일 수 있음)
+        // 이전 페이지 버튼 클릭 감지
         const prevButtonX = paginationStartX;
+        const isPrevDisabled = currentPage <= 1;
+        const prevButtonRight = prevButtonX + buttonWidth;
+        const prevButtonBottom = buttonY + buttonHeight;
+        
         if (
+          !isPrevDisabled &&
           x >= prevButtonX &&
-          x <= prevButtonX + buttonWidth &&
+          x <= prevButtonRight &&
           y >= buttonY &&
-          y <= buttonY + buttonHeight
+          y <= prevButtonBottom
         ) {
-          if (currentPage > 1) {
-            setCurrentPage(currentPage - 1);
-            soundManager.playClick();
-            return;
-          }
+          logger.debug("이전 페이지 버튼 클릭", {
+            x,
+            y,
+            prevButtonX,
+            prevButtonRight,
+            buttonY,
+            prevButtonBottom,
+            currentPage,
+          });
+          setCurrentPage(currentPage - 1);
+          soundManager.playClick();
+          return;
         }
 
-        // 다음 페이지 버튼 (항상 표시되지만 비활성화 상태일 수 있음)
+        // 다음 페이지 버튼 클릭 감지
         const pageInfoX = prevButtonX + buttonWidth + buttonGap;
         const nextButtonX = pageInfoX + pageInfoWidth + buttonGap;
+        const isNextDisabled = currentPage >= totalPages;
+        const nextButtonRight = nextButtonX + buttonWidth;
+        const nextButtonBottom = buttonY + buttonHeight;
+        
         if (
+          !isNextDisabled &&
           x >= nextButtonX &&
-          x <= nextButtonX + buttonWidth &&
+          x <= nextButtonRight &&
           y >= buttonY &&
-          y <= buttonY + buttonHeight
+          y <= nextButtonBottom
         ) {
-          if (currentPage < totalPages) {
-            setCurrentPage(currentPage + 1);
-            soundManager.playClick();
-            return;
-          }
+          logger.debug("다음 페이지 버튼 클릭", {
+            x,
+            y,
+            nextButtonX,
+            nextButtonRight,
+            buttonY,
+            nextButtonBottom,
+            currentPage,
+            totalPages,
+          });
+          setCurrentPage(currentPage + 1);
+          soundManager.playClick();
+          return;
         }
 
         // 스테이지 그리드 클릭 감지
@@ -1937,6 +1964,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       swapGems,
       showHint,
       togglePause,
+      currentPage,
+      t,
     ]
   );
 
