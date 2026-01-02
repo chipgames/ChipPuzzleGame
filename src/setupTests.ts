@@ -51,7 +51,7 @@ HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
   shadowOffsetX: 0,
   shadowOffsetY: 0,
   globalAlpha: 1,
-}));
+})) as any; // 타입 단언으로 CanvasRenderingContext2D의 모든 속성을 모킹하지 않아도 됨
 
 // ResizeObserver 모킹
 global.ResizeObserver = jest.fn().mockImplementation(() => ({

@@ -5,7 +5,6 @@
 
 import { logger } from "./logger";
 import { StorageData, GameProgress } from "@/types/storage";
-import { StageRecord } from "@/types/stage";
 import { memoryStorage } from "./memoryStorage";
 
 /**
@@ -258,7 +257,7 @@ class StorageManager {
           error,
         });
       }
-      return options.fallback ?? null;
+      return (options.fallback as T) ?? null;
     }
   }
 

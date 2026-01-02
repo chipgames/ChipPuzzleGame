@@ -203,24 +203,43 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.strokeRect(x, y, stageSize, stageSize);
 
-        // 스테이지 번호
-        ctx.fillStyle = "#fff";
-        const numberFontSize = Math.max(12, 20 * scale); // 최소 12px
-        ctx.font = `bold ${numberFontSize}px Arial`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(
-          stageNumber.toString(),
-          x + stageSize / 2,
-          y + stageSize / 2
-        );
-
-        // 잠금 아이콘 (잠긴 스테이지)
+        // 잠긴 스테이지인 경우 잠금 아이콘과 번호를 함께 표시
         if (!isUnlocked) {
+          // 잠금 아이콘 (위쪽)
           ctx.fillStyle = "#ffa500";
           const lockFontSize = Math.max(16, 24 * scale); // 최소 16px
           ctx.font = `${lockFontSize}px Arial`;
-          ctx.fillText("🔒", x + stageSize / 2, y + stageSize / 2 - 10 * scale);
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(
+            "🔒",
+            x + stageSize / 2,
+            y + stageSize / 2 - 8 * scale // 위쪽에 배치
+          );
+
+          // 스테이지 번호 (아래쪽)
+          ctx.fillStyle = "#fff";
+          const numberFontSize = Math.max(10, 14 * scale); // 잠긴 스테이지는 조금 작게
+          ctx.font = `bold ${numberFontSize}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(
+            stageNumber.toString(),
+            x + stageSize / 2,
+            y + stageSize / 2 + 12 * scale // 아래쪽에 배치
+          );
+        } else {
+          // 해제된 스테이지는 번호만 중앙에 표시
+          ctx.fillStyle = "#fff";
+          const numberFontSize = Math.max(12, 20 * scale); // 최소 12px
+          ctx.font = `bold ${numberFontSize}px Arial`;
+          ctx.textAlign = "center";
+          ctx.textBaseline = "middle";
+          ctx.fillText(
+            stageNumber.toString(),
+            x + stageSize / 2,
+            y + stageSize / 2
+          );
         }
       }
 
