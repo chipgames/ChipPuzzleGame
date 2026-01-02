@@ -99,16 +99,22 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
   useEffect(() => {
     // LocalStorage에서 해제된 스테이지 확인
-    const progress = storageManager.get<GameProgress>(
-      "chipPuzzleGame_progress",
-      { fallback: null }
-    );
-    
-    if (progress) {
-      setUnlockedStages(Math.max(1, progress.highestStage || 1));
-      logger.info("Game progress loaded", {
-        highestStage: progress.highestStage || 1,
-      });
+    try {
+      const progress = storageManager.get<GameProgress>(
+        "chipPuzzleGame_progress",
+        { fallback: null, silent: true }
+      );
+      
+      if (progress) {
+        setUnlockedStages(Math.max(1, progress.highestStage || 1));
+        logger.info("Game progress loaded", {
+          highestStage: progress.highestStage || 1,
+        });
+      }
+    } catch (error) {
+      // 게임 상태 복구 실패 시 조용히 처리 (새 게임 시작)
+      logger.warn("Failed to recover game state", { error });
+      setUnlockedStages(1);
     }
   }, []);
 
@@ -1439,6 +1445,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
           logger.error("Failed to save progress", {
             stage: gameState.currentStage,
           });
+          // 사용자에게 알림 (조용히 처리하여 게임 플레이 방해 최소화)
+          // 메모리 저장소를 사용 중이면 세션 동안만 유지됨을 알림
         }
     }
 

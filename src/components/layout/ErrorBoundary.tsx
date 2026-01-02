@@ -67,7 +67,11 @@ export class ErrorBoundary extends Component<Props, State> {
               {this.getLocalizedText("error.title")}
             </h2>
             <p className="error-boundary-message">
-              {this.getLocalizedText("error.message")}
+              {this.state.error
+                ? this.getLocalizedText("error.messageWithDetails", {
+                    error: this.state.error.message || this.state.error.name || "알 수 없는 오류",
+                  })
+                : this.getLocalizedText("error.message")}
             </p>
             {process.env.NODE_ENV === "development" && this.state.error && (
               <details className="error-boundary-details">
@@ -115,7 +119,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return this.props.children;
   }
 
-  private getLocalizedText(key: string): string {
+  private getLocalizedText(key: string, params?: Record<string, string>): string {
     // 간단한 다국어 지원 (실제로는 useLanguage 훅을 사용해야 하지만 클래스 컴포넌트에서는 제한적)
     let lang = "ko";
     try {
@@ -127,6 +131,7 @@ export class ErrorBoundary extends Component<Props, State> {
       ko: {
         "error.title": "오류가 발생했습니다",
         "error.message": "게임을 새로고침해주세요.",
+        "error.messageWithDetails": "다음 오류가 발생했습니다: {error}. 게임을 새로고침해주세요.",
         "error.details": "에러 상세 정보",
         "error.reload": "새로고침",
         "error.reset": "다시 시도",
@@ -154,7 +159,16 @@ export class ErrorBoundary extends Component<Props, State> {
       },
     };
 
-    return translations[lang]?.[key] || translations.ko[key] || key;
+    let text = translations[lang]?.[key] || translations.ko[key] || key;
+    
+    // 파라미터 치환
+    if (params) {
+      for (const [paramKey, paramValue] of Object.entries(params)) {
+        text = text.replace(`{${paramKey}}`, paramValue);
+      }
+    }
+    
+    return text;
   }
 }
 

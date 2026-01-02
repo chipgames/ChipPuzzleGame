@@ -6,6 +6,7 @@
 import { logger } from "./logger";
 import { StorageData, GameProgress } from "@/types/storage";
 import { StageRecord } from "@/types/stage";
+import { memoryStorage } from "./memoryStorage";
 
 interface StorageOptions {
   fallback?: any;
@@ -117,22 +118,39 @@ function sanitizeString(value: any): string | null {
 }
 
 class StorageManager {
+  private useMemoryStorage = false;
+
   private isAvailable(): boolean {
     try {
       const test = "__storage_test__";
       localStorage.setItem(test, test);
       localStorage.removeItem(test);
+      this.useMemoryStorage = false;
       return true;
     } catch {
+      // LocalStorage를 사용할 수 없으면 메모리 저장소 사용
+      this.useMemoryStorage = true;
+      logger.warn("LocalStorage is not available, using memory storage");
       return false;
     }
   }
 
   /**
-   * LocalStorage에서 값 가져오기
+   * LocalStorage 또는 메모리 저장소에서 값 가져오기
    */
   public get<T>(key: string, options: StorageOptions = {}): T | null {
-    if (!this.isAvailable()) {
+    const available = this.isAvailable();
+    
+    // LocalStorage를 사용할 수 없으면 메모리 저장소 사용
+    if (!available && this.useMemoryStorage) {
+      const memoryValue = memoryStorage.get<T>(key);
+      if (memoryValue !== null) {
+        return memoryValue;
+      }
+      return options.fallback ?? null;
+    }
+
+    if (!available) {
       if (!options.silent) {
         logger.warn("LocalStorage is not available", { key });
       }
@@ -202,14 +220,25 @@ class StorageManager {
   }
 
   /**
-   * LocalStorage에 값 저장하기
+   * LocalStorage 또는 메모리 저장소에 값 저장하기
    */
   public set<T>(
     key: string,
     value: T,
     options: Omit<StorageOptions, "fallback"> = {}
   ): boolean {
-    if (!this.isAvailable()) {
+    const available = this.isAvailable();
+    
+    // LocalStorage를 사용할 수 없으면 메모리 저장소 사용
+    if (!available && this.useMemoryStorage) {
+      const result = memoryStorage.set(key, value);
+      if (!result && !options.silent) {
+        logger.warn("Failed to save to memory storage", { key });
+      }
+      return result;
+    }
+
+    if (!available) {
       if (!options.silent) {
         logger.warn("LocalStorage is not available", { key });
       }
