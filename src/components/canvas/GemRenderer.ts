@@ -11,17 +11,29 @@ export class GemRenderer {
   }
 
   public render(gem: Gem, alpha: number = 1) {
+    // GPU 가속을 위한 최적화: transform 대신 직접 좌표 계산
     this.ctx.save();
 
-    // 위치 및 변환 적용
+    // 위치 및 변환 적용 (GPU 가속 최적화)
     const centerX = gem.x + this.cellSize / 2;
     const centerY = gem.y + this.cellSize / 2;
-    this.ctx.translate(centerX, centerY);
-    this.ctx.scale(gem.scale || 1, gem.scale || 1);
-    this.ctx.rotate(gem.rotation || 0);
+    const scale = gem.scale || 1;
+    const rotation = gem.rotation || 0;
+    
+    // 회전 및 스케일이 없으면 translate만 사용 (성능 최적화)
+    if (scale === 1 && rotation === 0) {
+      this.ctx.translate(centerX, centerY);
+    } else {
+      this.ctx.translate(centerX, centerY);
+      this.ctx.scale(scale, scale);
+      this.ctx.rotate(rotation);
+    }
     
     // 알파 적용 (페이드 효과)
-    this.ctx.globalAlpha = alpha;
+    // 알파가 1이면 globalAlpha 설정 생략 (성능 최적화)
+    if (alpha < 1) {
+      this.ctx.globalAlpha = alpha;
+    }
 
     // 젬 타입에 따른 렌더링
     switch (gem.type) {

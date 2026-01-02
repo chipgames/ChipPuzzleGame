@@ -144,6 +144,7 @@ src/
 - **타입 안정성**: TypeScript로 타입 안정성 보장
 - **성능 최적화**: React.memo, Lazy Loading 적용
 - **성능 모니터링**: Web Vitals 측정 및 분석
+- **애니메이션 최적화**: GPU 가속, will-change CSS 속성
 - **PWA 완성**: Service Worker를 통한 오프라인 지원
 - **보안**: CSP 적용, 데이터 검증
 - **SEO 최적화**: 구조화된 데이터, 메타 태그

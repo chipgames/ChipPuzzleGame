@@ -7,6 +7,10 @@
   align-items: center;
   justify-content: center;
   position: relative;
+  /* GPU 가속 최적화 */
+  will-change: transform;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
 }
 
 .game-canvas {
@@ -20,6 +24,16 @@
   background: #2a2a2a;
   border: 1px solid #444;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  /* GPU 가속 최적화 */
+  will-change: contents;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  /* 렌더링 최적화 */
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
 }
 
 @media (max-width: 1200px) {
