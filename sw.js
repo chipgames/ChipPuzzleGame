@@ -3,7 +3,8 @@
  * 오프라인 지원 및 캐싱 전략 구현
  */
 
-const CACHE_VERSION = "chip-puzzle-v1.1.0";
+// 캐시 버전 업데이트 (코드 변경 시마다 증가)
+const CACHE_VERSION = "chip-puzzle-v1.1.1";
 const CACHE_NAME = `${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `${CACHE_NAME}-static`;
 const DYNAMIC_CACHE_NAME = `${CACHE_NAME}-dynamic`;
@@ -91,46 +92,47 @@ self.addEventListener("fetch", (event) => {
   }
 
   event.respondWith(
-    caches.match(request).then((cachedResponse) => {
-      // 캐시에 있으면 반환
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // 네트워크 요청
-      return fetch(request)
-        .then((response) => {
-          // 응답이 유효한지 확인
-          if (!response || response.status !== 200 || response.type !== "basic") {
-            return response;
-          }
-
-          // 응답 복제 (한 번만 읽을 수 있으므로)
-          const responseToCache = response.clone();
-
-          // 동적 캐시에 저장
-          caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
-            // 이미지, 폰트, 스타일시트, 스크립트만 캐싱
-            if (
-              request.destination === "image" ||
-              request.destination === "font" ||
-              request.destination === "style" ||
-              request.destination === "script" ||
-              url.pathname.endsWith(".js") ||
-              url.pathname.endsWith(".css") ||
-              url.pathname.endsWith(".png") ||
-              url.pathname.endsWith(".jpg") ||
-              url.pathname.endsWith(".svg") ||
-              url.pathname.endsWith(".ico")
-            ) {
-              cache.put(request, responseToCache);
-            }
+    fetch(request)
+      .then((response) => {
+        // 응답이 유효한지 확인
+        if (!response || response.status !== 200 || response.type !== "basic") {
+          // 네트워크 응답이 유효하지 않으면 캐시 확인
+          return caches.match(request).then((cachedResponse) => {
+            return cachedResponse || response;
           });
+        }
 
-          return response;
-        })
-        .catch(() => {
-          // 네트워크 오류 시 오프라인 페이지 반환
+        // 응답 복제 (한 번만 읽을 수 있으므로)
+        const responseToCache = response.clone();
+
+        // 동적 캐시에 저장 (비동기, 응답 지연 없음)
+        caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
+          // 이미지, 폰트, 스타일시트, 스크립트만 캐싱
+          if (
+            request.destination === "image" ||
+            request.destination === "font" ||
+            request.destination === "style" ||
+            request.destination === "script" ||
+            url.pathname.endsWith(".js") ||
+            url.pathname.endsWith(".css") ||
+            url.pathname.endsWith(".png") ||
+            url.pathname.endsWith(".jpg") ||
+            url.pathname.endsWith(".svg") ||
+            url.pathname.endsWith(".ico")
+          ) {
+            cache.put(request, responseToCache);
+          }
+        });
+
+        return response;
+      })
+      .catch(() => {
+        // 네트워크 오류 시 캐시 확인
+        return caches.match(request).then((cachedResponse) => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // 캐시도 없으면 오프라인 페이지 반환
           if (request.destination === "document") {
             return caches.match("/ChipPuzzleGame/index.html");
           }
@@ -140,7 +142,7 @@ self.addEventListener("fetch", (event) => {
             statusText: "Service Unavailable",
           });
         });
-    })
+      })
   );
 });
 
