@@ -28,7 +28,7 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate }) => {
                 target.src = getLogoPath("ChipGames_Logo.svg");
               }
             }}
-            alt="CHIP GAMES" 
+            alt={t("menu.title") + " - CHIP GAMES 로고"} 
             className="menu-logo"
           />
         </div>

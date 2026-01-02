@@ -117,7 +117,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
                   target.src = getLogoPath("ChipGames_Logo.svg");
                 }
               }}
-              alt="CHIP GAMES" 
+              alt={t("header.gameTitle") + " - CHIP GAMES 로고"} 
               style={{ height: "40px", width: "auto" }}
             />
             <span className="header-game-title">

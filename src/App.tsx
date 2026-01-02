@@ -50,10 +50,51 @@ const App: React.FC = () => {
     setCurrentScreen("game");
   };
 
+  // 페이지별 SEO 설정
+  const getSEOProps = () => {
+    const baseUrl = "https://chipgames.github.io/ChipPuzzleGame/";
+    const lang = new URLSearchParams(window.location.search).get("lang") || "ko";
+    const langParam = lang !== "ko" ? `?lang=${lang}` : "";
+    
+    switch (currentScreen) {
+      case "guide":
+        return {
+          title: undefined, // SEOHead에서 다국어 처리
+          description: undefined,
+          keywords: undefined,
+          url: `${baseUrl}?screen=guide${langParam}`,
+          type: "article" as const,
+        };
+      case "help":
+        return {
+          title: undefined,
+          description: undefined,
+          keywords: undefined,
+          url: `${baseUrl}?screen=help${langParam}`,
+          type: "article" as const,
+        };
+      case "about":
+        return {
+          title: undefined,
+          description: undefined,
+          keywords: undefined,
+          url: `${baseUrl}?screen=about${langParam}`,
+          type: "article" as const,
+        };
+      default:
+        return {
+          title: undefined,
+          description: undefined,
+          keywords: undefined,
+          url: `${baseUrl}${langParam}`,
+          type: "website" as const,
+        };
+    }
+  };
 
   return (
     <ErrorBoundary>
-      <SEOHead />
+      <SEOHead {...getSEOProps()} />
       <div className="app-container">
         <Header onNavigate={handleNavigate} currentScreen={currentScreen} />
         <GameContainer>

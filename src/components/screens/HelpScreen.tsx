@@ -44,6 +44,31 @@ const HelpScreen: React.FC<HelpScreenProps> = ({ onNavigate: _onNavigate }) => {
             <p>{t("help.section7Content")}</p>
           </div>
         </div>
+        <div className="help-related-links">
+          <h3>{t("common.relatedPages") || "관련 페이지"}</h3>
+          <nav aria-label={t("common.relatedPages") || "관련 페이지"}>
+            <a 
+              href="?screen=guide" 
+              onClick={(e) => {
+                e.preventDefault();
+                _onNavigate("guide");
+              }}
+              className="help-link"
+            >
+              {t("header.guide")}
+            </a>
+            <a 
+              href="?screen=about" 
+              onClick={(e) => {
+                e.preventDefault();
+                _onNavigate("about");
+              }}
+              className="help-link"
+            >
+              {t("header.about")}
+            </a>
+          </nav>
+        </div>
       </div>
     </div>
   );

@@ -138,7 +138,8 @@
   },
   "common": {
     "back": "返回",
-    "close": "关闭"
+    "close": "关闭",
+    "relatedPages": "相关页面"
   },
   "error": {
     "canvasNotSupported": "此浏览器不支持Canvas",
@@ -154,6 +155,15 @@
   "seo": {
     "title": "匹配益智游戏 - CHIP GAMES | 免费在线益智游戏",
     "description": "免费在线匹配益智游戏。玩1000个挑战关卡！匹配彩色宝石达成目标的趣味益智游戏。在浏览器中即时游玩 - HTML5游戏。",
-    "keywords": "匹配游戏, 益智游戏, 免费游戏, 在线游戏, 益智, 三消, 糖果粉碎, 游戏, 浏览器游戏, HTML5游戏, 免费益智游戏, 匹配益智"
+    "keywords": "匹配游戏, 益智游戏, 免费游戏, 在线游戏, 益智, 三消, 糖果粉碎, 游戏, 浏览器游戏, HTML5游戏, 免费益智游戏, 匹配益智",
+    "guideTitle": "游戏指南 - 匹配益智游戏 | CHIP GAMES",
+    "guideDescription": "匹配益智游戏指南。了解游戏方法、特殊宝石和策略提示。学习如何清除1000个挑战关卡。",
+    "guideKeywords": "游戏指南, 匹配游戏指南, 益智游戏教程, 游戏提示, 特殊宝石, 策略指南",
+    "helpTitle": "帮助 - 匹配益智游戏 | CHIP GAMES",
+    "helpDescription": "匹配益智游戏帮助。了解游戏玩法、操作、提示功能和问题解决方法。还提供常见问题和答案。",
+    "helpKeywords": "游戏帮助, 匹配游戏帮助, 游戏常见问题, 问题解决, 游戏支持",
+    "aboutTitle": "关于游戏 - 匹配益智游戏 | CHIP GAMES",
+    "aboutDescription": "了解CHIP GAMES的匹配益智游戏。发现游戏特色，包括1000个关卡、精美图形和特殊宝石系统。",
+    "aboutKeywords": "关于游戏, CHIP GAMES, 匹配益智游戏信息, 游戏特色, 游戏信息"
   }
 }

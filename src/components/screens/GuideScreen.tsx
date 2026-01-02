@@ -46,6 +46,31 @@ const GuideScreen: React.FC<GuideScreenProps> = ({ onNavigate: _onNavigate }) =>
             <li>{t("guide.tip6")}</li>
           </ul>
         </div>
+        <div className="guide-related-links">
+          <h3>{t("common.relatedPages") || "관련 페이지"}</h3>
+          <nav aria-label={t("common.relatedPages") || "관련 페이지"}>
+            <a 
+              href="?screen=help" 
+              onClick={(e) => {
+                e.preventDefault();
+                _onNavigate("help");
+              }}
+              className="guide-link"
+            >
+              {t("header.help")}
+            </a>
+            <a 
+              href="?screen=about" 
+              onClick={(e) => {
+                e.preventDefault();
+                _onNavigate("about");
+              }}
+              className="guide-link"
+            >
+              {t("header.about")}
+            </a>
+          </nav>
+        </div>
       </div>
     </div>
   );
