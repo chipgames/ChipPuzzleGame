@@ -4,6 +4,8 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import GameContainer from "@/components/layout/GameContainer";
 import GameBoard from "@/components/game/GameBoard";
+import GuideScreen from "@/components/screens/GuideScreen";
+import HelpScreen from "@/components/screens/HelpScreen";
 import SEOHead from "@/components/seo/SEOHead";
 import { GameScreen } from "@/types/ui";
 import { initializeAdSense, setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
@@ -54,12 +56,18 @@ const App: React.FC = () => {
       <div className="app-container">
         <Header onNavigate={handleNavigate} currentScreen={currentScreen} />
         <GameContainer>
-          <GameBoard 
-            stageNumber={currentStage || 1} 
-            currentScreen={currentScreen}
-            onNavigate={handleNavigate}
-            onStartStage={handleStartStage}
-          />
+          {currentScreen === "guide" ? (
+            <GuideScreen onNavigate={handleNavigate} />
+          ) : currentScreen === "help" ? (
+            <HelpScreen onNavigate={handleNavigate} />
+          ) : (
+            <GameBoard 
+              stageNumber={currentStage || 1} 
+              currentScreen={currentScreen}
+              onNavigate={handleNavigate}
+              onStartStage={handleStartStage}
+            />
+          )}
         </GameContainer>
         <Footer />
       </div>

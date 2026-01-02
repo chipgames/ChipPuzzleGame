@@ -31,7 +31,17 @@
   },
   "help": {
     "title": "Help",
-    "description": "If you need help with the game, please contact us."
+    "description": "If you need help with the game, please contact us.",
+    "section1Title": "Gameplay",
+    "section1Content": "Match Puzzle Game is a puzzle game where you connect 3 or more gems of the same color to remove them. Each stage has a target score or specific gem collection goal.",
+    "section2Title": "Controls",
+    "section2Content": "Click or touch a gem to select it, then drag to an adjacent gem to swap positions. On mobile, you can use swipe gestures.",
+    "section3Title": "Hint Feature",
+    "section3Content": "Click the hint button during the game to show possible matches. Hints can only be used a limited number of times.",
+    "section4Title": "Pause",
+    "section4Content": "Click the pause button during the game to pause. You can resume at any time.",
+    "section5Title": "Troubleshooting",
+    "section5Content": "If the game is not working properly or you find a bug, please let us know through the 'Contact Us' link at the bottom."
   },
   "common": {
     "back": "Back"

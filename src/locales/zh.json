@@ -31,7 +31,17 @@
   },
   "help": {
     "title": "帮助",
-    "description": "如果您需要游戏帮助，请联系我们。"
+    "description": "如果您需要游戏帮助，请联系我们。",
+    "section1Title": "游戏玩法",
+    "section1Content": "匹配益智游戏是一款通过连接3个或更多相同颜色的宝石来消除的益智游戏。每个关卡都有目标分数或特定宝石收集目标。",
+    "section2Title": "操作方法",
+    "section2Content": "点击或触摸宝石来选择它，然后拖动到相邻的宝石来交换位置。在移动设备上，您可以使用滑动手势。",
+    "section3Title": "提示功能",
+    "section3Content": "在游戏过程中点击提示按钮可以显示可能的匹配。提示只能使用有限的次数。",
+    "section4Title": "暂停",
+    "section4Content": "在游戏过程中点击暂停按钮可以暂停游戏。您可以随时恢复。",
+    "section5Title": "问题解决",
+    "section5Content": "如果游戏无法正常工作或您发现错误，请通过底部的\"联系我们\"链接告知我们。"
   },
   "common": {
     "back": "返回"
