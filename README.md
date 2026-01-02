@@ -29,6 +29,16 @@ npm run dev
 npm run build
 ```
 
+### 테스트
+
+```bash
+# 테스트 실행
+npm test
+
+# 커버리지 포함 테스트
+npm run test:coverage
+```
+
 ### 배포
 
 ```bash
@@ -36,6 +46,7 @@ npm run deploy
 ```
 
 **중요**: 배포 후 GitHub에서 Pages 설정을 확인하세요:
+
 1. 저장소 Settings > Pages로 이동
 2. Source를 `gh-pages` 브랜치, `/ (root)` 폴더로 설정
 3. 접속 URL: https://chipgames.github.io/ChipPuzzleGame/
@@ -63,17 +74,18 @@ src/
 - ✅ 다국어 지원 (한국어, 영어, 중국어, 일본어)
 - ✅ 반응형 디자인
 - ✅ PWA 지원
+- ✅ 키보드 접근성 지원
+- ✅ 단위 테스트 (Jest)
+
+## 테스트
+
+프로젝트에는 핵심 로직에 대한 단위 테스트가 포함되어 있습니다:
+
+- `matchDetection.ts`: 매칭 감지 알고리즘 테스트
+- `starRating.ts`: 별점 계산 로직 테스트
+- `storage.ts`: LocalStorage 유틸리티 테스트
+- 컴포넌트 테스트: ErrorBoundary, LanguageSelector
 
 ## 라이선스
 
 MIT
-
-
-
-
-
-
-
-
-
-
