@@ -762,70 +762,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowBlur = 0;
       }
 
-      // 일시정지 오버레이 (프리미엄 스타일)
-      if (gameState.isPaused && !gameState.isGameOver) {
-        const {
-          bgOverlayDark,
-          bgCard,
-          accentPrimary: accentPrimaryPause,
-          textSecondary: textSecondaryPause,
-        } = getThemeColors();
-
-        // 반투명 배경
-        ctx.fillStyle = bgOverlayDark;
-        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-        // 글래스모피즘 카드
-        const cardWidth = 400 * scale;
-        const cardHeight = 200 * scale;
-        const cardX = (canvasWidth - cardWidth) / 2;
-        const cardY = (canvasHeight - cardHeight) / 2;
-        const cardRadius = 24 * scale;
-
-        ctx.save();
-        ctx.globalAlpha = 0.95;
-        ctx.fillStyle = bgCard;
-        ctx.beginPath();
-        ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
-        ctx.fill();
-        ctx.strokeStyle = hexToRgba(accentPrimaryPause, isLight ? 0.2 : 0.3);
-        ctx.lineWidth = 2 * scale;
-        ctx.stroke();
-        ctx.restore();
-
-        // 제목 텍스트 (그라데이션 효과)
-        ctx.shadowColor = hexToRgba(accentPrimaryPause, isLight ? 0.3 : 0.5);
-        ctx.shadowBlur = 12 * scale;
-        ctx.shadowOffsetX = 0;
-        ctx.shadowOffsetY = 0;
-        ctx.fillStyle = textPrimary;
-        ctx.font = `700 ${Math.max(
-          28,
-          56 * scale
-        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(
-          t("game.pause"),
-          canvasWidth / 2,
-          cardY + cardHeight / 2 - 30 * scale
-        );
-
-        // 안내 텍스트
-        ctx.shadowColor = "transparent";
-        ctx.shadowBlur = 0;
-        ctx.fillStyle = textSecondaryPause;
-        ctx.font = `500 ${Math.max(
-          14,
-          20 * scale
-        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-        ctx.fillText(
-          t("game.resume"),
-          canvasWidth / 2,
-          cardY + cardHeight / 2 + 20 * scale
-        );
-      }
-
       // 게임 오버 메시지 (프리미엄 스타일)
       if (gameState.isGameOver) {
         const {
@@ -1286,6 +1222,70 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (particleSystemRef.current) {
         particleSystemRef.current.update(16); // 약 60fps 기준
         particleSystemRef.current.render();
+      }
+
+      // 일시정지 오버레이 (프리미엄 스타일) - 젬 렌더링 이후에 그려서 위에 표시
+      if (gameState.isPaused && !gameState.isGameOver) {
+        const {
+          bgOverlayDark,
+          bgCard,
+          accentPrimary: accentPrimaryPause,
+          textSecondary: textSecondaryPause,
+        } = getThemeColors();
+
+        // 반투명 배경
+        ctx.fillStyle = bgOverlayDark;
+        ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+        // 글래스모피즘 카드
+        const cardWidth = 400 * scale;
+        const cardHeight = 200 * scale;
+        const cardX = (canvasWidth - cardWidth) / 2;
+        const cardY = (canvasHeight - cardHeight) / 2;
+        const cardRadius = 24 * scale;
+
+        ctx.save();
+        ctx.globalAlpha = 0.95;
+        ctx.fillStyle = bgCard;
+        ctx.beginPath();
+        ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
+        ctx.fill();
+        ctx.strokeStyle = hexToRgba(accentPrimaryPause, isLight ? 0.2 : 0.3);
+        ctx.lineWidth = 2 * scale;
+        ctx.stroke();
+        ctx.restore();
+
+        // 제목 텍스트 (그라데이션 효과)
+        ctx.shadowColor = hexToRgba(accentPrimaryPause, isLight ? 0.3 : 0.5);
+        ctx.shadowBlur = 12 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+        ctx.fillStyle = textPrimary;
+        ctx.font = `700 ${Math.max(
+          28,
+          56 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          t("game.pause"),
+          canvasWidth / 2,
+          cardY + cardHeight / 2 - 30 * scale
+        );
+
+        // 안내 텍스트
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = textSecondaryPause;
+        ctx.font = `500 ${Math.max(
+          14,
+          20 * scale
+        )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.fillText(
+          t("game.resume"),
+          canvasWidth / 2,
+          cardY + cardHeight / 2 + 20 * scale
+        );
       }
 
       // 클리어 화면 오버레이 (프리미엄 스타일)
