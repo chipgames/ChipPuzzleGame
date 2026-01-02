@@ -119,6 +119,9 @@ const Header: React.FC<HeaderProps> = ({ onNavigate, currentScreen: _currentScre
               }}
               alt={t("header.gameTitle") + " - CHIP GAMES 로고"} 
               style={{ height: "40px", width: "auto" }}
+              loading="eager"
+              width="120"
+              height="40"
             />
             <span className="header-game-title">
               {t("header.gameTitle")}

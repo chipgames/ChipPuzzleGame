@@ -38,10 +38,12 @@ export default defineConfig(({ command, mode }) => {
       assetsDir: "assets",
       sourcemap: false,
       minify: "esbuild",
+      cssCodeSplit: true,
       rollupOptions: {
         output: {
           manualChunks: {
             vendor: ["react", "react-dom"],
+            helmet: ["react-helmet-async"],
           },
           // 버전 정보를 파일명에 포함하여 캐시 무효화
           entryFileNames: `assets/[name]-${version}-[hash].js`,
@@ -50,6 +52,10 @@ export default defineConfig(({ command, mode }) => {
         },
       },
       chunkSizeWarningLimit: 1000,
+      // 압축 최적화
+      reportCompressedSize: true,
+      // 빌드 성능 최적화
+      target: "es2015",
     },
     server: {
       port: 3000,

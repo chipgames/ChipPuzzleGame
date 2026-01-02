@@ -30,6 +30,9 @@ const MenuScreen: React.FC<MenuScreenProps> = ({ onNavigate }) => {
             }}
             alt={t("menu.title") + " - CHIP GAMES 로고"} 
             className="menu-logo"
+            loading="eager"
+            width="200"
+            height="200"
           />
         </div>
         <h1 className="menu-title">{t("menu.title")}</h1>

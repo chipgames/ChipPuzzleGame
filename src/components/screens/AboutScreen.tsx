@@ -15,33 +15,33 @@ const AboutScreen: React.FC<AboutScreenProps> = ({ onNavigate: _onNavigate }) =>
         <h1 className="about-title">{t("about.title")}</h1>
         <div className="about-text">
           <p>{t("about.description")}</p>
-          <div className="about-section">
-            <h3>{t("about.section1Title")}</h3>
+          <section className="about-section">
+            <h2>{t("about.section1Title")}</h2>
             <p>{t("about.section1Content")}</p>
-          </div>
-          <div className="about-section">
-            <h3>{t("about.section2Title")}</h3>
+          </section>
+          <section className="about-section">
+            <h2>{t("about.section2Title")}</h2>
             <p>{t("about.section2Content")}</p>
-          </div>
-          <div className="about-section">
-            <h3>{t("about.section3Title")}</h3>
+          </section>
+          <section className="about-section">
+            <h2>{t("about.section3Title")}</h2>
             <p>{t("about.section3Content")}</p>
-          </div>
-          <div className="about-section">
-            <h3>{t("about.section4Title")}</h3>
+          </section>
+          <section className="about-section">
+            <h2>{t("about.section4Title")}</h2>
             <p>{t("about.section4Content")}</p>
-          </div>
-          <div className="about-section">
-            <h3>{t("about.section5Title")}</h3>
+          </section>
+          <section className="about-section">
+            <h2>{t("about.section5Title")}</h2>
             <p>{t("about.section5Content")}</p>
-          </div>
-          <div className="about-section">
-            <h3>{t("about.section6Title")}</h3>
+          </section>
+          <section className="about-section">
+            <h2>{t("about.section6Title")}</h2>
             <p>{t("about.section6Content")}</p>
-          </div>
+          </section>
         </div>
         <div className="about-related-links">
-          <h3>{t("common.relatedPages") || "관련 페이지"}</h3>
+          <h2>{t("common.relatedPages") || "관련 페이지"}</h2>
           <nav aria-label={t("common.relatedPages") || "관련 페이지"}>
             <a 
               href="?screen=guide" 

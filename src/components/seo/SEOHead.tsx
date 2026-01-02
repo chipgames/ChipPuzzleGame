@@ -204,6 +204,8 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <title>{finalTitle}</title>
       <meta name="description" content={finalDescription} />
       <meta name="keywords" content={finalKeywords} />
+      <meta name="theme-color" content="#667eea" />
+      <meta name="msapplication-TileColor" content="#667eea" />
       {noindex && <meta name="robots" content="noindex, nofollow" />}
       <link rel="canonical" href={url} />
 
@@ -211,16 +213,25 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <meta property="og:title" content={finalTitle} />
       <meta property="og:description" content={finalDescription} />
       <meta property="og:image" content={finalImage} />
+      <meta property="og:image:secure_url" content={finalImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:image:alt" content={finalTitle} />
+      <meta property="og:image:type" content="image/png" />
       <meta property="og:type" content={type} />
       <meta property="og:url" content={url} />
       <meta property="og:site_name" content="CHIP GAMES" />
       <meta property="og:locale" content={language === "ko" ? "ko_KR" : language === "en" ? "en_US" : language === "ja" ? "ja_JP" : "zh_CN"} />
+      <meta property="og:updated_time" content={new Date().toISOString()} />
 
       {/* Twitter Card 태그 */}
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={finalTitle} />
       <meta name="twitter:description" content={finalDescription} />
       <meta name="twitter:image" content={finalImage} />
+      <meta name="twitter:image:alt" content={finalTitle} />
+      <meta name="twitter:site" content="@CHIPGAMES" />
+      <meta name="twitter:creator" content="@CHIPGAMES" />
 
       {/* 다국어 지원 */}
       <link rel="alternate" hrefLang="ko" href={`${url}?lang=ko`} />
