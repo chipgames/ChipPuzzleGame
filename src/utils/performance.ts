@@ -80,11 +80,8 @@ class PerformanceMonitor {
     };
 
     // 메모리 정보 (Chrome에서만 지원)
-    if (
-      (performance as any).memory &&
-      typeof (performance as any).memory === "object"
-    ) {
-      const memory = (performance as any).memory;
+    if (performance.memory && typeof performance.memory === "object") {
+      const memory = performance.memory;
       metrics.memoryUsage = {
         usedJSHeapSize: memory.usedJSHeapSize,
         totalJSHeapSize: memory.totalJSHeapSize,
@@ -155,11 +152,8 @@ class PerformanceMonitor {
         jsHeapSizeLimit?: number;
       }
     | null {
-    if (
-      (performance as any).memory &&
-      typeof (performance as any).memory === "object"
-    ) {
-      const memory = (performance as any).memory;
+    if (performance.memory && typeof performance.memory === "object") {
+      const memory = performance.memory;
       return {
         usedJSHeapSize: memory.usedJSHeapSize,
         totalJSHeapSize: memory.totalJSHeapSize,

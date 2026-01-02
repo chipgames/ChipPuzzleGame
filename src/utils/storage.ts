@@ -8,15 +8,23 @@ import { StorageData, GameProgress } from "@/types/storage";
 import { StageRecord } from "@/types/stage";
 import { memoryStorage } from "./memoryStorage";
 
+/**
+ * Storage 옵션 인터페이스
+ */
 interface StorageOptions {
-  fallback?: any;
-  silent?: boolean; // 에러를 조용히 처리할지 여부
+  /** 키가 없을 때 반환할 기본값 */
+  fallback?: unknown;
+  /** 에러를 조용히 처리할지 여부 */
+  silent?: boolean;
 }
 
 /**
  * LocalStorage 데이터 검증 함수
+ * 
+ * @param data - 검증할 데이터
+ * @returns 데이터가 유효한 StorageData이면 true
  */
-function validateStorageData(data: any): data is StorageData {
+function validateStorageData(data: unknown): data is StorageData {
   if (!data || typeof data !== "object") {
     return false;
   }
@@ -69,8 +77,11 @@ function validateStorageData(data: any): data is StorageData {
 
 /**
  * GameProgress 검증 함수
+ * 
+ * @param data - 검증할 데이터
+ * @returns 데이터가 유효한 GameProgress이면 true
  */
-function validateGameProgress(data: any): data is GameProgress {
+function validateGameProgress(data: unknown): data is GameProgress {
   if (!data || typeof data !== "object") {
     return false;
   }
@@ -88,8 +99,11 @@ function validateGameProgress(data: any): data is GameProgress {
 
 /**
  * 안전한 문자열 검증 (XSS 방지)
+ * 
+ * @param value - 검증할 값
+ * @returns sanitized 문자열 또는 null
  */
-function sanitizeString(value: any): string | null {
+function sanitizeString(value: unknown): string | null {
   if (typeof value !== "string") {
     return null;
   }
@@ -137,6 +151,26 @@ class StorageManager {
 
   /**
    * LocalStorage 또는 메모리 저장소에서 값 가져오기
+   * 
+   * LocalStorage를 사용할 수 없으면 자동으로 메모리 저장소를 사용합니다.
+   * 게임 데이터인 경우 자동으로 검증을 수행합니다.
+   * 
+   * @param key - 저장소 키
+   * @param options - 옵션 객체
+   * @param options.fallback - 키가 없을 때 반환할 기본값
+   * @param options.silent - 에러를 조용히 처리할지 여부
+   * @returns 저장된 값 또는 null
+   * 
+   * @example
+   * ```typescript
+   * // 기본 사용
+   * const progress = storageManager.get<GameProgress>("chipPuzzleGame_progress");
+   * 
+   * // fallback 사용
+   * const progress = storageManager.get<GameProgress>("chipPuzzleGame_progress", {
+   *   fallback: { highestStage: 1, stageRecords: {} }
+   * });
+   * ```
    */
   public get<T>(key: string, options: StorageOptions = {}): T | null {
     const available = this.isAvailable();
@@ -164,7 +198,7 @@ class StorageManager {
       }
       
       // JSON 파싱 시도
-      let parsed: any;
+      let parsed: unknown;
       try {
         parsed = JSON.parse(item);
       } catch (parseError) {
@@ -221,6 +255,28 @@ class StorageManager {
 
   /**
    * LocalStorage 또는 메모리 저장소에 값 저장하기
+   * 
+   * LocalStorage를 사용할 수 없으면 자동으로 메모리 저장소를 사용합니다.
+   * 게임 데이터인 경우 저장 전에 검증을 수행합니다.
+   * 문자열 값인 경우 XSS 방지를 위한 sanitization을 수행합니다.
+   * 
+   * @param key - 저장소 키
+   * @param value - 저장할 값
+   * @param options - 옵션 객체
+   * @param options.silent - 에러를 조용히 처리할지 여부
+   * @returns 저장 성공 시 true, 실패 시 false
+   * 
+   * @example
+   * ```typescript
+   * const progress: GameProgress = {
+   *   highestStage: 5,
+   *   stageRecords: { /* ... *\/ }
+   * };
+   * const success = storageManager.set("chipPuzzleGame_progress", progress);
+   * if (!success) {
+   *   console.error("저장 실패");
+   * }
+   * ```
    */
   public set<T>(
     key: string,
@@ -297,6 +353,11 @@ class StorageManager {
 
   /**
    * LocalStorage에서 값 제거하기
+   * 
+   * @param key - 제거할 키
+   * @param options - 옵션 객체
+   * @param options.silent - 에러를 조용히 처리할지 여부
+   * @returns 제거 성공 시 true, 실패 시 false
    */
   public remove(key: string, options: StorageOptions = {}): boolean {
     if (!this.isAvailable()) {
@@ -320,6 +381,16 @@ class StorageManager {
 
   /**
    * LocalStorage 전체 비우기 (게임 데이터만)
+   * 
+   * "chipPuzzleGame_" 접두사로 시작하는 모든 키를 제거합니다.
+   * 
+   * @returns 성공 시 true, 실패 시 false
+   * 
+   * @example
+   * ```typescript
+   * // 게임 데이터 초기화
+   * storageManager.clearGameData();
+   * ```
    */
   public clearGameData(): boolean {
     if (!this.isAvailable()) {
@@ -342,6 +413,8 @@ class StorageManager {
 
   /**
    * LocalStorage 사용 가능 여부 확인
+   * 
+   * @returns LocalStorage를 사용할 수 있으면 true, 아니면 false
    */
   public available(): boolean {
     return this.isAvailable();

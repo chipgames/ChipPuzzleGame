@@ -13,7 +13,7 @@ export class SoundManager {
 
     try {
       if (!this.audioCtx) {
-        const Ctor = (window.AudioContext || (window as any).webkitAudioContext) as typeof AudioContext;
+        const Ctor = (window.AudioContext || window.webkitAudioContext) as typeof AudioContext;
         if (!Ctor) {
           logger.warn("Web Audio API is not supported in this browser");
           this.enabled = false;

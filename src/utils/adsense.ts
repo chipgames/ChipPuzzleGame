@@ -3,11 +3,7 @@
  * 광고 초기화, 오류 방지, 접근성 개선
  */
 
-declare global {
-  interface Window {
-    adsbygoogle?: any[];
-  }
-}
+import type { AdSenseConfig } from "@/types/adsense";
 
 /**
  * 개발 환경인지 확인
@@ -50,7 +46,7 @@ export function preventDuplicateAdSense(): boolean {
   // 안전한 배열 확인
   if (window.adsbygoogle && Array.isArray(window.adsbygoogle)) {
     // 이미 enable_page_level_ads가 설정되었는지 확인
-    if (window.adsbygoogle.some((ad: any) => ad.enable_page_level_ads)) {
+    if (window.adsbygoogle.some((ad: AdSenseConfig) => ad.enable_page_level_ads)) {
       return false;
     }
   }

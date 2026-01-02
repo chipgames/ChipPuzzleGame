@@ -9,6 +9,29 @@ import {
   activateSpecialGemCombo,
 } from "@/utils/specialGemEffects";
 
+/**
+ * 게임 상태를 관리하는 Custom Hook
+ * 
+ * 게임 보드, 점수, 이동 횟수, 목표, 게임 오버 상태 등을 관리합니다.
+ * 젬 선택, 교환, 매칭 처리 등의 게임 로직을 제공합니다.
+ * 
+ * @param stageNumber - 현재 스테이지 번호
+ * @returns 게임 상태 및 게임 조작 함수들
+ * 
+ * @example
+ * ```typescript
+ * const { gameState, selectGem, swapGems, processMatches, togglePause } = useGameState(1);
+ * 
+ * // 젬 선택
+ * selectGem(0, 0);
+ * 
+ * // 젬 교환
+ * swapGems(0, 0, 0, 1);
+ * 
+ * // 매칭 처리
+ * processMatches();
+ * ```
+ */
 export const useGameState = (stageNumber: number) => {
   const [gameState, setGameState] = useState<GameState>(() => {
     const stageConfig = generateStage(stageNumber);
@@ -47,7 +70,13 @@ export const useGameState = (stageNumber: number) => {
   const selectedGemRef = useRef<{ row: number; col: number } | null>(null);
 
   /**
-   * 젬 선택
+   * 젬 선택 함수
+   * 
+   * 클릭한 젬을 선택하거나 선택 해제합니다.
+   * 같은 젬을 다시 클릭하면 선택이 해제됩니다.
+   * 
+   * @param row - 선택할 젬의 행 인덱스
+   * @param col - 선택할 젬의 열 인덱스
    */
   const selectGem = useCallback((row: number, col: number) => {
     setGameState((prev) => {

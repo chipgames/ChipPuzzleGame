@@ -18,13 +18,29 @@ import { storageManager } from "@/utils/storage";
 import { GameProgress } from "@/types/storage";
 import "./GameBoard.css";
 
+/**
+ * 게임 보드 컴포넌트의 Props
+ */
 interface GameBoardProps {
+  /** 현재 스테이지 번호 (기본값: 1) */
   stageNumber?: number;
+  /** 현재 화면 상태 */
   currentScreen?: GameScreen;
+  /** 화면 네비게이션 콜백 */
   onNavigate?: (screen: GameScreen) => void;
+  /** 스테이지 시작 콜백 */
   onStartStage?: (stageNumber: number) => void;
 }
 
+/**
+ * 게임 보드 컴포넌트
+ * 
+ * Canvas를 사용하여 게임을 렌더링하고, 사용자 입력을 처리합니다.
+ * 스테이지 선택 화면과 게임 플레이 화면을 모두 렌더링합니다.
+ * 
+ * @param props - GameBoardProps
+ * @returns 게임 보드 JSX
+ */
 const GameBoard: React.FC<GameBoardProps> = ({
   stageNumber = 1,
   currentScreen = "stageSelect",

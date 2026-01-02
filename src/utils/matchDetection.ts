@@ -10,8 +10,26 @@ export interface MatchResult {
 }
 
 /**
- * 게임 보드에서 매칭을 찾는 함수 (개선된 버전)
- * T자, L자 매칭도 더 정확하게 감지
+ * 게임 보드에서 매칭을 찾는 함수
+ * 
+ * 가로와 세로 방향으로 3개 이상의 같은 색상 젬이 연결된 매칭을 찾습니다.
+ * 중복 매칭을 방지하기 위해 processed Set을 사용합니다.
+ * 
+ * @param board - 게임 보드 (2차원 배열, Gem 또는 null 포함)
+ * @returns 발견된 모든 매칭의 배열
+ * 
+ * @example
+ * ```typescript
+ * const board = [
+ *   [redGem, redGem, redGem, blueGem],
+ *   [blueGem, greenGem, greenGem, greenGem]
+ * ];
+ * const matches = findMatches(board);
+ * // 결과: [
+ * //   { type: "horizontal", positions: [{row: 0, col: 0}, {row: 0, col: 1}, {row: 0, col: 2}] },
+ * //   { type: "horizontal", positions: [{row: 1, col: 1}, {row: 1, col: 2}, {row: 1, col: 3}] }
+ * // ]
+ * ```
  */
 export function findMatches(board: (Gem | null)[][]): Match[] {
   const matches: Match[] = [];
@@ -108,6 +126,20 @@ export function findMatches(board: (Gem | null)[][]): Match[] {
 
 /**
  * 특정 위치의 젬이 매칭에 포함되는지 확인
+ * 
+ * @param row - 확인할 행 인덱스
+ * @param col - 확인할 열 인덱스
+ * @param matches - 매칭 배열
+ * @returns 해당 위치가 매칭에 포함되면 true, 아니면 false
+ * 
+ * @example
+ * ```typescript
+ * const matches = [
+ *   { type: "horizontal", positions: [{row: 0, col: 0}, {row: 0, col: 1}] }
+ * ];
+ * isPositionInMatch(0, 0, matches); // true
+ * isPositionInMatch(1, 0, matches); // false
+ * ```
  */
 export function isPositionInMatch(
   row: number,
@@ -121,6 +153,20 @@ export function isPositionInMatch(
 
 /**
  * 매칭 개수에 따라 특수 젬이 생성되는지 확인
+ * 
+ * 4개 이상의 젬이 매칭되면 특수 젬이 생성됩니다.
+ * 
+ * @param match - 확인할 매칭 객체
+ * @returns 4개 이상이면 true, 아니면 false
+ * 
+ * @example
+ * ```typescript
+ * const match4 = { type: "horizontal", positions: [/* 4개 위치 *\/] };
+ * shouldCreateSpecialGem(match4); // true
+ * 
+ * const match3 = { type: "horizontal", positions: [/* 3개 위치 *\/] };
+ * shouldCreateSpecialGem(match3); // false
+ * ```
  */
 export function shouldCreateSpecialGem(match: Match): boolean {
   return match.positions.length >= 4;

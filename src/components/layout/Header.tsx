@@ -4,13 +4,8 @@ import LanguageSelector from "@/components/ui/LanguageSelector";
 import { GameScreen } from "@/types/ui";
 import { soundManager } from "@/utils/SoundManager";
 import { storageManager } from "@/utils/storage";
+import { getAssetPath } from "@/utils/pathUtils";
 import "./Header.css";
-
-// Base URL을 고려한 로고 경로
-const getLogoPath = (filename: string) => {
-  const baseUrl = (import.meta as any).env?.BASE_URL || "/";
-  return `${baseUrl}${filename}`;
-};
 
 interface HeaderProps {
   onNavigate?: (screen: GameScreen) => void;
@@ -109,12 +104,12 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, currentScreen: _curren
             style={{ cursor: "pointer", display: "flex", alignItems: "center", gap: "12px" }}
           >
             <img 
-              src={getLogoPath("ChipGames_Logo.png")} 
+              src={getAssetPath("ChipGames_Logo.png")} 
               onError={(e) => {
                 // PNG 파일이 없으면 SVG 사용
                 const target = e.target as HTMLImageElement;
                 if (target.src && !target.src.includes('.svg')) {
-                  target.src = getLogoPath("ChipGames_Logo.svg");
+                  target.src = getAssetPath("ChipGames_Logo.svg");
                 }
               }}
               alt={t("header.gameTitle") + " - CHIP GAMES 로고"} 

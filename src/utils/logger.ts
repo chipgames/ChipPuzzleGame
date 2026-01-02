@@ -5,10 +5,14 @@
 
 type LogLevel = "debug" | "info" | "warn" | "error";
 
+/**
+ * 로그 엔트리 인터페이스
+ */
 interface LogEntry {
   level: LogLevel;
   message: string;
-  data?: any;
+  /** 로그 데이터 (구조화된 객체) */
+  data?: unknown;
   timestamp: string;
   userAgent?: string;
   url?: string;
@@ -19,10 +23,18 @@ class Logger {
   private logHistory: LogEntry[] = [];
   private maxHistorySize = 100;
 
+  /**
+   * 로그 엔트리 생성
+   * 
+   * @param level - 로그 레벨
+   * @param message - 로그 메시지
+   * @param data - 로그 데이터 (선택적)
+   * @returns 로그 엔트리 객체
+   */
   private createLogEntry(
     level: LogLevel,
     message: string,
-    data?: any
+    data?: unknown
   ): LogEntry {
     return {
       level,
@@ -41,7 +53,14 @@ class Logger {
     }
   }
 
-  private log(level: LogLevel, message: string, data?: any) {
+  /**
+   * 로그 기록
+   * 
+   * @param level - 로그 레벨
+   * @param message - 로그 메시지
+   * @param data - 로그 데이터 (선택적)
+   */
+  private log(level: LogLevel, message: string, data?: unknown) {
     const entry = this.createLogEntry(level, message, data);
     this.addToHistory(entry);
 
@@ -88,19 +107,43 @@ class Logger {
     }
   }
 
-  public debug(message: string, data?: any) {
+  /**
+   * 디버그 로그
+   * 
+   * @param message - 로그 메시지
+   * @param data - 로그 데이터 (선택적)
+   */
+  public debug(message: string, data?: unknown) {
     this.log("debug", message, data);
   }
 
-  public info(message: string, data?: any) {
+  /**
+   * 정보 로그
+   * 
+   * @param message - 로그 메시지
+   * @param data - 로그 데이터 (선택적)
+   */
+  public info(message: string, data?: unknown) {
     this.log("info", message, data);
   }
 
-  public warn(message: string, data?: any) {
+  /**
+   * 경고 로그
+   * 
+   * @param message - 로그 메시지
+   * @param data - 로그 데이터 (선택적)
+   */
+  public warn(message: string, data?: unknown) {
     this.log("warn", message, data);
   }
 
-  public error(message: string, data?: any) {
+  /**
+   * 에러 로그
+   * 
+   * @param message - 로그 메시지
+   * @param data - 로그 데이터 (선택적)
+   */
+  public error(message: string, data?: unknown) {
     this.log("error", message, data);
   }
 

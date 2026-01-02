@@ -5,6 +5,25 @@ import { logger } from "@/utils/logger";
 
 const translationsCache: Record<string, any> = {};
 
+/**
+ * 다국어 지원을 위한 Custom Hook
+ * 
+ * 언어 파일을 동적으로 로드하고, 번역 함수를 제공합니다.
+ * 언어 변경 시 자동으로 새로운 번역 파일을 로드합니다.
+ * 
+ * @returns 언어 상태 및 번역 함수
+ * 
+ * @example
+ * ```typescript
+ * const { language, setLanguage, t } = useLanguage();
+ * 
+ * // 언어 변경
+ * setLanguage("en");
+ * 
+ * // 번역 텍스트 가져오기
+ * const title = t("header.gameTitle");
+ * ```
+ */
 export const useLanguage = () => {
   const [language, setLanguageState] = useState<SupportedLanguage>(() => {
     const service = new LanguageService();
@@ -50,14 +69,14 @@ export const useLanguage = () => {
     loadTranslations();
 
     // 언어 변경 이벤트 리스너
-    const handleLanguageChange = (event: CustomEvent) => {
-      setLanguageState(event.detail);
+    const handleLanguageChange = (event: CustomEvent<string>) => {
+      setLanguageState(event.detail as SupportedLanguage);
     };
 
-    window.addEventListener("languageChanged" as any, handleLanguageChange);
+    window.addEventListener("languageChanged", handleLanguageChange as EventListener);
 
     return () => {
-      window.removeEventListener("languageChanged" as any, handleLanguageChange);
+      window.removeEventListener("languageChanged", handleLanguageChange as EventListener);
     };
   }, [language]);
 

@@ -1,8 +1,29 @@
 import { GameState } from "@/types/game";
 
 /**
- * 별점 계산 (0~3)
- * 개선된 알고리즘: 더 공정하고 명확한 평가 기준
+ * 별점 계산 함수 (0~3)
+ * 
+ * 게임 상태를 기반으로 별점을 계산합니다.
+ * 평가 기준:
+ * - 0스타: 목표 미달성
+ * - 1스타: 목표 달성 (100% 이상)
+ * - 2스타: 목표 120% 이상 또는 이동 횟수 40% 이상 남음
+ * - 3스타: 목표 150% 이상, 이동 횟수 50% 이상, 점수 보너스 80% 이상
+ * 
+ * @param gameState - 게임 상태 객체
+ * @returns 별점 (0~3)
+ * 
+ * @example
+ * ```typescript
+ * const gameState = {
+ *   score: 1500,
+ *   goals: [{ type: "score", target: 1000, current: 1500 }],
+ *   moves: 25,
+ *   currentStage: 1,
+ *   // ... 기타 필드
+ * };
+ * const stars = calculateStarRating(gameState); // 3
+ * ```
  */
 export function calculateStarRating(gameState: GameState): number {
   const { score, goals, moves, currentStage } = gameState;
