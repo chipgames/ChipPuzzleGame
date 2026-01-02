@@ -28,9 +28,12 @@ export const getThemeColors = () => {
   return {
     bgPrimary: getCSSVariable("--bg-primary", "#1a1a2e"),
     bgSecondary: getCSSVariable("--bg-secondary", "#2a2a3e"),
+    bgTertiary: getCSSVariable("--bg-tertiary", "#3a3a4e"),
     bgCard: getCSSVariable("--bg-card", "rgba(42, 42, 62, 0.9)"),
+    bgOverlayDark: getCSSVariable("--bg-overlay-dark", "rgba(26, 26, 46, 0.9)"),
     textPrimary: getCSSVariable("--text-primary", "#ffffff"),
     textSecondary: getCSSVariable("--text-secondary", "rgba(255, 255, 255, 0.85)"),
+    textTertiary: getCSSVariable("--text-tertiary", "rgba(255, 255, 255, 0.65)"),
     accentPrimary: getCSSVariable("--accent-primary", "#a8b5ff"),
     accentSecondary: getCSSVariable("--accent-secondary", "#c5a3ff"),
     accentSuccess: getCSSVariable("--accent-success", "#7fdfd4"),

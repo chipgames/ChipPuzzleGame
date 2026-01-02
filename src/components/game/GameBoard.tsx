@@ -16,7 +16,7 @@ import { performanceMonitor } from "@/utils/performance";
 import { logger } from "@/utils/logger";
 import { storageManager } from "@/utils/storage";
 import { GameProgress } from "@/types/storage";
-import { getThemeColors } from "@/utils/themeColors";
+import { getThemeColors, hexToRgba } from "@/utils/themeColors";
 import "./GameBoard.css";
 
 /**
@@ -145,8 +145,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const baseWidth = 1200;
       const scale = canvasWidth / baseWidth;
 
-      // 배경
-      const { canvasBg, textPrimary } = getThemeColors();
+      // 배경 및 테마 색상 (먼저 선언)
+      const { canvasBg, textPrimary, accentPrimary: accentPrimaryStage, accentSecondary: accentSecondaryStage, bgTertiary } = getThemeColors();
+      const isLightStage = document.documentElement.getAttribute("data-theme") === "light";
       ctx.fillStyle = canvasBg;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
@@ -191,17 +192,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
             x + stageSize,
             y + stageSize
           );
-          gradient.addColorStop(0, "#667eea");
-          gradient.addColorStop(1, "#764ba2");
+          // 테마에 맞는 그라데이션 색상 사용
+          gradient.addColorStop(0, accentPrimaryStage);
+          gradient.addColorStop(1, accentSecondaryStage);
           ctx.fillStyle = gradient;
         } else {
-          // 잠긴 스테이지
-          ctx.fillStyle = "#1a1a1a";
+          // 잠긴 스테이지 - 테마에 맞는 배경색
+          ctx.fillStyle = bgTertiary || (isLightStage ? "#e0e0e5" : "#1a1a1a");
         }
         ctx.fillRect(x, y, stageSize, stageSize);
 
-        // 테두리
-        ctx.strokeStyle = isUnlocked ? "#667eea" : "#444";
+        // 테두리 - 테마에 맞는 색상
+        ctx.strokeStyle = isUnlocked ? accentPrimaryStage : (isLightStage ? "#cccccc" : "#444");
         ctx.lineWidth = Math.max(1, 2 * scale);
         ctx.strokeRect(x, y, stageSize, stageSize);
 
@@ -261,7 +263,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const buttonWidth = 80 * scale;
       const buttonY = pageInfoY + 20 * scale;
       const buttonGap = 10 * scale;
-      const { accentPrimary: accentPrimaryStage } = getThemeColors();
 
       // 이전 페이지 버튼
       if (currentPage > 1) {
@@ -309,7 +310,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 기준 크기 (1200px 기준으로 설계)
       const baseWidth = 1200;
       const scale = canvasWidth / baseWidth;
-      const { canvasBg, textPrimary } = getThemeColors();
+      const { canvasBg, textPrimary, accentPrimary, accentSecondary, accentSuccess } = getThemeColors();
+      const isLight = document.documentElement.getAttribute("data-theme") === "light";
 
       // 배경
       ctx.fillStyle = canvasBg;
@@ -396,16 +398,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.stroke();
       ctx.restore();
 
-      // 텍스트 스타일
+      // 텍스트 스타일 (테마에 맞는 그림자)
       ctx.textAlign = "left";
       ctx.textBaseline = "top";
-      ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+      ctx.shadowColor = isLight ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.5)";
       ctx.shadowBlur = 4 * scale;
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 2 * scale;
 
       // 스테이지 번호 표시 (가장 위에)
-      const { accentPrimary } = getThemeColors();
       ctx.font = `700 ${Math.max(14, infoFontSize * 1.1)}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
       ctx.fillStyle = accentPrimary; // 강조 색상
       ctx.fillText(
@@ -449,20 +450,21 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 콤보 표시 (프리미엄 스타일)
       if (gameState.comboCount > 0) {
-        ctx.shadowColor = "rgba(255, 217, 61, 0.6)";
+        const { accentWarning } = getThemeColors();
+        ctx.shadowColor = hexToRgba(accentWarning, isLight ? 0.4 : 0.6);
         ctx.shadowBlur = 12 * scale;
         ctx.font = `700 ${Math.max(
           14,
           24 * scale
         )}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
-        ctx.fillStyle = "#ffd93d";
+        ctx.fillStyle = accentWarning;
         ctx.textAlign = "left";
         ctx.fillText(
           `${t("game.combo")} x${gameState.comboCount}!`,
           infoMarginX,
           infoY + infoLineHeight * 4
         );
-        ctx.shadowColor = "rgba(0, 0, 0, 0.5)";
+        ctx.shadowColor = isLight ? "rgba(0, 0, 0, 0.1)" : "rgba(0, 0, 0, 0.5)";
         ctx.shadowBlur = 4 * scale;
       }
 
@@ -496,8 +498,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
           hintButtonX,
           hintButtonY + hintButtonHeight
         );
-        hintGradient.addColorStop(0, showHint ? "#4ecdc4" : "#667eea");
-        hintGradient.addColorStop(1, showHint ? "#44a08d" : "#764ba2");
+        // 테마에 맞는 그라데이션 색상 사용
+        if (showHint) {
+          hintGradient.addColorStop(0, accentSuccess);
+          hintGradient.addColorStop(1, accentSuccess);
+        } else {
+          hintGradient.addColorStop(0, accentPrimary);
+          hintGradient.addColorStop(1, accentSecondary);
+        }
 
         ctx.save();
         ctx.beginPath();
@@ -510,15 +518,18 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
         ctx.fillStyle = hintGradient;
         ctx.fill();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        // 테마에 맞는 테두리 색상
+        const buttonBorderColor = isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+        ctx.strokeStyle = buttonBorderColor;
         ctx.lineWidth = Math.max(1, 1.5 * scale);
         ctx.stroke();
         ctx.restore();
 
-        // 그림자 효과
+        // 그림자 효과 (테마에 맞게 조정)
+        const shadowAlpha = isLight ? 0.2 : 0.4;
         ctx.shadowColor = showHint
-          ? "rgba(78, 205, 196, 0.4)"
-          : "rgba(102, 126, 234, 0.4)";
+          ? hexToRgba(accentSuccess, shadowAlpha)
+          : hexToRgba(accentPrimary, shadowAlpha);
         ctx.shadowBlur = 8 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 2 * scale;
@@ -548,12 +559,14 @@ const GameBoard: React.FC<GameBoardProps> = ({
           pauseButtonX,
           pauseButtonY + pauseButtonHeight
         );
+        // 테마에 맞는 그라데이션 색상 사용
         if (gameState.isPaused) {
-          pauseGradient.addColorStop(0, "#ff6b6b");
-          pauseGradient.addColorStop(1, "#ee5a6f");
+          const { accentDanger } = getThemeColors();
+          pauseGradient.addColorStop(0, accentDanger);
+          pauseGradient.addColorStop(1, accentDanger);
         } else {
-          pauseGradient.addColorStop(0, "#667eea");
-          pauseGradient.addColorStop(1, "#764ba2");
+          pauseGradient.addColorStop(0, accentPrimary);
+          pauseGradient.addColorStop(1, accentSecondary);
         }
 
         ctx.save();
@@ -567,15 +580,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
         ctx.fillStyle = pauseGradient;
         ctx.fill();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        // 테마에 맞는 테두리 색상
+        ctx.strokeStyle = buttonBorderColor;
         ctx.lineWidth = Math.max(1, 1.5 * scale);
         ctx.stroke();
         ctx.restore();
 
-        // 그림자 효과
+        // 그림자 효과 (테마에 맞게 조정)
+        const { accentDanger } = getThemeColors();
         ctx.shadowColor = gameState.isPaused
-          ? "rgba(255, 107, 107, 0.4)"
-          : "rgba(102, 126, 234, 0.4)";
+          ? hexToRgba(accentDanger, shadowAlpha)
+          : hexToRgba(accentPrimary, shadowAlpha);
         ctx.shadowBlur = 8 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 2 * scale;
@@ -597,8 +612,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 일시정지 오버레이 (프리미엄 스타일)
       if (gameState.isPaused && !gameState.isGameOver) {
+        const { bgOverlayDark, bgCard, accentPrimary: accentPrimaryPause, textSecondary: textSecondaryPause } = getThemeColors();
+        
         // 반투명 배경
-        ctx.fillStyle = "rgba(15, 15, 30, 0.85)";
+        ctx.fillStyle = bgOverlayDark;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
         // 글래스모피즘 카드
@@ -610,17 +627,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
         ctx.save();
         ctx.globalAlpha = 0.95;
-        ctx.fillStyle = "rgba(26, 26, 46, 0.9)";
+        ctx.fillStyle = bgCard;
         ctx.beginPath();
         ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
         ctx.fill();
-        ctx.strokeStyle = "rgba(102, 126, 234, 0.3)";
+        ctx.strokeStyle = hexToRgba(accentPrimaryPause, isLight ? 0.2 : 0.3);
         ctx.lineWidth = 2 * scale;
         ctx.stroke();
         ctx.restore();
 
         // 제목 텍스트 (그라데이션 효과)
-        ctx.shadowColor = "rgba(102, 126, 234, 0.5)";
+        ctx.shadowColor = hexToRgba(accentPrimaryPause, isLight ? 0.3 : 0.5);
         ctx.shadowBlur = 12 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
@@ -640,7 +657,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         // 안내 텍스트
         ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+        ctx.fillStyle = textSecondaryPause;
         ctx.font = `500 ${Math.max(
           14,
           20 * scale
@@ -654,8 +671,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       // 게임 오버 메시지 (프리미엄 스타일)
       if (gameState.isGameOver) {
+        const { bgOverlayDark, bgCard, accentDanger: accentDangerGameOver } = getThemeColors();
+        const buttonBorderColorGameOver = isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+        const shadowAlphaGameOver = isLight ? 0.2 : 0.4;
+        
         // 반투명 배경
-        ctx.fillStyle = "rgba(15, 15, 30, 0.9)";
+        ctx.fillStyle = bgOverlayDark;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
         // 글래스모피즘 카드
@@ -667,19 +688,19 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
         ctx.save();
         ctx.globalAlpha = 0.95;
-        ctx.fillStyle = "rgba(26, 26, 46, 0.9)";
+        ctx.fillStyle = bgCard;
         ctx.beginPath();
         ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
         ctx.fill();
-        ctx.strokeStyle = "rgba(255, 107, 107, 0.3)";
+        ctx.strokeStyle = hexToRgba(accentDangerGameOver, isLight ? 0.3 : 0.3);
         ctx.lineWidth = 2 * scale;
         ctx.stroke();
         ctx.restore();
 
         // 제목 텍스트
-        ctx.shadowColor = "rgba(255, 107, 107, 0.5)";
+        ctx.shadowColor = hexToRgba(accentDangerGameOver, isLight ? 0.3 : 0.5);
         ctx.shadowBlur = 12 * scale;
-        ctx.fillStyle = "#ff6b6b";
+        ctx.fillStyle = accentDangerGameOver;
         ctx.font = `700 ${Math.max(
           28,
           56 * scale
@@ -691,7 +712,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         // 점수 표시
         ctx.shadowColor = "transparent";
         ctx.shadowBlur = 0;
-        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.fillStyle = textPrimary;
         ctx.font = `600 ${Math.max(
           16,
           24 * scale
@@ -715,8 +736,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
           buttonX,
           buttonY + buttonHeight
         );
-        gradient.addColorStop(0, "#ff6b6b");
-        gradient.addColorStop(1, "#ee5a6f");
+        // 테마에 맞는 그라데이션 색상 사용
+        gradient.addColorStop(0, accentDangerGameOver);
+        gradient.addColorStop(1, accentDangerGameOver);
 
         ctx.save();
         ctx.beginPath();
@@ -729,16 +751,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
         ctx.fillStyle = gradient;
         ctx.fill();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.strokeStyle = buttonBorderColorGameOver;
         ctx.lineWidth = 2 * scale;
         ctx.stroke();
         ctx.restore();
 
-        ctx.shadowColor = "rgba(255, 107, 107, 0.4)";
+        ctx.shadowColor = hexToRgba(accentDangerGameOver, shadowAlphaGameOver);
         ctx.shadowBlur = 8 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 2 * scale;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = textPrimary;
         ctx.font = `600 ${Math.max(
           16,
           22 * scale
@@ -1106,9 +1128,12 @@ const GameBoard: React.FC<GameBoardProps> = ({
       // 클리어 화면 오버레이 (프리미엄 스타일)
       if (isCleared && !gameState.isAnimating && !gameState.isGameOver) {
         const stars = calculateStarRating(gameState);
+        const { bgOverlayDark, bgCard, accentSuccess, textTertiary } = getThemeColors();
+        const buttonBorderColorClear = isLight ? "rgba(255, 255, 255, 0.5)" : "rgba(255, 255, 255, 0.3)";
+        const shadowAlphaClear = isLight ? 0.2 : 0.4;
 
         // 반투명 배경
-        ctx.fillStyle = "rgba(15, 15, 30, 0.92)";
+        ctx.fillStyle = bgOverlayDark;
         ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
         // 글래스모피즘 카드
@@ -1120,21 +1145,21 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
         ctx.save();
         ctx.globalAlpha = 0.96;
-        ctx.fillStyle = "rgba(26, 26, 46, 0.9)";
+        ctx.fillStyle = bgCard;
         ctx.beginPath();
         ctx.roundRect(cardX, cardY, cardWidth, cardHeight, cardRadius);
         ctx.fill();
-        ctx.strokeStyle = "rgba(78, 205, 196, 0.4)";
+        ctx.strokeStyle = hexToRgba(accentSuccess, isLight ? 0.3 : 0.4);
         ctx.lineWidth = 2 * scale;
         ctx.stroke();
         ctx.restore();
 
         // 클리어 메시지 (그라데이션 효과)
-        ctx.shadowColor = "rgba(78, 205, 196, 0.5)";
+        ctx.shadowColor = hexToRgba(accentSuccess, isLight ? 0.3 : 0.5);
         ctx.shadowBlur = 12 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
-        ctx.fillStyle = "#4ecdc4";
+        ctx.fillStyle = accentSuccess;
         ctx.font = `700 ${Math.max(
           32,
           64 * scale
@@ -1148,6 +1173,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
 
         // 별점 표시 (프리미엄 스타일)
+        const { accentWarning } = getThemeColors();
         const starSize = Math.max(24, 48 * scale);
         const starSpacing = starSize * 1.8;
         const starStartX = canvasWidth / 2 - starSpacing;
@@ -1156,9 +1182,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
         for (let i = 0; i < 3; i++) {
           const starX = starStartX + i * starSpacing;
           ctx.shadowColor =
-            i < stars ? "rgba(255, 217, 61, 0.6)" : "transparent";
+            i < stars ? hexToRgba(accentWarning, isLight ? 0.4 : 0.6) : "transparent";
           ctx.shadowBlur = i < stars ? 12 * scale : 0;
-          ctx.fillStyle = i < stars ? "#ffd93d" : "rgba(102, 102, 102, 0.5)";
+          ctx.fillStyle = i < stars ? accentWarning : textTertiary;
           ctx.font = `${starSize}px Arial`;
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
@@ -1169,7 +1195,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowBlur = 0;
 
         // 점수 표시
-        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.fillStyle = textPrimary;
         ctx.font = `600 ${Math.max(
           18,
           28 * scale
@@ -1193,8 +1219,9 @@ const GameBoard: React.FC<GameBoardProps> = ({
           buttonX,
           buttonY + buttonHeight
         );
-        gradient.addColorStop(0, "#667eea");
-        gradient.addColorStop(1, "#764ba2");
+        // 테마에 맞는 그라데이션 색상 사용
+        gradient.addColorStop(0, accentPrimary);
+        gradient.addColorStop(1, accentSecondary);
 
         ctx.save();
         ctx.beginPath();
@@ -1207,16 +1234,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
         );
         ctx.fillStyle = gradient;
         ctx.fill();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.strokeStyle = buttonBorderColorClear;
         ctx.lineWidth = 2 * scale;
         ctx.stroke();
         ctx.restore();
 
-        ctx.shadowColor = "rgba(102, 126, 234, 0.4)";
+        ctx.shadowColor = hexToRgba(accentPrimary, shadowAlphaClear);
         ctx.shadowBlur = 8 * scale;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 2 * scale;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = textPrimary;
         ctx.font = `600 ${Math.max(
           16,
           22 * scale
