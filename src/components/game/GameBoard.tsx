@@ -623,7 +623,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.shadowOffsetX = 0;
       ctx.shadowOffsetY = 0;
 
-      // 힌트 버튼 및 일시정지 버튼 (우측 상단) - 모바일 비율 고려
+      // 힌트 버튼, 일시정지 버튼, 스테이지 목록 버튼 (우측 상단, 세로 배치) - 모바일 비율 고려
       if (!gameState.isGameOver && !gameState.isAnimating) {
         const baseButtonWidth = 120;
         const baseButtonHeight = 40;
@@ -635,17 +635,26 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const hintButtonHeight = baseButtonHeight * scale;
         const pauseButtonWidth = baseButtonWidth * scale;
         const pauseButtonHeight = baseButtonHeight * scale;
+        const backToStagesButtonWidth = baseButtonWidth * scale;
+        const backToStagesButtonHeight = baseButtonHeight * scale;
 
-        // 힌트 버튼 (프리미엄 스타일)
-        const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
+        // 모든 버튼의 X 좌표는 동일 (세로 배치)
+        const buttonX = canvasWidth - hintButtonWidth - buttonMargin;
+        
+        // 힌트 버튼 (맨 위)
         const hintButtonY = buttonMargin;
+        // 일시정지 버튼 (중간)
+        const pauseButtonY = hintButtonY + hintButtonHeight + buttonGap;
+        // 스테이지 목록 버튼 (맨 아래)
+        const backToStagesButtonY = pauseButtonY + pauseButtonHeight + buttonGap;
+        
         const buttonRadius = 12 * scale;
 
         // 버튼 배경 (그라데이션)
         const hintGradient = ctx.createLinearGradient(
-          hintButtonX,
+          buttonX,
           hintButtonY,
-          hintButtonX,
+          buttonX,
           hintButtonY + hintButtonHeight
         );
         // 테마에 맞는 그라데이션 색상 사용
@@ -660,7 +669,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.save();
         ctx.beginPath();
         ctx.roundRect(
-          hintButtonX,
+          buttonX,
           hintButtonY,
           hintButtonWidth,
           hintButtonHeight,
@@ -693,7 +702,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.textBaseline = "middle";
         ctx.fillText(
           t("game.hint"),
-          hintButtonX + hintButtonWidth / 2,
+          buttonX + hintButtonWidth / 2,
           hintButtonY + hintButtonHeight / 2
         );
 
@@ -701,14 +710,11 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.shadowBlur = 0;
 
         // 일시정지 버튼 (프리미엄 스타일)
-        const pauseButtonX = hintButtonX - pauseButtonWidth - buttonGap;
-        const pauseButtonY = buttonMargin;
-
         // 버튼 배경 (그라데이션)
         const pauseGradient = ctx.createLinearGradient(
-          pauseButtonX,
+          buttonX,
           pauseButtonY,
-          pauseButtonX,
+          buttonX,
           pauseButtonY + pauseButtonHeight
         );
         // 테마에 맞는 그라데이션 색상 사용
@@ -724,7 +730,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.save();
         ctx.beginPath();
         ctx.roundRect(
-          pauseButtonX,
+          buttonX,
           pauseButtonY,
           pauseButtonWidth,
           pauseButtonHeight,
@@ -754,8 +760,54 @@ const GameBoard: React.FC<GameBoardProps> = ({
         ctx.textBaseline = "middle";
         ctx.fillText(
           gameState.isPaused ? t("game.resume") : t("game.pause"),
-          pauseButtonX + pauseButtonWidth / 2,
+          buttonX + pauseButtonWidth / 2,
           pauseButtonY + pauseButtonHeight / 2
+        );
+
+        ctx.shadowColor = "transparent";
+        ctx.shadowBlur = 0;
+
+        // 스테이지 목록 버튼 (프리미엄 스타일)
+        const backToStagesGradient = ctx.createLinearGradient(
+          buttonX,
+          backToStagesButtonY,
+          buttonX,
+          backToStagesButtonY + backToStagesButtonHeight
+        );
+        backToStagesGradient.addColorStop(0, accentPrimary);
+        backToStagesGradient.addColorStop(1, accentSecondary);
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(
+          buttonX,
+          backToStagesButtonY,
+          backToStagesButtonWidth,
+          backToStagesButtonHeight,
+          buttonRadius
+        );
+        ctx.fillStyle = backToStagesGradient;
+        ctx.fill();
+        ctx.strokeStyle = buttonBorderColor;
+        ctx.lineWidth = Math.max(1, 1.5 * scale);
+        ctx.stroke();
+        ctx.restore();
+
+        // 그림자 효과
+        ctx.shadowColor = hexToRgba(accentPrimary, shadowAlpha);
+        ctx.shadowBlur = 8 * scale;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 2 * scale;
+
+        ctx.fillStyle = textPrimary;
+        const backToStagesFontSize = 16 * scale;
+        ctx.font = `600 ${backToStagesFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif`;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          t("game.backToStages"),
+          buttonX + backToStagesButtonWidth / 2,
+          backToStagesButtonY + backToStagesButtonHeight / 2
         );
 
         ctx.shadowColor = "transparent";
@@ -1953,7 +2005,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           return;
         }
 
-        // 힌트 버튼 및 일시정지 버튼 클릭 확인 (렌더링과 동일한 크기/위치 계산)
+        // 힌트 버튼, 일시정지 버튼, 스테이지 목록 버튼 클릭 확인 (렌더링과 동일한 크기/위치 계산, 세로 배치)
         const baseButtonWidth = 120;
         const baseButtonHeight = 40;
         const buttonMargin = 20 * scale;
@@ -1963,28 +2015,23 @@ const GameBoard: React.FC<GameBoardProps> = ({
         const hintButtonHeight = baseButtonHeight * scale;
         const pauseButtonWidth = baseButtonWidth * scale;
         const pauseButtonHeight = baseButtonHeight * scale;
+        const backToStagesButtonWidth = baseButtonWidth * scale;
+        const backToStagesButtonHeight = baseButtonHeight * scale;
 
-        const hintButtonX = canvasWidth - hintButtonWidth - buttonMargin;
+        // 모든 버튼의 X 좌표는 동일 (세로 배치)
+        const buttonX = canvasWidth - hintButtonWidth - buttonMargin;
+        
+        // 힌트 버튼 (맨 위)
         const hintButtonY = buttonMargin;
-        const pauseButtonX = hintButtonX - pauseButtonWidth - buttonGap;
-        const pauseButtonY = buttonMargin;
-
-        // 일시정지 버튼 클릭
-        if (
-          x >= pauseButtonX &&
-          x <= pauseButtonX + pauseButtonWidth &&
-          y >= pauseButtonY &&
-          y <= pauseButtonY + pauseButtonHeight
-        ) {
-          togglePause();
-          soundManager.playClick();
-          return;
-        }
+        // 일시정지 버튼 (중간)
+        const pauseButtonY = hintButtonY + hintButtonHeight + buttonGap;
+        // 스테이지 목록 버튼 (맨 아래)
+        const backToStagesButtonY = pauseButtonY + pauseButtonHeight + buttonGap;
 
         // 힌트 버튼 클릭
         if (
-          x >= hintButtonX &&
-          x <= hintButtonX + hintButtonWidth &&
+          x >= buttonX &&
+          x <= buttonX + hintButtonWidth &&
           y >= hintButtonY &&
           y <= hintButtonY + hintButtonHeight
         ) {
@@ -2003,6 +2050,32 @@ const GameBoard: React.FC<GameBoardProps> = ({
                 hintRef.current = null;
               }, 3000);
             }
+          }
+          soundManager.playClick();
+          return;
+        }
+
+        // 일시정지 버튼 클릭
+        if (
+          x >= buttonX &&
+          x <= buttonX + pauseButtonWidth &&
+          y >= pauseButtonY &&
+          y <= pauseButtonY + pauseButtonHeight
+        ) {
+          togglePause();
+          soundManager.playClick();
+          return;
+        }
+
+        // 스테이지 목록 버튼 클릭
+        if (
+          x >= buttonX &&
+          x <= buttonX + backToStagesButtonWidth &&
+          y >= backToStagesButtonY &&
+          y <= backToStagesButtonY + backToStagesButtonHeight
+        ) {
+          if (onNavigate) {
+            onNavigate("stageSelect");
           }
           soundManager.playClick();
           return;
