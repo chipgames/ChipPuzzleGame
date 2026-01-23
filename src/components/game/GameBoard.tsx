@@ -463,6 +463,16 @@ const GameBoard: React.FC<GameBoardProps> = ({
       ctx.fillStyle = canvasBg;
       ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
+      // 게임 정보 패널 크기 계산 (게임 보드 위치 조정을 위해 먼저 계산)
+      const infoFontSize = Math.max(10, 20 * scale);
+      const infoMarginX = 24 * scale;
+      const infoCardPadding = 16 * scale;
+      const infoCardWidth = 280 * scale;
+      const infoLineHeight = infoFontSize + 8 * scale;
+      const infoCardHeight = infoLineHeight * 4 + infoCardPadding * 2;
+      const infoPanelRightEdge = infoMarginX - infoCardPadding + infoCardWidth;
+      const infoPanelMargin = 20 * scale; // 정보 패널과 게임 보드 사이 여백
+
       // 그리드 배경 그리기
       const baseCellSize = config.cellSize || 70;
       const cellSize = baseCellSize * scale;
@@ -471,7 +481,29 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       const gridWidth = cellSize * gridCols;
       const gridHeight = cellSize * gridRows;
-      const gridStartX = (canvasWidth - gridWidth) / 2;
+      
+      // 게임 보드 시작 X 좌표: 정보 패널 오른쪽에 여백을 두고 배치
+      // 오른쪽 버튼 영역도 고려 (버튼 너비 + 여백)
+      const buttonMargin = 20 * scale;
+      const baseButtonWidth = 120;
+      const buttonWidth = baseButtonWidth * scale;
+      const rightButtonArea = buttonWidth + buttonMargin;
+      
+      // 사용 가능한 너비 계산
+      const availableWidth = canvasWidth - infoPanelRightEdge - infoPanelMargin - rightButtonArea;
+      
+      // 게임 보드가 사용 가능한 너비보다 작으면 중앙 정렬, 크면 정보 패널 오른쪽에 배치
+      let gridStartX: number;
+      if (gridWidth <= availableWidth) {
+        // 중앙 정렬하되, 정보 패널과 겹치지 않도록 조정
+        const centerX = canvasWidth / 2;
+        const minStartX = infoPanelRightEdge + infoPanelMargin;
+        gridStartX = Math.max(minStartX, centerX - gridWidth / 2);
+      } else {
+        // 게임 보드가 크면 정보 패널 오른쪽에 배치
+        gridStartX = infoPanelRightEdge + infoPanelMargin;
+      }
+      
       const gridStartY = (canvasHeight - gridHeight) / 2;
 
       // GemRenderer 초기화 (cellSize 변경시에만 재생성)
@@ -520,18 +552,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
       }
 
       // 게임 정보 표시 (상단) - 프리미엄 스타일
-      const infoFontSize = Math.max(10, 20 * scale);
-      const infoMarginX = 24 * scale;
+      // (infoFontSize, infoMarginX, infoCardPadding, infoCardWidth, infoLineHeight는 위에서 이미 계산됨)
       const infoMarginY = 24 * scale;
-      const infoLineHeight = infoFontSize + 8 * scale;
       const infoY = infoMarginY;
-      const infoCardPadding = 16 * scale;
       const infoCardRadius = 16 * scale;
 
       // 정보 카드 배경 (글래스모피즘 효과)
       const { bgCard, borderColor } = getThemeColors();
-      const infoCardWidth = 280 * scale;
-      const infoCardHeight = infoLineHeight * 4 + infoCardPadding * 2;
       ctx.save();
       ctx.globalAlpha = 0.9;
       ctx.fillStyle = bgCard;
@@ -2086,7 +2113,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
           return;
         }
 
-        // 젬 클릭 처리
+        // 젬 클릭 처리 (렌더링과 동일한 계산 사용)
         const baseCellSize = config.cellSize || 70;
         const cellSize = baseCellSize * scale;
         const gridCols = config.gridCols || 9;
@@ -2094,7 +2121,28 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
         const gridWidth = cellSize * gridCols;
         const gridHeight = cellSize * gridRows;
-        const gridStartX = (canvasWidth - gridWidth) / 2;
+        
+        // 게임 보드 위치 계산 (렌더링과 동일)
+        // buttonMargin과 baseButtonWidth는 위에서 이미 선언됨 (2038번째 줄, 2036번째 줄)
+        const infoFontSize = Math.max(10, 20 * scale);
+        const infoMarginX = 24 * scale;
+        const infoCardPadding = 16 * scale;
+        const infoCardWidth = 280 * scale;
+        const infoPanelRightEdge = infoMarginX - infoCardPadding + infoCardWidth;
+        const infoPanelMargin = 20 * scale;
+        const buttonWidth = baseButtonWidth * scale;
+        const rightButtonArea = buttonWidth + buttonMargin;
+        const availableWidth = canvasWidth - infoPanelRightEdge - infoPanelMargin - rightButtonArea;
+        
+        let gridStartX: number;
+        if (gridWidth <= availableWidth) {
+          const centerX = canvasWidth / 2;
+          const minStartX = infoPanelRightEdge + infoPanelMargin;
+          gridStartX = Math.max(minStartX, centerX - gridWidth / 2);
+        } else {
+          gridStartX = infoPanelRightEdge + infoPanelMargin;
+        }
+        
         const gridStartY = (canvasHeight - gridHeight) / 2;
 
         // 클릭한 그리드 셀 계산
@@ -2162,7 +2210,29 @@ const GameBoard: React.FC<GameBoardProps> = ({
 
       const gridWidth = cellSize * gridCols;
       const gridHeight = cellSize * gridRows;
-      const gridStartX = (canvasWidth - gridWidth) / 2;
+      
+      // 게임 보드 위치 계산 (렌더링과 동일)
+      const infoFontSize = Math.max(10, 20 * scale);
+      const infoMarginX = 24 * scale;
+      const infoCardPadding = 16 * scale;
+      const infoCardWidth = 280 * scale;
+      const infoPanelRightEdge = infoMarginX - infoCardPadding + infoCardWidth;
+      const infoPanelMargin = 20 * scale;
+      const buttonMargin = 20 * scale;
+      const baseButtonWidth = 120;
+      const buttonWidth = baseButtonWidth * scale;
+      const rightButtonArea = buttonWidth + buttonMargin;
+      const availableWidth = canvasWidth - infoPanelRightEdge - infoPanelMargin - rightButtonArea;
+      
+      let gridStartX: number;
+      if (gridWidth <= availableWidth) {
+        const centerX = canvasWidth / 2;
+        const minStartX = infoPanelRightEdge + infoPanelMargin;
+        gridStartX = Math.max(minStartX, centerX - gridWidth / 2);
+      } else {
+        gridStartX = infoPanelRightEdge + infoPanelMargin;
+      }
+      
       const gridStartY = (canvasHeight - gridHeight) / 2;
 
       const col = Math.floor((x - gridStartX) / cellSize);
