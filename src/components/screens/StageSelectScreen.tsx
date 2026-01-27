@@ -8,11 +8,13 @@ import "./StageSelectScreen.css";
 interface StageSelectScreenProps {
   onNavigate: (screen: "menu" | "stageSelect" | "game" | "guide" | "help") => void;
   onStartStage: (stageNumber: number) => void;
+  currentScreen?: "menu" | "stageSelect" | "game" | "guide" | "help";
 }
 
 const StageSelectScreen: React.FC<StageSelectScreenProps> = ({ 
   onNavigate, 
-  onStartStage 
+  onStartStage,
+  currentScreen = "stageSelect"
 }) => {
   const { t } = useLanguage();
   const [unlockedStages, setUnlockedStages] = useState<number>(1);
@@ -22,7 +24,8 @@ const StageSelectScreen: React.FC<StageSelectScreenProps> = ({
   const stagesPerPage = 50;
   const totalPages = Math.ceil(totalStages / stagesPerPage);
 
-  useEffect(() => {
+  // 스테이지 진행 상태 로드 함수
+  const loadStageProgress = () => {
     // LocalStorage에서 해제된 스테이지 확인
     const progress = storageManager.get<GameProgress>(
       "chipPuzzleGame_progress",
@@ -38,8 +41,19 @@ const StageSelectScreen: React.FC<StageSelectScreenProps> = ({
       setCurrentPage(unlockedPage);
       
       logger.debug("Stage progress loaded", { highestStage });
+    } else {
+      // 진행 상태가 없으면 기본값 설정
+      setUnlockedStages(1);
+      setCurrentPage(1);
     }
-  }, [stagesPerPage]);
+  };
+
+  // 컴포넌트 마운트 시 및 스테이지 선택 화면으로 돌아올 때마다 진행 상태 로드
+  useEffect(() => {
+    if (currentScreen === "stageSelect") {
+      loadStageProgress();
+    }
+  }, [currentScreen, stagesPerPage]);
 
   const handleStageClick = (stageNumber: number) => {
     if (stageNumber <= unlockedStages) {

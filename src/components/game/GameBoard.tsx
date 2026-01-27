@@ -129,8 +129,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [currentScreen, gameState.board, stageNumber]);
 
-  useEffect(() => {
-    // LocalStorage에서 해제된 스테이지 확인
+  // 스테이지 진행 상태 로드 함수
+  const loadStageProgress = useCallback(() => {
     try {
       const progress = storageManager.get<GameProgress>(
         "chipPuzzleGame_progress",
@@ -138,10 +138,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
       );
 
       if (progress) {
-        setUnlockedStages(Math.max(1, progress.highestStage || 1));
+        const highestStage = Math.max(1, progress.highestStage || 1);
+        setUnlockedStages(highestStage);
         logger.info("Game progress loaded", {
-          highestStage: progress.highestStage || 1,
+          highestStage,
         });
+      } else {
+        setUnlockedStages(1);
       }
     } catch (error) {
       // 게임 상태 복구 실패 시 조용히 처리 (새 게임 시작)
@@ -149,6 +152,13 @@ const GameBoard: React.FC<GameBoardProps> = ({
       setUnlockedStages(1);
     }
   }, []);
+
+  // 컴포넌트 마운트 시 및 스테이지 선택 화면으로 돌아올 때마다 진행 상태 로드
+  useEffect(() => {
+    if (currentScreen === "stageSelect") {
+      loadStageProgress();
+    }
+  }, [currentScreen, loadStageProgress]);
 
   const renderStageSelect = useCallback(
     (
