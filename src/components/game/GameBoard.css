@@ -250,19 +250,18 @@
   }
 }
 
-/* 세로 모드일 때 버튼 위치 조정 - 헤더 바로 아래 */
-@media (max-width: 768px) and (orientation: portrait) {
+/* 세로 모드일 때 버튼 위치 - 오른쪽 상단 (스테이지 정보와 겹치지 않도록) */
+@media (max-width: 768px) {
   .orientation-toggle-button {
     top: 75px;
     right: 10px;
   }
-}
-
-/* 가로 모드일 때 버튼 위치 조정 - 헤더 바로 아래 */
-@media (max-width: 768px) and (orientation: landscape) {
-  .orientation-toggle-button {
+  
+  /* 가로 모드일 때 버튼 위치 - 왼쪽 상단으로 이동하여 스테이지 정보를 가리지 않도록 */
+  .orientation-toggle-button.landscape-mode {
     top: 75px;
-    right: 10px;
+    left: 10px;
+    right: auto;
   }
 }
 

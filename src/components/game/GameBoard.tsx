@@ -2768,10 +2768,10 @@ const GameBoard: React.FC<GameBoardProps> = ({
           onResize={handleCanvasResize}
         />
       </div>
-      {/* 모바일에서만 방향 전환 버튼 표시 */}
-      {isMobile && currentScreen === "game" && (
+      {/* 모바일에서만 방향 전환 버튼 표시 (스테이지 선택 화면과 게임 화면) */}
+      {isMobile && (currentScreen === "stageSelect" || currentScreen === "game") && (
         <button
-          className="orientation-toggle-button"
+          className={`orientation-toggle-button ${isLandscapeMode ? "landscape-mode" : ""}`}
           onClick={toggleOrientationMode}
           aria-label={
             isLandscapeMode
