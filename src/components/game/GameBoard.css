@@ -8,6 +8,46 @@
   z-index: 1;
 }
 
+.game-board-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s ease;
+  position: relative;
+}
+
+/* 모바일에서 가로 모드일 때 게임 보드 회전 및 크기 조정 */
+@media (max-width: 768px) {
+  .game-board-container.landscape-mode {
+    transform: rotate(90deg);
+    width: 100vh;
+    height: 100vw;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    margin-top: -50vw;
+    margin-left: -50vh;
+    transform-origin: center center;
+    z-index: 10;
+  }
+  
+  /* 가로 모드일 때 게임 보드가 화면을 벗어나지 않도록 */
+  .game-board-container.landscape-mode .game-canvas-wrapper {
+    width: 100vh;
+    height: 100vw;
+    max-width: 100vh;
+    max-height: 100vw;
+  }
+  
+  /* 가로 모드일 때 게임 보드가 더 크게 보이도록 */
+  .game-board-container.landscape-mode .game-canvas {
+    max-width: 100vh;
+    max-height: 100vw;
+  }
+}
+
 /* 모바일 회전 안내 오버레이 */
 .rotate-message {
   position: fixed;

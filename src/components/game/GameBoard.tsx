@@ -50,6 +50,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
 }) => {
   const initializedRef = useRef(false);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null);
   const gemRendererRef = useRef<GemRenderer | null>(null);
   const lastCellSizeRef = useRef<number | null>(null);
@@ -81,6 +82,17 @@ const GameBoard: React.FC<GameBoardProps> = ({
     row: number;
     col: number;
   } | null>(null);
+  // 가로/세로 모드 상태 (모바일에서 게임 보드 회전)
+  const [isLandscapeMode, setIsLandscapeMode] = useState<boolean>(() => {
+    if (typeof window !== "undefined") {
+      const saved = storageManager.get<boolean>(
+        "chipPuzzleGame_landscapeMode",
+        { fallback: false, silent: true }
+      );
+      return saved ?? false;
+    }
+    return false;
+  });
 
   // 게임 상태 관리
   const { gameState, selectGem, swapGems, processMatches, togglePause } =
@@ -1803,12 +1815,77 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (!canvas) return;
 
       const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      let x = event.clientX - rect.left;
+      let y = event.clientY - rect.top;
 
       const dpr = window.devicePixelRatio || 1;
-      const canvasWidth = canvas.width / dpr;
-      const canvasHeight = canvas.height / dpr;
+      let canvasWidth = canvas.width / dpr;
+      let canvasHeight = canvas.height / dpr;
+
+      // 가로 모드일 때 클릭 좌표 변환 (90도 시계방향 회전의 역변환)
+      // 
+      // [문제 상황]
+      // - CSS로 컨테이너가 90도 시계방향 회전됨 (transform: rotate(90deg))
+      // - Canvas는 회전되지 않았지만, 시각적으로는 회전되어 보임
+      // - 클릭 좌표는 회전된 화면 기준이지만, 게임 로직은 원래 좌표계 필요
+      //
+      // [변환 과정]
+      // 1. 화면 클릭 좌표 → 회전된 canvas 기준 상대 좌표 (x, y)
+      // 2. 회전된 좌표를 중심 기준 상대 좌표로 변환 (relativeX, relativeY)
+      // 3. -90도 회전 (역변환)하여 원래 좌표계의 상대 좌표로 변환
+      // 4. 원래 캔버스 중심 기준 절대 좌표로 변환
+      //
+      if (isLandscapeMode && window.innerWidth <= 768) {
+        // [단계 1] 원래 캔버스 크기 확인
+        // Canvas 자체는 회전되지 않았으므로, 원래 크기는 변하지 않음
+        const originalWidth = canvasWidth;   // 예: 1200px
+        const originalHeight = canvasHeight;   // 예: 675px
+        
+        // [단계 2] 회전된 요소의 경계 상자 크기
+        // getBoundingClientRect()는 회전된 요소의 경계 상자(bounding box)를 반환
+        // 90도 회전하면 width와 height가 교환됨
+        // 예: 원래 1200×675 → 회전 후 경계 상자는 약 675×1200
+        const rotatedWidth = rect.width;      // 회전 후 width (원래 height와 비슷)
+        const rotatedHeight = rect.height;     // 회전 후 height (원래 width와 비슷)
+        
+        // [단계 3] 회전 중심 계산
+        // transform-origin: center center이므로 회전 중심은 중앙
+        const rotatedCenterX = rotatedWidth / 2;   // 회전된 요소의 중심 X
+        const rotatedCenterY = rotatedHeight / 2;  // 회전된 요소의 중심 Y
+        const originalCenterX = originalWidth / 2;  // 원래 캔버스의 중심 X
+        const originalCenterY = originalHeight / 2; // 원래 캔버스의 중심 Y
+        
+        // [단계 4] 회전된 좌표를 중심 기준 상대 좌표로 변환
+        // 현재 x, y는 회전된 canvas 기준 절대 좌표
+        // 중심점을 기준으로 상대 좌표로 변환하여 회전 변환을 쉽게 함
+        const relativeX = x - rotatedCenterX;  // 중심 기준 상대 X
+        const relativeY = y - rotatedCenterY;   // 중심 기준 상대 Y
+        
+        // [단계 5] -90도 회전 (90도 시계방향 회전의 역변환)
+        //
+        // [수학적 원리]
+        // 90도 시계방향 회전 공식: (x, y) → (y, width - x)
+        // 역변환 공식: (x', y') → (height - y', x')
+        //
+        // [예시]
+        // 원래 상대 좌표: (100, 50)
+        // 90도 회전 후: (50, width - 100) = (50, 1200 - 100) = (50, 1100)
+        // 역변환: (height - 1100, 50) = (675 - 1100, 50) = (-425, 50)
+        //
+        // 하지만 실제로는 회전된 좌표계에서:
+        // - rotatedWidth = originalHeight (회전 후 width는 원래 height)
+        // - rotatedHeight = originalWidth (회전 후 height는 원래 width)
+        //
+        // 따라서 역변환:
+        //const originalRelativeX = originalHeight - relativeY;  // height - y'
+        const originalRelativeX = relativeY;  // height - y'
+        const originalRelativeY = -relativeX;                      // x'
+        
+        // [단계 6] 원래 캔버스의 중심을 기준으로 절대 좌표로 변환
+        // 상대 좌표를 다시 절대 좌표로 변환하여 최종 클릭 위치 계산
+        x = originalCenterX + originalRelativeX;
+        y = originalCenterY + originalRelativeY;
+      }
 
       // 캔버스 컨텍스트 가져오기 (텍스트 너비 측정용)
       const ctx = canvas.getContext("2d");
@@ -1950,14 +2027,31 @@ const GameBoard: React.FC<GameBoardProps> = ({
         // 50개일 때는 10열 × 5행으로 표시 (가로로 10개, 세로로 5개)
         const stagesPerRow = stagesToShow === 50 ? 10 : 8;
 
-        const startX =
-          (canvasWidth -
-            (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
-          2;
-        const startY = 100 * scale;
+        let col: number;
+        let row: number;
 
-        const col = Math.floor((x - startX) / (stageSize + gap));
-        const row = Math.floor((y - startY) / (stageSize + gap));
+        // 가로 모드일 때는 세로 모드와 동일한 로직 사용 (좌표 변환이 이미 적용됨)
+        if (isLandscapeMode && window.innerWidth <= 768) {
+          // 좌표 변환이 이미 적용되었으므로, 세로 모드와 동일하게 계산
+          const startX =
+            (canvasWidth -
+              (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
+            2;
+          const startY = 100 * scale;
+          
+          col = Math.floor((x - startX) / (stageSize + gap));
+          row = Math.floor((y - startY) / (stageSize + gap));
+        } else {
+          // 일반 모드
+          const startX =
+            (canvasWidth -
+              (stagesPerRow * stageSize + (stagesPerRow - 1) * gap)) /
+            2;
+          const startY = 100 * scale;
+
+          col = Math.floor((x - startX) / (stageSize + gap));
+          row = Math.floor((y - startY) / (stageSize + gap));
+        }
 
         if (col >= 0 && col < stagesPerRow && row >= 0) {
           const stageNumber = startStage + row * stagesPerRow + col;
@@ -2101,8 +2195,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
           y >= backToStagesButtonY &&
           y <= backToStagesButtonY + backToStagesButtonHeight
         ) {
-          if (onNavigate) {
-            onNavigate("stageSelect");
+          if (_onNavigate) {
+            _onNavigate("stageSelect");
           }
           soundManager.playClick();
           return;
@@ -2124,7 +2218,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
         
         // 게임 보드 위치 계산 (렌더링과 동일)
         // buttonMargin과 baseButtonWidth는 위에서 이미 선언됨 (2038번째 줄, 2036번째 줄)
-        const infoFontSize = Math.max(10, 20 * scale);
         const infoMarginX = 24 * scale;
         const infoCardPadding = 16 * scale;
         const infoCardWidth = 280 * scale;
@@ -2180,6 +2273,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       togglePause,
       currentPage,
       t,
+      isLandscapeMode,
     ]
   );
 
@@ -2192,12 +2286,76 @@ const GameBoard: React.FC<GameBoardProps> = ({
       if (gameState.isPaused) return;
 
       const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      let x = event.clientX - rect.left;
+      let y = event.clientY - rect.top;
 
       const dpr = window.devicePixelRatio || 1;
-      const canvasWidth = canvas.width / dpr;
-      const canvasHeight = canvas.height / dpr;
+      let canvasWidth = canvas.width / dpr;
+      let canvasHeight = canvas.height / dpr;
+
+      // 가로 모드일 때 클릭 좌표 변환 (90도 시계방향 회전의 역변환)
+      // 
+      // [문제 상황]
+      // - CSS로 컨테이너가 90도 시계방향 회전됨 (transform: rotate(90deg))
+      // - Canvas는 회전되지 않았지만, 시각적으로는 회전되어 보임
+      // - 클릭 좌표는 회전된 화면 기준이지만, 게임 로직은 원래 좌표계 필요
+      //
+      // [변환 과정]
+      // 1. 화면 클릭 좌표 → 회전된 canvas 기준 상대 좌표 (x, y)
+      // 2. 회전된 좌표를 중심 기준 상대 좌표로 변환 (relativeX, relativeY)
+      // 3. -90도 회전 (역변환)하여 원래 좌표계의 상대 좌표로 변환
+      // 4. 원래 캔버스 중심 기준 절대 좌표로 변환
+      //
+      if (isLandscapeMode && window.innerWidth <= 768) {
+        // [단계 1] 원래 캔버스 크기 확인
+        // Canvas 자체는 회전되지 않았으므로, 원래 크기는 변하지 않음
+        const originalWidth = canvasWidth;   // 예: 1200px
+        const originalHeight = canvasHeight;   // 예: 675px
+        
+        // [단계 2] 회전된 요소의 경계 상자 크기
+        // getBoundingClientRect()는 회전된 요소의 경계 상자(bounding box)를 반환
+        // 90도 회전하면 width와 height가 교환됨
+        // 예: 원래 1200×675 → 회전 후 경계 상자는 약 675×1200
+        const rotatedWidth = rect.width;      // 회전 후 width (원래 height와 비슷)
+        const rotatedHeight = rect.height;     // 회전 후 height (원래 width와 비슷)
+        
+        // [단계 3] 회전 중심 계산
+        // transform-origin: center center이므로 회전 중심은 중앙
+        const rotatedCenterX = rotatedWidth / 2;   // 회전된 요소의 중심 X
+        const rotatedCenterY = rotatedHeight / 2;  // 회전된 요소의 중심 Y
+        const originalCenterX = originalWidth / 2;  // 원래 캔버스의 중심 X
+        const originalCenterY = originalHeight / 2; // 원래 캔버스의 중심 Y
+        
+        // [단계 4] 회전된 좌표를 중심 기준 상대 좌표로 변환
+        // 현재 x, y는 회전된 canvas 기준 절대 좌표
+        // 중심점을 기준으로 상대 좌표로 변환하여 회전 변환을 쉽게 함
+        const relativeX = x - rotatedCenterX;  // 중심 기준 상대 X
+        const relativeY = y - rotatedCenterY;   // 중심 기준 상대 Y
+        
+        // [단계 5] -90도 회전 (90도 시계방향 회전의 역변환)
+        //
+        // [수학적 원리]
+        // 90도 시계방향 회전 공식: (x, y) → (y, width - x)
+        // 역변환 공식: (x', y') → (height - y', x')
+        //
+        // [예시]
+        // 원래 상대 좌표: (100, 50)
+        // 90도 회전 후: (50, width - 100) = (50, 1200 - 100) = (50, 1100)
+        // 역변환: (height - 1100, 50) = (675 - 1100, 50) = (-425, 50)
+        //
+        // 하지만 실제로는 회전된 좌표계에서:
+        // - rotatedWidth = originalHeight (회전 후 width는 원래 height)
+        // - rotatedHeight = originalWidth (회전 후 height는 원래 width)
+        //
+        // 따라서 역변환:
+        const originalRelativeX = originalHeight - relativeY;  // height - y'
+        const originalRelativeY = relativeX;                      // x'
+        
+        // [단계 6] 원래 캔버스의 중심을 기준으로 절대 좌표로 변환
+        // 상대 좌표를 다시 절대 좌표로 변환하여 최종 클릭 위치 계산
+        x = originalCenterX + originalRelativeX;
+        y = originalCenterY + originalRelativeY;
+      }
 
       // 기준 크기 (1200px 기준으로 설계)
       const baseWidth = 1200;
@@ -2212,7 +2370,6 @@ const GameBoard: React.FC<GameBoardProps> = ({
       const gridHeight = cellSize * gridRows;
       
       // 게임 보드 위치 계산 (렌더링과 동일)
-      const infoFontSize = Math.max(10, 20 * scale);
       const infoMarginX = 24 * scale;
       const infoCardPadding = 16 * scale;
       const infoCardWidth = 280 * scale;
@@ -2251,7 +2408,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
         isDraggingRef.current = true;
       }
     },
-    [currentScreen, config, gameState.board, gameState.isPaused]
+    [currentScreen, config, gameState.board, gameState.isPaused, isLandscapeMode]
   );
 
   const handlePointerMove = useCallback(
@@ -2268,11 +2425,76 @@ const GameBoard: React.FC<GameBoardProps> = ({
         return;
 
       const rect = canvas.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
+      let x = event.clientX - rect.left;
+      let y = event.clientY - rect.top;
 
       const dpr = window.devicePixelRatio || 1;
-      const canvasWidth = canvas.width / dpr;
+      let canvasWidth = canvas.width / dpr;
+      let canvasHeight = canvas.height / dpr;
+
+      // 가로 모드일 때 클릭 좌표 변환 (90도 시계방향 회전의 역변환)
+      // 
+      // [문제 상황]
+      // - CSS로 컨테이너가 90도 시계방향 회전됨 (transform: rotate(90deg))
+      // - Canvas는 회전되지 않았지만, 시각적으로는 회전되어 보임
+      // - 클릭 좌표는 회전된 화면 기준이지만, 게임 로직은 원래 좌표계 필요
+      //
+      // [변환 과정]
+      // 1. 화면 클릭 좌표 → 회전된 canvas 기준 상대 좌표 (x, y)
+      // 2. 회전된 좌표를 중심 기준 상대 좌표로 변환 (relativeX, relativeY)
+      // 3. -90도 회전 (역변환)하여 원래 좌표계의 상대 좌표로 변환
+      // 4. 원래 캔버스 중심 기준 절대 좌표로 변환
+      //
+      if (isLandscapeMode && window.innerWidth <= 768) {
+        // [단계 1] 원래 캔버스 크기 확인
+        // Canvas 자체는 회전되지 않았으므로, 원래 크기는 변하지 않음
+        const originalWidth = canvasWidth;   // 예: 1200px
+        const originalHeight = canvasHeight;   // 예: 675px
+        
+        // [단계 2] 회전된 요소의 경계 상자 크기
+        // getBoundingClientRect()는 회전된 요소의 경계 상자(bounding box)를 반환
+        // 90도 회전하면 width와 height가 교환됨
+        // 예: 원래 1200×675 → 회전 후 경계 상자는 약 675×1200
+        const rotatedWidth = rect.width;      // 회전 후 width (원래 height와 비슷)
+        const rotatedHeight = rect.height;     // 회전 후 height (원래 width와 비슷)
+        
+        // [단계 3] 회전 중심 계산
+        // transform-origin: center center이므로 회전 중심은 중앙
+        const rotatedCenterX = rotatedWidth / 2;   // 회전된 요소의 중심 X
+        const rotatedCenterY = rotatedHeight / 2;  // 회전된 요소의 중심 Y
+        const originalCenterX = originalWidth / 2;  // 원래 캔버스의 중심 X
+        const originalCenterY = originalHeight / 2; // 원래 캔버스의 중심 Y
+        
+        // [단계 4] 회전된 좌표를 중심 기준 상대 좌표로 변환
+        // 현재 x, y는 회전된 canvas 기준 절대 좌표
+        // 중심점을 기준으로 상대 좌표로 변환하여 회전 변환을 쉽게 함
+        const relativeX = x - rotatedCenterX;  // 중심 기준 상대 X
+        const relativeY = y - rotatedCenterY;   // 중심 기준 상대 Y
+        
+        // [단계 5] -90도 회전 (90도 시계방향 회전의 역변환)
+        //
+        // [수학적 원리]
+        // 90도 시계방향 회전 공식: (x, y) → (y, width - x)
+        // 역변환 공식: (x', y') → (height - y', x')
+        //
+        // [예시]
+        // 원래 상대 좌표: (100, 50)
+        // 90도 회전 후: (50, width - 100) = (50, 1200 - 100) = (50, 1100)
+        // 역변환: (height - 1100, 50) = (675 - 1100, 50) = (-425, 50)
+        //
+        // 하지만 실제로는 회전된 좌표계에서:
+        // - rotatedWidth = originalHeight (회전 후 width는 원래 height)
+        // - rotatedHeight = originalWidth (회전 후 height는 원래 width)
+        //
+        // 따라서 역변환:
+        const originalRelativeX = originalHeight - relativeY;  // height - y'
+        const originalRelativeY = relativeX;                      // x'
+        
+        // [단계 6] 원래 캔버스의 중심을 기준으로 절대 좌표로 변환
+        // 상대 좌표를 다시 절대 좌표로 변환하여 최종 클릭 위치 계산
+        x = originalCenterX + originalRelativeX;
+        y = originalCenterY + originalRelativeY;
+      }
 
       // 기준 크기 (1200px 기준으로 설계)
       const baseWidth = 1200;
@@ -2331,7 +2553,7 @@ const GameBoard: React.FC<GameBoardProps> = ({
       dragCurrentPosRef.current = { x, y };
       dragTargetCellRef.current = targetCell;
     },
-    [currentScreen, config, gameState.isPaused]
+    [currentScreen, config, gameState.isPaused, isLandscapeMode]
   );
 
   const handlePointerUp = useCallback(() => {
@@ -2511,6 +2733,15 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, [currentScreen, gameState.board]);
 
+  // 가로/세로 모드 토글 핸들러
+  const toggleOrientationMode = useCallback(() => {
+    const newMode = !isLandscapeMode;
+    setIsLandscapeMode(newMode);
+    // localStorage에 저장
+    storageManager.set("chipPuzzleGame_landscapeMode", newMode);
+    soundManager.playClick();
+  }, [isLandscapeMode]);
+
   // CSS transform을 사용하여 게임 화면 회전
   // 이전에 저장된 orientationPreference 데이터 정리
   useEffect(() => {
@@ -2521,13 +2752,47 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, []);
 
+  // 모바일 여부 확인
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+
   return (
     <div className="game-board">
-      <GameCanvas
-        config={config}
-        onReady={handleCanvasReady}
-        onResize={handleCanvasResize}
-      />
+      <div
+        ref={containerRef}
+        className={`game-board-container ${isLandscapeMode ? "landscape-mode" : ""}`}
+      >
+        <GameCanvas
+          config={config}
+          onReady={handleCanvasReady}
+          onResize={handleCanvasResize}
+        />
+      </div>
+      {/* 모바일에서만 방향 전환 버튼 표시 */}
+      {isMobile && currentScreen === "game" && (
+        <button
+          className="orientation-toggle-button"
+          onClick={toggleOrientationMode}
+          aria-label={
+            isLandscapeMode
+              ? t("game.switchToPortrait")
+              : t("game.switchToLandscape")
+          }
+          title={
+            isLandscapeMode
+              ? t("game.switchToPortrait")
+              : t("game.switchToLandscape")
+          }
+        >
+          <span className="orientation-icon">
+            {isLandscapeMode ? "📱" : "🔄"}
+          </span>
+          <span className="orientation-text">
+            {isLandscapeMode
+              ? t("game.portraitMode")
+              : t("game.landscapeMode")}
+          </span>
+        </button>
+      )}
     </div>
   );
 };
