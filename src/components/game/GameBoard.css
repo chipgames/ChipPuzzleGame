@@ -211,9 +211,10 @@
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 50;
+  z-index: 10000; /* 다른 버튼들과 동일한 z-index로 상향 */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   min-width: 60px;
+  pointer-events: auto;
 }
 
 .orientation-toggle-button:hover {
@@ -255,6 +256,8 @@
   .orientation-toggle-button {
     top: 75px;
     right: 10px;
+    display: flex !important; /* 가로 모드에서도 보이도록 */
+    z-index: 10000;
   }
   
   /* 가로 모드일 때 버튼 위치 - 왼쪽 상단으로 이동하여 스테이지 정보를 가리지 않도록 */
@@ -262,6 +265,21 @@
     top: 75px;
     left: 10px;
     right: auto;
+    display: flex !important;
+    z-index: 10000;
+  }
+}
+
+/* 가로 모드 (화면 회전 시) */
+@media (orientation: landscape) and (max-height: 768px) {
+  .orientation-toggle-button {
+    display: flex !important;
+    z-index: 10000;
+  }
+  
+  .orientation-toggle-button.landscape-mode {
+    display: flex !important;
+    z-index: 10000;
   }
 }
 

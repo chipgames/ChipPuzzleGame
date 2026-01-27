@@ -12,6 +12,7 @@ import { getWebVitals, logWebVitals } from "@/utils/webVitals";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import "@/styles/App.css";
 import "@/styles/UIHideButton.css";
+import "@/styles/OrientationLockButton.css";
 
 // Lazy loading for large components
 const GuideScreen = lazy(() => import("@/components/screens/GuideScreen"));
@@ -25,6 +26,15 @@ const App: React.FC = () => {
     // localStorage에서 UI 숨김 상태 불러오기
     if (typeof window !== "undefined") {
       const saved = localStorage.getItem("chipPuzzleGame_uiHidden");
+      return saved === "true";
+    }
+    return false;
+  });
+
+  const [isOrientationLocked, setIsOrientationLocked] = useState<boolean>(() => {
+    // localStorage에서 화면 고정 상태 불러오기
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("chipPuzzleGame_orientationLocked");
       return saved === "true";
     }
     return false;
@@ -100,8 +110,120 @@ const App: React.FC = () => {
     localStorage.setItem("chipPuzzleGame_uiHidden", String(newState));
   };
 
-  // 모바일 여부 확인
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  // 화면 고정 토글
+  const toggleOrientationLock = async () => {
+    if (typeof window === "undefined" || !screen.orientation) {
+      alert("이 브라우저는 화면 고정을 지원하지 않습니다.");
+      return;
+    }
+
+    try {
+      if (isOrientationLocked) {
+        // 화면 고정 해제
+        await (screen.orientation as any).unlock();
+        setIsOrientationLocked(false);
+        localStorage.setItem("chipPuzzleGame_orientationLocked", "false");
+      } else {
+        // 전체화면 모드 진입 시도 (화면 고정이 더 잘 작동함)
+        try {
+          if (document.documentElement.requestFullscreen) {
+            await document.documentElement.requestFullscreen();
+          } else if ((document.documentElement as any).webkitRequestFullscreen) {
+            await (document.documentElement as any).webkitRequestFullscreen();
+          } else if ((document.documentElement as any).mozRequestFullScreen) {
+            await (document.documentElement as any).mozRequestFullScreen();
+          } else if ((document.documentElement as any).msRequestFullscreen) {
+            await (document.documentElement as any).msRequestFullscreen();
+          }
+        } catch (fullscreenError) {
+          // 전체화면 실패해도 계속 진행
+          console.warn("전체화면 모드 진입 실패:", fullscreenError);
+        }
+
+        // 현재 화면 방향에 따라 고정
+        const currentOrientation = screen.orientation.type;
+        let lockType: "portrait" | "landscape" | "portrait-primary" | "portrait-secondary" | "landscape-primary" | "landscape-secondary" | "any" = "any";
+        
+        // 현재 방향에 따라 적절한 고정 타입 선택
+        if (currentOrientation.startsWith("portrait")) {
+          lockType = "portrait";
+        } else if (currentOrientation.startsWith("landscape")) {
+          lockType = "landscape";
+        }
+        
+        await (screen.orientation as any).lock(lockType);
+        setIsOrientationLocked(true);
+        localStorage.setItem("chipPuzzleGame_orientationLocked", "true");
+      }
+    } catch (error: unknown) {
+      // 화면 고정이 지원되지 않거나 실패한 경우
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.warn("화면 고정 실패:", errorMessage);
+      
+      // 사용자에게 안내
+      if (errorMessage.includes("not allowed") || errorMessage.includes("denied")) {
+        alert("화면 고정을 사용하려면 전체화면 모드가 필요합니다. 또는 브라우저 설정에서 화면 회전을 허용해주세요.");
+      } else {
+        alert("화면 고정을 지원하지 않거나 사용할 수 없습니다.");
+      }
+    }
+  };
+
+  // 화면 고정 상태 초기화
+  useEffect(() => {
+    if (typeof window === "undefined" || !screen.orientation) {
+      return;
+    }
+
+    // 저장된 화면 고정 상태 복원
+    if (isOrientationLocked) {
+      const currentOrientation = screen.orientation.type;
+      let lockType: "portrait" | "landscape" | "portrait-primary" | "portrait-secondary" | "landscape-primary" | "landscape-secondary" | "any" = "any";
+      
+      if (currentOrientation.startsWith("portrait")) {
+        lockType = "portrait";
+      } else if (currentOrientation.startsWith("landscape")) {
+        lockType = "landscape";
+      }
+      
+      (screen.orientation as any).lock(lockType).catch((error: unknown) => {
+        console.warn("화면 고정 복원 실패:", error);
+        setIsOrientationLocked(false);
+        localStorage.setItem("chipPuzzleGame_orientationLocked", "false");
+      });
+    }
+  }, []);
+
+  // 모바일 여부 확인 (가로/세로 모드 모두 고려)
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    // 터치 지원 여부 또는 화면 크기로 판단
+    return (
+      window.innerWidth <= 768 ||
+      window.innerHeight <= 768 ||
+      ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+    );
+  });
+
+  // 화면 크기 변경 감지
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      setIsMobile(
+        window.innerWidth <= 768 ||
+        window.innerHeight <= 768 ||
+        ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+      );
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
 
   // 페이지별 SEO 설정
   const getSEOProps = () => {
@@ -175,14 +297,27 @@ const App: React.FC = () => {
         {!isUIHidden && <Footer />}
         {/* 모바일에서만 UI 숨김/표시 토글 버튼 */}
         {isMobile && (
-          <button
-            className="ui-toggle-button"
-            onClick={toggleUI}
-            aria-label={isUIHidden ? "UI 표시" : "UI 숨김"}
-            title={isUIHidden ? "메뉴 및 푸터 표시" : "메뉴 및 푸터 숨김"}
-          >
-            {isUIHidden ? "👁️" : "🙈"}
-          </button>
+          <>
+            <button
+              className="ui-toggle-button"
+              onClick={toggleUI}
+              aria-label={isUIHidden ? "UI 표시" : "UI 숨김"}
+              title={isUIHidden ? "메뉴 및 푸터 표시" : "메뉴 및 푸터 숨김"}
+            >
+              {isUIHidden ? "👁️" : "🙈"}
+            </button>
+            {/* 화면 고정 토글 버튼 */}
+            {typeof window !== "undefined" && screen.orientation && (
+              <button
+                className="orientation-lock-button"
+                onClick={toggleOrientationLock}
+                aria-label={isOrientationLocked ? "화면 고정 해제" : "화면 고정"}
+                title={isOrientationLocked ? "화면 고정 해제" : "화면 고정"}
+              >
+                {isOrientationLocked ? "🔒" : "🔓"}
+              </button>
+            )}
+          </>
         )}
       </div>
     </ErrorBoundary>

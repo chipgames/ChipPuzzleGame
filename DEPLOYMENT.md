@@ -21,7 +21,7 @@ npm install
 
 ### 방법 1: 자동 배포 (권장)
 
-가장 간단한 방법입니다. 한 번의 명령으로 빌드와 배포가 완료됩니다.
+가장 간단한 방법입니다. 한 번의 명령으로 버전 업데이트, 빌드, 배포가 완료됩니다.
 
 ```bash
 npm run deploy
@@ -29,8 +29,16 @@ npm run deploy
 
 이 명령은 다음을 자동으로 수행합니다:
 
-1. 프로덕션 빌드 생성 (`npm run build:gh`)
-2. `gh-pages` 브랜치에 배포 (`npx gh-pages -d dist`)
+1. **버전 자동 업데이트** (`npm run version:patch`)
+   - `package.json`의 버전을 패치 버전으로 증가 (예: 1.1.0 → 1.1.1)
+   - Service Worker의 캐시 버전도 함께 업데이트
+2. 프로덕션 빌드 생성 (`npm run build:gh`)
+3. `gh-pages` 브랜치에 배포 (`npx gh-pages -d dist`)
+
+**버전 업데이트 옵션:**
+- `npm run deploy` - 패치 버전 증가 (1.1.0 → 1.1.1)
+- `npm run deploy:minor` - 마이너 버전 증가 (1.1.0 → 1.2.0)
+- `npm run deploy:major` - 메이저 버전 증가 (1.1.0 → 2.0.0)
 
 **참고**: Windows 환경에서는 `npx`를 사용해야 하므로, `npm run deploy` 명령어를 사용하는 것이 가장 안전합니다.
 

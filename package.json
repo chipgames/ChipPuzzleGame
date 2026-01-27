@@ -1,13 +1,18 @@
 {
   "name": "chip-puzzle-game",
-  "version": "1.1.0",
+  "version": "1.1.3",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
     "build:gh": "vite build --mode production",
     "preview": "vite preview",
-    "deploy": "npm run build:gh && npx gh-pages -d dist",
+    "version:patch": "node scripts/version-bump.mjs patch",
+    "version:minor": "node scripts/version-bump.mjs minor",
+    "version:major": "node scripts/version-bump.mjs major",
+    "deploy": "npm run version:patch && npm run build:gh && npx gh-pages -d dist",
+    "deploy:minor": "npm run version:minor && npm run build:gh && npx gh-pages -d dist",
+    "deploy:major": "npm run version:major && npm run build:gh && npx gh-pages -d dist",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "test": "jest",
     "test:coverage": "jest --coverage",
@@ -42,5 +47,3 @@
     "cross-env": "^7.0.3"
   }
 }
-
-

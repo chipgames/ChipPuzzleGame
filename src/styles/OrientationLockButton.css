@@ -1,8 +1,8 @@
-/* 모바일 UI 숨김/표시 토글 버튼 */
-.ui-toggle-button {
+/* 모바일 화면 고정 토글 버튼 */
+.orientation-lock-button {
   position: fixed;
   bottom: 20px;
-  right: 20px;
+  left: 20px;
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -16,42 +16,42 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000; /* 게임 보드 컨테이너(z-index: 10)보다 훨씬 높게 설정 */
+  z-index: 10000; /* UI 토글 버튼과 동일한 z-index */
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(102, 126, 234, 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  pointer-events: auto; /* 클릭 이벤트가 정상적으로 작동하도록 */
+  pointer-events: auto;
 }
 
 /* 가로 모드에서도 버튼이 보이도록 */
 @media (max-width: 768px) {
-  .ui-toggle-button {
+  .orientation-lock-button {
     display: flex !important;
   }
 }
 
 /* 가로 모드 (화면 회전 시) */
 @media (orientation: landscape) and (max-height: 768px) {
-  .ui-toggle-button {
+  .orientation-lock-button {
     display: flex !important;
     z-index: 10000;
   }
 }
 
-.ui-toggle-button:hover {
+.orientation-lock-button:hover {
   background: rgba(102, 126, 234, 1);
   transform: scale(1.1);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(102, 126, 234, 0.6);
 }
 
-.ui-toggle-button:active {
+.orientation-lock-button:active {
   transform: scale(0.95);
 }
 
 /* 데스크톱에서는 숨김 */
 @media (min-width: 769px) {
-  .ui-toggle-button {
+  .orientation-lock-button {
     display: none;
   }
 }

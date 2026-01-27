@@ -2753,8 +2753,36 @@ const GameBoard: React.FC<GameBoardProps> = ({
     }
   }, []);
 
-  // 모바일 여부 확인
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  // 모바일 여부 확인 (가로/세로 모드 모두 고려)
+  const [isMobile, setIsMobile] = useState<boolean>(() => {
+    if (typeof window === "undefined") return false;
+    // 터치 지원 여부 또는 화면 크기로 판단
+    return (
+      window.innerWidth <= 768 ||
+      window.innerHeight <= 768 ||
+      ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+    );
+  });
+
+  // 화면 크기 변경 감지
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window === "undefined") return;
+      setIsMobile(
+        window.innerWidth <= 768 ||
+        window.innerHeight <= 768 ||
+        ("ontouchstart" in window || navigator.maxTouchPoints > 0)
+      );
+    };
+
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("orientationchange", handleResize);
+    
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("orientationchange", handleResize);
+    };
+  }, []);
 
   return (
     <div className="game-board">
