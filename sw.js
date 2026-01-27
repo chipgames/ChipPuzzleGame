@@ -4,7 +4,7 @@
  */
 
 // 캐시 버전 업데이트 (코드 변경 시마다 증가)
-const CACHE_VERSION = "chip-puzzle-v1.1.1";
+const CACHE_VERSION = "chip-puzzle-v1.1.2";
 const CACHE_NAME = `${CACHE_VERSION}`;
 const STATIC_CACHE_NAME = `${CACHE_NAME}-static`;
 const DYNAMIC_CACHE_NAME = `${CACHE_NAME}-dynamic`;
