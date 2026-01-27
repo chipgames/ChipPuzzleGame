@@ -2348,8 +2348,8 @@ const GameBoard: React.FC<GameBoardProps> = ({
         // - rotatedHeight = originalWidth (회전 후 height는 원래 width)
         //
         // 따라서 역변환:
-        const originalRelativeX = originalHeight - relativeY;  // height - y'
-        const originalRelativeY = relativeX;                      // x'
+        const originalRelativeX = relativeY;  // height - y'
+        const originalRelativeY = -relativeX;                      // x'
         
         // [단계 6] 원래 캔버스의 중심을 기준으로 절대 좌표로 변환
         // 상대 좌표를 다시 절대 좌표로 변환하여 최종 클릭 위치 계산
