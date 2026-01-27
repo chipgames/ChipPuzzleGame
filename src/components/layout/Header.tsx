@@ -117,6 +117,14 @@ const Header: React.FC<HeaderProps> = memo(({ onNavigate, currentScreen: _curren
             </span>
           </div>
         </div>
+        {/* 모바일 메뉴 오버레이 */}
+        {isMobileMenuOpen && (
+          <div 
+            className="header-nav-overlay"
+            onClick={() => setIsMobileMenuOpen(false)}
+            aria-hidden="true"
+          />
+        )}
         <nav className={`header-nav ${isMobileMenuOpen ? "mobile-open" : ""}`}>
           <button 
             className="header-nav-button"

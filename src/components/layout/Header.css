@@ -338,7 +338,7 @@
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 99;
+    z-index: 1000;
     box-shadow: var(--shadow-lg);
   }
 
@@ -354,11 +354,12 @@
     font-weight: 500;
     color: var(--text-primary);
     border: none;
-    background: transparent;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: transparent !important; /* 모든 버튼이 동일한 배경 */
+    border-bottom: 1px solid var(--border-color); /* 테마에 맞는 구분선 색상 사용 */
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    z-index: 1001;
   }
 
   .header-nav-button:last-child {
@@ -383,8 +384,13 @@
   }
 
   .header-nav-button:hover {
-    background: var(--bg-glass);
+    background: var(--bg-glass) !important;
     padding-left: 24px;
+  }
+
+  /* 활성 상태 초기화 - 모든 버튼이 동일하게 보이도록 */
+  .header-nav-button:not(:hover):not(:active) {
+    background: transparent !important;
   }
 
   .header-right {
@@ -404,15 +410,16 @@
   }
 
   /* 모바일 메뉴 오버레이 */
-  .header-nav.mobile-open::before {
-    content: '';
+  .header-nav-overlay {
     position: fixed;
     top: 50px;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
     animation: fadeIn 0.3s;
     pointer-events: auto;
   }
