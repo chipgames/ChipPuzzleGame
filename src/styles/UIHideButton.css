@@ -1,0 +1,41 @@
+/* 모바일 UI 숨김/표시 토글 버튼 */
+.ui-toggle-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(102, 126, 234, 0.9);
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  border: 2px solid rgba(102, 126, 234, 0.3);
+  color: #ffffff;
+  font-size: 24px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(102, 126, 234, 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ui-toggle-button:hover {
+  background: rgba(102, 126, 234, 1);
+  transform: scale(1.1);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(102, 126, 234, 0.6);
+}
+
+.ui-toggle-button:active {
+  transform: scale(0.95);
+}
+
+/* 데스크톱에서는 숨김 */
+@media (min-width: 769px) {
+  .ui-toggle-button {
+    display: none;
+  }
+}

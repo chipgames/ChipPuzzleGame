@@ -11,6 +11,7 @@ import { setupAdObserver, preventAdSenseErrors } from "@/utils/adsense";
 import { getWebVitals, logWebVitals } from "@/utils/webVitals";
 import { registerServiceWorker } from "@/utils/serviceWorker";
 import "@/styles/App.css";
+import "@/styles/UIHideButton.css";
 
 // Lazy loading for large components
 const GuideScreen = lazy(() => import("@/components/screens/GuideScreen"));
@@ -20,6 +21,14 @@ const AboutScreen = lazy(() => import("@/components/screens/AboutScreen"));
 const App: React.FC = () => {
   const [currentScreen, setCurrentScreen] = useState<GameScreen>("stageSelect");
   const [currentStage, setCurrentStage] = useState<number | null>(null);
+  const [isUIHidden, setIsUIHidden] = useState<boolean>(() => {
+    // localStorage에서 UI 숨김 상태 불러오기
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("chipPuzzleGame_uiHidden");
+      return saved === "true";
+    }
+    return false;
+  });
   
   // 테마 초기화
   useTheme();
@@ -84,6 +93,16 @@ const App: React.FC = () => {
     setCurrentScreen("game");
   };
 
+  // UI 숨김/표시 토글
+  const toggleUI = () => {
+    const newState = !isUIHidden;
+    setIsUIHidden(newState);
+    localStorage.setItem("chipPuzzleGame_uiHidden", String(newState));
+  };
+
+  // 모바일 여부 확인
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+
   // 페이지별 SEO 설정
   const getSEOProps = () => {
     const baseUrl = "https://chipgames.github.io/ChipPuzzleGame/";
@@ -130,7 +149,7 @@ const App: React.FC = () => {
     <ErrorBoundary>
       <SEOHead {...getSEOProps()} />
       <div className="app-container">
-        <Header onNavigate={handleNavigate} currentScreen={currentScreen} />
+        {!isUIHidden && <Header onNavigate={handleNavigate} currentScreen={currentScreen} />}
         <GameContainer>
           {currentScreen === "guide" ? (
             <Suspense fallback={<div style={{ padding: "20px", textAlign: "center" }}>로딩 중...</div>}>
@@ -153,7 +172,18 @@ const App: React.FC = () => {
             />
           )}
         </GameContainer>
-        <Footer />
+        {!isUIHidden && <Footer />}
+        {/* 모바일에서만 UI 숨김/표시 토글 버튼 */}
+        {isMobile && (
+          <button
+            className="ui-toggle-button"
+            onClick={toggleUI}
+            aria-label={isUIHidden ? "UI 표시" : "UI 숨김"}
+            title={isUIHidden ? "메뉴 및 푸터 표시" : "메뉴 및 푸터 숨김"}
+          >
+            {isUIHidden ? "👁️" : "🙈"}
+          </button>
+        )}
       </div>
     </ErrorBoundary>
   );
