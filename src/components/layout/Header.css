@@ -393,6 +393,32 @@
     background: transparent !important;
   }
 
+  /* 네비게이션 메뉴 구분선 */
+  .header-nav-divider {
+    width: 100%;
+    height: 1px;
+    background: var(--border-color);
+    margin: 8px 0;
+  }
+
+  /* 설치 버튼 스타일 */
+  .header-install-button {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    color: var(--accent-primary) !important;
+  }
+
+  .install-icon {
+    font-size: 1.2rem;
+  }
+
+  .header-install-button:hover {
+    color: var(--accent-primary) !important;
+    background: rgba(168, 181, 255, 0.1) !important;
+  }
+
   .header-right {
     gap: 8px;
   }
