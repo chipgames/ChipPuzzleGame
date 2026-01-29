@@ -247,6 +247,31 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       <link rel="alternate" hrefLang="zh" href={`${url}?lang=zh`} />
       <link rel="alternate" hrefLang="x-default" href={url} />
 
+      {/* 네이버 검색 최적화 */}
+      <meta name="naver-site-verification" content="" />
+      {/* 네이버 웹마스터 도구에서 발급받은 인증 코드를 위 content에 입력하세요 */}
+      <meta name="NaverBot" content="All" />
+      <meta name="Yeti" content="All" />
+      {/* 네이버 블로그/카페 공유 최적화 */}
+      <meta property="og:image:type" content="image/png" />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      
+      {/* 다음(Daum) 검색 최적화 */}
+      <meta name="daum-title" content={finalTitle} />
+      <meta name="daum-description" content={finalDescription} />
+      <meta name="daum-image" content={finalImage} />
+      
+      {/* 한국 검색 엔진 최적화 키워드 */}
+      <meta name="subject" content="무료 온라인 매칭 퍼즐 게임" />
+      <meta name="classification" content="게임, 퍼즐게임, 무료게임" />
+      <meta name="category" content="게임" />
+      <meta name="coverage" content="Worldwide" />
+      <meta name="distribution" content="Global" />
+      <meta name="rating" content="General" />
+      <meta name="target" content="all" />
+      <meta name="audience" content="all" />
+
       {/* Content Security Policy */}
       <meta
         httpEquiv="Content-Security-Policy"

@@ -1,6 +1,24 @@
 User-agent: *
 Allow: /
 
+# 네이버 검색 엔진 크롤러
+User-agent: Yeti
+Allow: /
+User-agent: NaverBot
+Allow: /
+
+# 다음(Daum) 검색 엔진 크롤러
+User-agent: Daumoa
+Allow: /
+User-agent: Daum
+Allow: /
+
+# 구글 검색 엔진 크롤러
+User-agent: Googlebot
+Allow: /
+User-agent: Googlebot-Image
+Allow: /
+
 # Sitemap
 Sitemap: https://chipgames.github.io/ChipPuzzleGame/sitemap.xml
 
