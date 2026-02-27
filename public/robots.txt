@@ -13,10 +13,20 @@ Allow: /
 User-agent: Daum
 Allow: /
 
-# 구글 검색 엔진 크롤러
+# 구글 검색 엔진 크롤러 (전 세계)
 User-agent: Googlebot
 Allow: /
 User-agent: Googlebot-Image
+Allow: /
+
+# Bing 검색 엔진 크롤러 (미국·유럽·해외)
+User-agent: Bingbot
+Allow: /
+User-agent: msnbot
+Allow: /
+
+# Yandex 검색 엔진 크롤러 (러시아·독립국가연합)
+User-agent: Yandex
 Allow: /
 
 # Sitemap
